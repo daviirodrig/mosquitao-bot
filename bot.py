@@ -13,9 +13,9 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content.startswith('$pintao'):
-        await client.send_file(message.channel, '\\pintao.png')
+        await client.send_file(message.channel, 'pintao.png')
     elif message.content.startswith('$felps'):
-        await client.send_file(message.channel, '\\felps.png')
+        await client.send_file(message.channel, 'felps.png')
 
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
