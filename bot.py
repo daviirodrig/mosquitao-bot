@@ -37,6 +37,7 @@ async def on_message(message):
     elif message.content.startswith('$polvo'):
         await client.send_message(message.channel, random.choice(["Sim",
                                                                   "Talvez",
+                                                                  "E eu sei lá porra",
                                                                   "Não"]))
 
 
