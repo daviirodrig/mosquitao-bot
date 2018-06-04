@@ -28,7 +28,9 @@ async def on_member_remove(member):
 
 @client.event
 async def on_message(message):
-    if message.content.startswith('$pintao'):
+    if message.author == client.user:
+        return
+    elif message.content.startswith('$pintao'):
         await client.send_file(message.channel, 'pintao.png')
     elif message.content.startswith('$felps'):
         await client.send_file(message.channel, 'felps.png')
