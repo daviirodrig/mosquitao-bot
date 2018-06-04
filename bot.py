@@ -37,7 +37,7 @@ async def on_message(message):
     elif message.content.startswith('$pergunta'):
         await client.send_message(message.channel, random.choice(["Sim",
                                                                   "Talvez",
-                                                                  "E eu sei lá porra",
+                                                                  "Eu sei lá porra",
                                                                   "Não"]))
 
 
