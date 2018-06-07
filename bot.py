@@ -38,6 +38,7 @@ async def on_message(message):
         await client.send_file(message.channel, 'felps.png')
     elif message.content.startswith('$ping'):
         await client.send_message(message.channel, 'Pong!')
+        print('Alguem pingou!')
     elif message.content.startswith('$pergunta'):
         await client.send_message(message.channel, random.choice(["Sim",
                                                                   "Talvez",
