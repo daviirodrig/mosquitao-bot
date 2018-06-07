@@ -30,7 +30,7 @@ async def on_member_remove(member):
 async def on_message(message):
     if message.author == client.user:
         return
-    elif message.content.startswith('$paz')
+    elif message.content.startswith('$paz'):
         await client.send_file(message.channel, 'paz.jpg')
     elif message.content.startswith('$pintao'):
         await client.send_file(message.channel, 'pintao.png')
