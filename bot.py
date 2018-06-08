@@ -9,7 +9,7 @@ async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
-    print('------')
+    print('-' * len(client.user.id))
 
 
 @client.event
@@ -30,6 +30,9 @@ async def on_member_remove(member):
 async def on_message(message):
     if message.author == client.user:
         return
+    elif message.content.startswith('$laranjo'):
+        await client.send_message(message.channel, 'Comando não criado.')
+        print('{}: $laranjo'.format(message.author))
     elif message.content.startswith('$paz'):
         await client.send_file(message.channel, 'paz.jpg')
         print('{}: $paz'.format(message.author))
