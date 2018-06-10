@@ -33,19 +33,19 @@ async def on_message(message):
         return
     elif message.content.startswith('$laranjo'):
         await client.send_message(message.channel, 'Comando não criado.')
-        print('\033[m{} \033[0;31m{}: \033[0;35m$laranjo'.format(time, message.author))
+        print('{} {}: $laranjo'.format(time, message.author))
     elif message.content.startswith('$paz'):
         await client.send_file(message.channel, 'paz.jpg')
-        print('\033[m{} \033[0;31m{}: \033[0;35m$paz'.format(time, message.author))
+        print('{} {}: $paz'.format(time, message.author))
     elif message.content.startswith('$pintao'):
         await client.send_file(message.channel, 'pintao.png')
-        print('\033[m{} \033[0;31m{}: \033[0;35m$pintao'.format(time, message.author))
+        print('{} {}: $pintao'.format(time, message.author))
     elif message.content.startswith('$felps'):
         await client.send_file(message.channel, 'felps.png')
-        print('\033[m{} \033[0;31m{}: \033[0;35m$felps'.format(time, message.author))
+        print('{} {}: $felps'.format(time, message.author))
     elif message.content.startswith('$ping'):
         await client.send_message(message.channel, 'Pong!')
-        print('\033[m{} \033[0;31m{}: \033[0;35m$ping'.format(time, message.author))
+        print('{} {}: $ping'.format(time, message.author))
     elif message.content.startswith('$pergunta'):
         await client.send_message(message.channel, random.choice(["Sim",
                                                                   "Com certeza",
@@ -53,7 +53,7 @@ async def on_message(message):
                                                                   "Eu acho melhor não",
                                                                   "Eu sei lá porra",
                                                                   "Não"]))
-        print('{} \033[0;31m{}: \033[0;35m$pergunta'.format(time, message.author))
+        print('{} {}: $pergunta'.format(time, message.author))
     elif message.content.startswith('$'):
         await client.send_message(message.channel, 'ESTE COMANDO NÂO EXISTE!!!')
 
