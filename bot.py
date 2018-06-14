@@ -33,15 +33,15 @@ async def on_message(message):
         return
 
     elif message.content.startswith('$paz'):
-        await client.send_file(message.channel, 'paz.jpg')
+        await client.send_file(message.channel, 'images/paz.jpg')
         print('{} {}: {}'.format(time, message.author, message.content))
 
     elif message.content.startswith('$pintao'):
-        await client.send_file(message.channel, 'pintao.png')
+        await client.send_file(message.channel, 'images/pintao.png')
         print('{} {}: {}'.format(time, message.author, message.content))
 
     elif message.content.startswith('$felps'):
-        await client.send_file(message.channel, 'felps.png')
+        await client.send_file(message.channel, 'images/felps.png')
         print('{} {}: {}'.format(time, message.author, message.content))
 
     elif message.content.startswith('$ping'):
@@ -59,7 +59,7 @@ async def on_message(message):
 
     elif message.content.startswith('$'):
         await client.send_message(message.channel, 'ESTE COMANDO NÂO EXISTE!!!')
-        print(message.content)
+        print('{} {}: {}'.format(time, message.author, message.content))
 
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
