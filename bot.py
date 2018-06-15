@@ -9,6 +9,7 @@ async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
+    await client.change_presence(game=discord.Game(name='Merda na sua cara'))
     print('-' * len(client.user.id))
 
 
@@ -28,38 +29,54 @@ async def on_member_remove(member):
 
 @client.event
 async def on_message(message):
-    time = message.timestamp
-    if message.author == client.user:
-        return
+        tempo = message.timestamp
+        if message.author == client.user:
+            return
 
-    elif message.content.startswith('$paz'):
-        await client.send_file(message.channel, 'images/paz.jpg')
-        print('{} {}: {}'.format(time, message.author, message.content))
+        elif message.content.lower().startswith('$paz'):
+            await client.send_file(message.channel, 'images/paz.jpg')
+            print('{} {}: {}'.format(tempo, message.author, message.content))
 
-    elif message.content.startswith('$pintao'):
-        await client.send_file(message.channel, 'images/pintao.png')
-        print('{} {}: {}'.format(time, message.author, message.content))
+        elif message.content.lower().startswith('$sair'):
+            try:
+                canaldevoz = client.voice_client_in(message.server)
+                await canaldevoz.disconnect()
+                print('{} {}: {}'.format(tempo, message.author, message.content))
+            except AttributeError:
+                await client.send_message(message.channel, "O bot não esta conectado em nenhum canal de voz!")
 
-    elif message.content.startswith('$felps'):
-        await client.send_file(message.channel, 'images/felps.png')
-        print('{} {}: {}'.format(time, message.author, message.content))
+        elif message.content.lower().startswith('$entrar'):
+            try:
+                canal = message.author.voice.voice_channel
+                await client.join_voice_channel(canal)
+                print('{} {}: {}'.format(tempo, message.author, message.content))
+            except discord.errors.InvalidArgument:
+                await client.send_message(message.channel, 'Você prescisa estar em um canal de voz!')
 
-    elif message.content.startswith('$ping'):
-        await client.send_message(message.channel, 'Pong!')
-        print('{} {}: {}'.format(time, message.author, message.content))
+        elif message.content.lower().startswith('$pintao'):
+            await client.send_file(message.channel, 'images/pintao.png')
+            print('{} {}: {}'.format(tempo, message.author, message.content))
 
-    elif message.content.startswith('$pergunta'):
-        await client.send_message(message.channel, random.choice(["Sim",
-                                                                  "Com certeza",
-                                                                  "Talvez",
-                                                                  "Eu acho melhor não",
-                                                                  "Eu sei lá porra",
-                                                                  "Não"]))
-        print('{} {}: {}'.format(time, message.author, message.content))
+        elif message.content.lower().startswith('$felps'):
+            await client.send_file(message.channel, 'images/felps.png')
+            print('{} {}: {}'.format(tempo, message.author, message.content))
 
-    elif message.content.startswith('$'):
-        await client.send_message(message.channel, 'ESTE COMANDO NÂO EXISTE!!!')
-        print('{} {}: {}'.format(time, message.author, message.content))
+        elif message.content.lower().startswith('$ping'):
+            await client.send_message(message.channel, 'Pong!')
+            print('{} {}: {}'.format(tempo, message.author, message.content))
+
+        elif message.content.lower().startswith('$pergunta'):
+            await client.send_message(message.channel, random.choice(["Sim",
+                                                                      "Com certeza",
+                                                                      "Talvez",
+                                                                      "Eu acho melhor não",
+                                                                      "Eu sei lá porra",
+                                                                      "Não"]))
+            print('{} {}: {}'.format(tempo, message.author, message.content))
+
+        elif message.content.lower().startswith('$'):
+            await client.send_message(message.channel, 'ESTE COMANDO NÂO EXISTE!!!')
+            print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
