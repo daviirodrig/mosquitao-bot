@@ -37,13 +37,14 @@ async def on_message(message):
             await client.send_file(message.channel, 'images/paz.jpg')
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
-        elif message.content.lower().startswith('$sair'):
+        elif message.content.startswith('$sair'):
             try:
                 canaldevoz = client.voice_client_in(message.server)
                 await canaldevoz.disconnect()
+                await client.send_message(message.channel, ":dvd:Desconectado do canal com sucesso!")
                 print('{} {}: {}'.format(tempo, message.author, message.content))
             except AttributeError:
-                await client.send_message(message.channel, "O bot não esta conectado em nenhum canal de voz!")
+                await client.send_message(message.channel, ":dvd:O bot não está conectado em nenhum canal de voz!")
 
         elif message.content.lower().startswith('$entrar'):
             try:
@@ -51,7 +52,7 @@ async def on_message(message):
                 await client.join_voice_channel(canal)
                 print('{} {}: {}'.format(tempo, message.author, message.content))
             except discord.errors.InvalidArgument:
-                await client.send_message(message.channel, 'Você prescisa estar em um canal de voz!')
+                await client.send_message(message.channel, ':dvd:Você prescisa estar em um canal de voz!')
 
         elif message.content.lower().startswith('$pintao'):
             await client.send_file(message.channel, 'images/pintao.png')
