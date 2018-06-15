@@ -1,5 +1,6 @@
 import discord
 import random
+import pynacl
 
 client = discord.Client()
 
