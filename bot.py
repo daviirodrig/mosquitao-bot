@@ -26,7 +26,7 @@ async def on_member_remove(member):
     msg = "{} Saiu do clã, kkk otário".format(member.mention)
     await client.send_message(canal, msg)
 
-vin = '<:VinD:459138597132697611>'
+vin = '<459138597132697611>'
 
 @client.event
 async def on_message(message):
