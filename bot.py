@@ -26,6 +26,7 @@ async def on_member_remove(member):
     msg = "{} Saiu do clã, kkk otário".format(member.mention)
     await client.send_message(canal, msg)
 
+vin = <:VinD:459138597132697611>
 
 @client.event
 async def on_message(message):
@@ -76,7 +77,7 @@ async def on_message(message):
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
         elif message.content.lower().startswith('$'):
-            await client.send_message(message.channel, '<:VinD:459138597132697611> Comando não encontrado <:VinD:459138597132697611>')
+            await client.send_message(message.channel, f'{vin} Comando não encontrado {vin}')
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
