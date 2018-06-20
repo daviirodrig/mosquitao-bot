@@ -76,7 +76,7 @@ async def on_message(message):
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
         elif message.content.lower().startswith('$'):
-            await client.send_message(message.channel, ':VinD: Comando não encontrado :VinD:')
+            await client.send_message(message.channel, '<:VinD:459138597132697611> Comando não encontrado <:VinD:459138597132697611>')
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
