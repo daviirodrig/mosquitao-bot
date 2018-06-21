@@ -1,9 +1,7 @@
 import discord
-import token
 import random
 
 client = discord.Client()
-TOKEN = token.token()
 
 @client.event
 async def on_ready():
