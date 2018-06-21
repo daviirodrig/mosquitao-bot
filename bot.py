@@ -32,6 +32,9 @@ async def on_message(message):
         tempo = message.timestamp
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$diga')
+            await client.send_message(message.channel, message.content[6:])
+            print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$paz'):
             await client.send_file(message.channel, 'images/paz.jpg')
