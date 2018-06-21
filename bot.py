@@ -85,4 +85,4 @@ async def on_message(message):
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
-client.run(TOKEN)
+client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
