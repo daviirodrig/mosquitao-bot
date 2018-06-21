@@ -2,4 +2,4 @@ libffi-dev
 python-dev
 libffi-devel
 python3.5-dev
-libopus0
+libopus-dev
