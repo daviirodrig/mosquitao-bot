@@ -1,4 +1,5 @@
 import discord
+from token import token
 import random
 
 client = discord.Client()
@@ -86,4 +87,4 @@ async def on_message(message):
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
-client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
+client.run(TOKEN)
