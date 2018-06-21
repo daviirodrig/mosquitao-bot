@@ -3,7 +3,6 @@ import random
 
 client = discord.Client()
 
-
 @client.event
 async def on_ready():
     print('Logged in as')
@@ -32,6 +31,9 @@ async def on_message(message):
         tempo = message.timestamp
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$diga'):
+            await client.send_message(message.channel, message.content[6:])
+            print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$paz'):
             await client.send_file(message.channel, 'images/paz.jpg')
@@ -41,10 +43,17 @@ async def on_message(message):
             try:
                 canaldevoz = client.voice_client_in(message.server)
                 await canaldevoz.disconnect()
+<<<<<<< HEAD
                 await client.send_message(message.channel, ":dvd:Desconectado do canal com sucesso!")
 				print('{} {}: {}'.format(tempo, message.author, message.content))
             except AttributeError:
                 await client.send_message(message.channel, ":dvd:O bot não está conectado em nenhum canal de voz!")
+=======
+                await client.send_message(message.channel, ":dvd: Desconectado do canal com sucesso!")
+                print('{} {}: {}'.format(tempo, message.author, message.content))
+            except AttributeError:
+                await client.send_message(message.channel, ":dvd: O bot não está conectado em nenhum canal de voz!")
+>>>>>>> 116930c6672bc02a5e04e8ccf6a0001054710200
 
         elif message.content.lower().startswith('$entrar'):
             try:
@@ -52,7 +61,11 @@ async def on_message(message):
                 await client.join_voice_channel(canal)
                 print('{} {}: {}'.format(tempo, message.author, message.content))
             except discord.errors.InvalidArgument:
+<<<<<<< HEAD
                 await client.send_message(message.channel, ':dvd:Você prescisa estar em um canal de voz!')
+=======
+                await client.send_message(message.channel, ':dvd: Você prescisa estar em um canal de voz!')
+>>>>>>> 116930c6672bc02a5e04e8ccf6a0001054710200
 
         elif message.content.lower().startswith('$pintao'):
             await client.send_file(message.channel, 'images/pintao.png')
@@ -76,7 +89,10 @@ async def on_message(message):
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
         elif message.content.lower().startswith('$'):
-            await client.send_message(message.channel, 'ESTE COMANDO NÂO EXISTE!!!')
+            embed = discord.Embed(title="Comando não encontrado", color=0xff0000)
+            embed.set_author(name="IH DEU RUIM", url="https://www.mosquitaobot.cf")
+            embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/459137918318149635.png?v=1")
+            await client.send_message(message.channel, embed=embed)
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
