@@ -80,7 +80,7 @@ async def on_message(message):
 
         elif message.content.lower().startswith('$'):
             embed = discord.Embed(title="Comando não encontrado", color=0xff0000)
-            embed.set_author(name="IH DEU RUIM", url="https://www.mosquitaobot.cf")
+            embed.set_author(name="IH DEU RUIM", url="http://mosquitaobot.glitch.me")
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/459137918318149635.png?v=1")
             await client.send_message(message.channel, embed=embed)
             print(f'{tempo} {message.author}: {message.content}')
