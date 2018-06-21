@@ -1,3 +1,4 @@
 discord.py
 PyNaCl
+libffi
 speedtest-cli
