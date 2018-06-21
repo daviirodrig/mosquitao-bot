@@ -87,4 +87,4 @@ async def on_message(message):
             print('{} {}: {}'.format(tempo, message.author, message.content))
 
 
-client.run(TOKEN)
+client.run(token.TOKEN)
