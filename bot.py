@@ -3,8 +3,6 @@ import random
 import discord
 
 client = discord.Client()
-if not discord.opus.is_loaded():
-    discord.opus.load_opus('opus')
 
 
 @client.event
