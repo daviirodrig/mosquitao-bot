@@ -4,3 +4,4 @@ libffi-devel
 python3.5-dev
 libopus-dev
 libopus0
+ffmpeg
