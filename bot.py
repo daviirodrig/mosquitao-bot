@@ -1,5 +1,5 @@
 import discord
-from token import token
+import token
 import random
 
 client = discord.Client()
