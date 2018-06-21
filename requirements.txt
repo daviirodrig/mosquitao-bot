@@ -1,4 +1,5 @@
 discord.py
 PyNaCl
-libffi
+libffi-devel
+python3.5-dev
 speedtest-cli
