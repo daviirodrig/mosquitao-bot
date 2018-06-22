@@ -34,9 +34,10 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+
         elif message.content.lower().startswith('$pokedex'):
             poke = message.content[9:]
-            await client.send_message(message.channel, pokebase.generation(poke))
+            await client.send_message(message.channel, pokebase.pokedex(poke))
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$diga'):
@@ -116,6 +117,5 @@ async def on_message(message):
     except Exception as error:
         await client.send_message(message.channel, 'Fala pro @DogeMiner#9504 que deu erro')
         await client.send_message(message.channel, 'Error: [{error}]'.format(error=error))
-
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
