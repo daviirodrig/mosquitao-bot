@@ -35,7 +35,7 @@ async def on_message(message):
         if message.author == client.user:
             return
         elif message.content.lower().startswith('$pokedex'):
-            poke = message.content[7:]
+            poke = message.content[6:] - 'x'
             await client.send_message(message.channel, pokebase.generation(poke))
             print(f'{tempo} {message.author}: {message.content}')
 
