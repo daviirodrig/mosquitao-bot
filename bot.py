@@ -29,7 +29,8 @@ async def on_member_remove(member):
 
 @client.event
 async def on_message(message):
-        tempo = message.timestamp
+    tempo = message.timestamp
+    try:
         if message.author == client.user:
             return
 
@@ -81,7 +82,8 @@ async def on_message(message):
 
         elif message.content.lower().startswith('$help'):
             embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
-            embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me", icon_url="https://cdn.discordapp.com/avatars/452539202769387540/ef16eb79da268455e46fbdcd26c95940.png")
+            embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me",
+                             icon_url="https://cdn.discordapp.com/avatars/452539202769387540/ef16eb79da268455e46fbdcd26c95940.png")
             embed.add_field(name="Diga [coisas]", value="```Faz o bot dizer coisas```", inline=True)
             embed.add_field(name="Paz", value="```Mostra a foto de um dedo do meio```", inline=True)
             embed.add_field(name="Entrar", value="```O bot entra em seu canal de voz```", inline=True)
@@ -89,7 +91,8 @@ async def on_message(message):
             embed.add_field(name="Pintao", value="```Mostra o pintão do alan```", inline=True)
             embed.add_field(name="Felps", value="```Mostra uma foto do felps```", inline=True)
             embed.add_field(name="Ping", value="```Pong!```", inline=True)
-            embed.add_field(name="Pergunta [Sua pergunta aqui] ", value="```O bot responde perguntas objetivas```", inline=True)
+            embed.add_field(name="Pergunta [Sua pergunta aqui] ", value="```O bot responde perguntas objetivas```",
+                            inline=True)
             embed.set_footer(text="Prefixo: $")
             await client.send_message(message.channel, embed=embed)
             print(f'{tempo} {message.author}: {message.content}')
@@ -100,5 +103,7 @@ async def on_message(message):
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/459137918318149635.png?v=1")
             await client.send_message(message.channel, embed=embed)
             print(f'{tempo} {message.author}: {message.content}')
+    except Exception:
+        await client.send_message(message.channel, 'Fala pro @DogeMiner#9504 que deu erro ')
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
