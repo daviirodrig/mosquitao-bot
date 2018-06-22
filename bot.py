@@ -74,6 +74,7 @@ async def on_message(message):
         elif message.content.lower().startswith('$pergunta qual o sentido da vida '):
             await client.send_message(message.channel, '**42**')
             print(f'{tempo} {message.author}: {message.content}')
+
         elif message.content.lower().startswith('$pergunta'):
             await client.send_message(message.channel, random.choice(["Sim",
                                                                       "Com certeza",
