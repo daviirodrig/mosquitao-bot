@@ -72,6 +72,8 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$pergunta'):
+            if message.content.lower() in 'sentido da vida':
+                await client.send_message(message.channel, '**42**')
             await client.send_message(message.channel, random.choice(["Sim",
                                                                       "Com certeza",
                                                                       "Talvez",
@@ -83,7 +85,7 @@ async def on_message(message):
         elif message.content.lower().startswith('$help'):
             embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
             embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me",
-                             icon_url="https://cdn.discordapp.com/avatars/452539202769387540/ef16eb79da268455e46fbdcd26c95940.png")
+                             icon_url="https://goo.gl/Viy31D")
             embed.add_field(name="Diga [coisas]", value="```Faz o bot dizer coisas```", inline=True)
             embed.add_field(name="Paz", value="```Mostra a foto de um dedo do meio```", inline=True)
             embed.add_field(name="Entrar", value="```O bot entra em seu canal de voz```", inline=True)
@@ -98,11 +100,13 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$'):
-            embed = discord.Embed(title="Comando não encontrado", color=0xff0000)
+            embed = discord.Embed(title="Comando não encontrado",
+                                  description="Use $help para ver os comandos disponíveis", color=0xff0000)
             embed.set_author(name="IH DEU RUIM", url="https://mosquitao.glitch.me")
             embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/459137918318149635.png?v=1")
             await client.send_message(message.channel, embed=embed)
             print(f'{tempo} {message.author}: {message.content}')
+
     except Exception:
         await client.send_message(message.channel, 'Fala pro @DogeMiner#9504 que deu erro ')
 
