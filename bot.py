@@ -71,7 +71,7 @@ async def on_message(message):
             await client.send_message(message.channel, 'Pong!')
             print(f'{tempo} {message.author}: {message.content}')
             
-        elif message.content.lower().startswith('$pergunta qual o sentido da vida '):
+        elif message.content.lower().startswith('$pergunta qual o sentido da vida'):
             await client.send_message(message.channel, '**42**')
             print(f'{tempo} {message.author}: {message.content}')
         elif message.content.lower().startswith('$pergunta'):
