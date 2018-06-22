@@ -1,5 +1,6 @@
 import discord
 import random
+import pokebase
 
 client = discord.Client()
 
@@ -33,6 +34,10 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$pokedex'):
+            poke = message.content[7:]
+            await client.send_message(message.channel, pokebase.generation(poke))
+            print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$diga'):
             await client.send_message(message.channel, message.content[6:])
@@ -70,11 +75,10 @@ async def on_message(message):
         elif message.content.lower().startswith('$ping'):
             await client.send_message(message.channel, 'Pong!')
             print(f'{tempo} {message.author}: {message.content}')
-            
-        elif message.content.lower().startswith('$pergunta qual o sentido da vida'):
+
+        elif message.content.lower().startswith('$pergunta qual o sentido da vida '):
             await client.send_message(message.channel, '**42**')
             print(f'{tempo} {message.author}: {message.content}')
-
         elif message.content.lower().startswith('$pergunta'):
             await client.send_message(message.channel, random.choice(["Sim",
                                                                       "Com certeza",
@@ -111,6 +115,5 @@ async def on_message(message):
 
     except Exception:
         await client.send_message(message.channel, 'Fala pro @DogeMiner#9504 que deu erro ')
-
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
