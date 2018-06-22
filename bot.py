@@ -74,12 +74,13 @@ async def on_message(message):
         elif message.content.lower().startswith('$pergunta'):
             if message.content.lower() in 'sentido da vida':
                 await client.send_message(message.channel, '**42**')
-            await client.send_message(message.channel, random.choice(["Sim",
-                                                                      "Com certeza",
-                                                                      "Talvez",
-                                                                      "Eu acho melhor não",
-                                                                      "Eu sei lá porra",
-                                                                      "Não"]))
+            else:
+                await client.send_message(message.channel, random.choice(["Sim",
+                                                                          "Com certeza",
+                                                                          "Talvez",
+                                                                          "Eu acho melhor não",
+                                                                          "Eu sei lá porra",
+                                                                          "Não"]))
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$help'):
@@ -109,5 +110,6 @@ async def on_message(message):
 
     except Exception:
         await client.send_message(message.channel, 'Fala pro @DogeMiner#9504 que deu erro ')
+
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
