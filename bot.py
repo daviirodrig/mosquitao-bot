@@ -72,7 +72,7 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$pergunta'):
-            if message.content.lower() in 'sentido da vida':
+            if message.content.lower()[10:] in 'sentido da vida':
                 await client.send_message(message.channel, '**42**')
             else:
                 await client.send_message(message.channel, random.choice(["Sim",
