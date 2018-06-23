@@ -34,9 +34,10 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+
         elif message.content.lower().startswith('$spam'):
             for c in range(0, 15):
-                time.sleep(1)
+                time.sleep(0.7)
                 await client.send_message(message.channel, 'Spawna pokemon ae men')
 
         elif message.content.lower().startswith('$pokedex'):
@@ -119,7 +120,7 @@ async def on_message(message):
 
     except Exception as error:
         dogeminer = '<@!212680360486633472>'
-        await client.send_message(message.channel, f'Fala pro {dogeminer} que deu erro')
+        await client.send_message(message.channel, f'Ei {dogeminer}, deu erro')
         await client.send_message(message.channel, f'Error: [{error}]')
         print(f'{tempo} {message.author}: {message.content}')
 
