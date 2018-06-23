@@ -1,6 +1,6 @@
 import discord
 import random
-import pokebase
+import time
 
 client = discord.Client()
 
@@ -34,10 +34,13 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$spam'):
+            for c in range(0, 15):
+                time.sleep(1)
+                await client.send_message(message.channel, 'Spawna pokemon ae men')
 
         elif message.content.lower().startswith('$pokedex'):
-            poke = pokebase.pokemon(message.content[9:])
-            await client.send_message(message.channel, poke.name)
+            await client.send_message(message.channel, 'Comando não implementado')
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$diga'):
@@ -115,8 +118,10 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
     except Exception as error:
-        await client.send_message(message.channel, 'Fala pro @DogeMiner#9504 que deu erro')
-        await client.send_message(message.channel, 'Error: [{error}]'.format(error=error))
+        dogeminer = '<@!212680360486633472>'
+        await client.send_message(message.channel, f'Fala pro {dogeminer} que deu erro')
+        await client.send_message(message.channel, f'Error: [{error}]')
         print(f'{tempo} {message.author}: {message.content}')
+
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
