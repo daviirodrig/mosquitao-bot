@@ -85,13 +85,12 @@ async def on_message(message):
             if 'sentido da vida' in message.content.lower():
                 await client.send_message(message.channel, '**42**')
             else:
-                pass
-            await client.send_message(message.channel, random.choice(["Sim",
-                                                                      "Com certeza",
-                                                                      "Talvez",
-                                                                      "Eu acho melhor não",
-                                                                      "Eu sei lá porra",
-                                                                      "Não"]))
+                await client.send_message(message.channel, random.choice(["Sim",
+                                                                          "Com certeza",
+                                                                          "Talvez",
+                                                                          "Eu acho melhor não",
+                                                                          "Eu sei lá porra",
+                                                                          "Não"]))
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$help'):
