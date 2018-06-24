@@ -83,7 +83,7 @@ async def on_message(message):
 
         elif message.content.lower().startswith('$pergunta'):
             if 'sentido da vida' in message.content.lower():
-                await client.send_message(message.channel, '**42**'
+                await client.send_message(message.channel, '**42**')
             await client.send_message(message.channel, random.choice(["Sim",
                                                                       "Com certeza",
                                                                       "Talvez",
