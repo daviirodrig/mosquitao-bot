@@ -108,6 +108,7 @@ async def on_message(message):
             embed.add_field(name="Pintao", value="```Mostra o pintão do alan```", inline=True)
             embed.add_field(name="Felps", value="```Mostra uma foto do felps```", inline=True)
             embed.add_field(name="Ping", value="```Pong!```", inline=True)
+            embed.add_field(name="Limpar [Quantidade]", value="```Limpa uma certa quantidade de mensagens.```", inline=True)
             embed.add_field(name="Pergunta [Sua pergunta aqui] ", value="```O bot responde perguntas objetivas```",
                             inline=True)
             embed.set_footer(text="Prefixo: $")
