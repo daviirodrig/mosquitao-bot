@@ -34,6 +34,10 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$limpar'):
+            lim = int(message.content.lower()[7:]) + 1
+            await client.purge_from(message.channel, limit=lim)
+            await client.send_message(message.channel, f'{lim} mensagens limpas')
 
         elif message.content.lower().startswith('$spam'):
             for c in range(0, 15):
