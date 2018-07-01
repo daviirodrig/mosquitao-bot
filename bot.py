@@ -35,6 +35,10 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$avatar'):
+            avatar = message.author.avatar_url
+            await client.send_message(message.channel, avatar)
+
         elif message.content.lower().startswith('$limpar'):
             lim = int(message.content.lower()[7:]) + 1
             await client.purge_from(message.channel, limit=lim)
@@ -115,6 +119,5 @@ async def on_message(message):
         await client.send_message(message.channel, f'Ei {dogeminer}, deu erro')
         await client.send_message(message.channel, f'Error: [{error}]')
         print(f'{tempo} {message.author}: {message.content}')
-
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
