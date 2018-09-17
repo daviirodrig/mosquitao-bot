@@ -2,6 +2,7 @@ import discord
 import random
 import time
 import embeds
+from googletrans import Translator
 
 client = discord.Client()
 
@@ -35,9 +36,13 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
-        elif message.content.lower().startswith('$avatar'):
-            avatar = message.author.avatar_url
-            await client.send_message(message.channel, avatar)
+        elif message.content.lower().startswith('$traduza'):
+            to_lang = message.content[9:11]
+            msg = message.content[12:]
+            tradutor = Translator(service_urls=['translate.google.com',
+                                                'translate.google.com.br'])
+            msgtr = tradutor.translate(msg, dest=to_lang)
+            await client.send_message(message.channel, msgtr.text)
 
         elif message.content.lower().startswith('$limpar'):
             lim = int(message.content.lower()[7:]) + 1
@@ -47,7 +52,7 @@ async def on_message(message):
         elif message.content.lower().startswith('$spam'):
             for c in range(0, 15):
                 time.sleep(0.7)
-                await client.send_message(message.channel, 'Spawna pokemon ae men')
+                await client.send_message(message.channel, f'A {c}')
 
         elif message.content.lower().startswith('$pokedex'):
             await client.send_message(message.channel, 'Comando não implementado')
