@@ -47,7 +47,6 @@ async def on_message(message):
             opcoes = message.content.split(' ')
             opcoes.remove('$democracia')
             await client.send_message(message.channel, f'Digite $votar 1 para votar em {opcoes[0]}\nDigite $votar 2 para votar em {opcoes[1]} ')
-            global votacao
             votacao = True
 
         elif message.content.lower().startswith('$traduza'):
