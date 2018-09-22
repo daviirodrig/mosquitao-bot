@@ -4,6 +4,7 @@ import time
 import embeds
 from googletrans import Translator
 
+votacao = False
 client = discord.Client()
 
 
@@ -19,24 +20,38 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     canal = client.get_channel("297130716985032714")
-    msg = "{} Entrou no Clã Do Mosquito, ae caraiou".format(member.mention)
+    msg = f"{member.mention} Entrou no Clã Do Mosquito, ae caraiou"
     await client.send_message(canal, msg)
 
 
 @client.event
 async def on_member_remove(member):
     canal = client.get_channel("297130716985032714")
-    msg = "{} Saiu do clã, kkk otário".format(member.mention)
+    msg = f"{member.mention} Saiu do clã, kkk otário"
     await client.send_message(canal, msg)
 
 
 @client.event
 async def on_message(message):
     tempo = message.timestamp
+
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$votar'):
+            print(f'{tempo} {message.author}: {message.content}')
+            if votacao:
+                print('A')
+        elif message.content.lower().startswith('$democracia'):
+            print(f'{tempo} {message.author}: {message.content}')
+            opcoes = message.content.split(' ')
+            opcoes.remove('$democracia')
+            await client.send_message(message.channel, f'Digite $votar 1 para votar em {opcoes[0]}\nDigite $votar 2 para votar em {opcoes[1]} ')
+            global votacao
+            votacao = True
+
         elif message.content.lower().startswith('$traduza'):
+            print(f'{tempo} {message.author}: {message.content}')
             to_lang = message.content[9:11]
             msg = message.content[12:]
             tradutor = Translator(service_urls=['translate.google.com',
@@ -45,11 +60,13 @@ async def on_message(message):
             await client.send_message(message.channel, msgtr.text)
 
         elif message.content.lower().startswith('$limpar'):
+            print(f'{tempo} {message.author}: {message.content}')
             lim = int(message.content.lower()[7:]) + 1
             await client.purge_from(message.channel, limit=lim)
             await client.send_message(message.channel, f'{lim} mensagens limpas')
 
         elif message.content.lower().startswith('$spam'):
+            print(f'{tempo} {message.author}: {message.content}')
             for c in range(0, 15):
                 time.sleep(0.7)
                 await client.send_message(message.channel, f'A {c}')
@@ -123,6 +140,5 @@ async def on_message(message):
         dogeminer = '<@!212680360486633472>'
         await client.send_message(message.channel, f'Ei {dogeminer}, deu erro')
         await client.send_message(message.channel, f'Error: [{error}]')
-        print(f'{tempo} {message.author}: {message.content}')
 
 client.run('NDUyNTM5MjAyNzY5Mzg3NTQw.DfSrBA.qSY-v5iWRuim-xpv2_23T6Xd79M')
