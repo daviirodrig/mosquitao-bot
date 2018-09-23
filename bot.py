@@ -4,7 +4,6 @@ import time
 import embeds
 from googletrans import Translator
 
-votacao = False
 client = discord.Client()
 
 
@@ -34,21 +33,46 @@ async def on_member_remove(member):
 @client.event
 async def on_message(message):
     tempo = message.timestamp
-
     try:
         if message.author == client.user:
             return
-        elif message.content.lower().startswith('$votar'):
-            print(f'{tempo} {message.author}: {message.content}')
-            if votacao:
-                print('A')
+
         elif message.content.lower().startswith('$democracia'):
             print(f'{tempo} {message.author}: {message.content}')
+            global opcoes
             opcoes = message.content.split(' ')
             opcoes.remove('$democracia')
-            await client.send_message(message.channel, f'Digite $votar 1 para votar em {opcoes[0]}\nDigite $votar 2 para votar em {opcoes[1]} ')
-            votacao = True
+            await client.send_message(message.channel,
+                                      f'Digite $votar 1 para votar em {opcoes[0]}\nDigite $votar 2 para votar em {opcoes[1]} ')
+            global vote
+            vote = True
 
+        elif message.content.lower().startswith('$resetarvot'):
+            print(f'{tempo} {message.author}: {message.content}')
+            vote = False
+            global votos1, votos2
+            votos1 = 0
+            votos2 = 0
+            await client.send_message(message.channel, f'Votação resetada')
+
+        elif message.content.lower().startswith('$votar'):
+            print(f'{tempo} {message.author}: {message.content}')
+            try:
+                if vote:
+                    if message.content[7] == '1':
+                        votos1 += 1
+                        await client.send_message(message.channel, f'+1 voto contado para "{opcoes[0]}"')
+                    elif message.content[7] == '2':
+                        votos2 += 1
+                        await client.send_message(message.channel, f'+1 voto contado para "{opcoes[1]}"')
+                else:
+                    await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
+            except NameError:
+                await client.send_message(message.channel, 'Nehuma votação está ocorrendo no momento')
+        elif message.content.lower().startswith('$resultados'):
+            print(f'{tempo} {message.author}: {message.content}')
+            await client.send_message(message.channel, f'{votos1} votos para {opcoes[0]}'
+                                                       f'\n{votos2} votos para {opcoes[1]}')
         elif message.content.lower().startswith('$traduza'):
             print(f'{tempo} {message.author}: {message.content}')
             to_lang = message.content[9:11]
@@ -124,7 +148,8 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$help'):
-            await client.send_message(message.channel, embed=embeds.help)
+            await client.send_message(message.channel, 'Enviei os comandos na DM')
+            await client.send_message(message.author, embed=embeds.help)
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$'):
