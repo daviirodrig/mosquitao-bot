@@ -65,6 +65,9 @@ async def on_message(message):
                     elif message.content[7] == '2':
                         votos2 += 1
                         await client.send_message(message.channel, f'+1 voto contado para "{opcoes[1]}"')
+                    else:
+                        await client.send_message(message.channel,
+                                                  f'Número de votação inválido {"<@!" + message.author.id + ">"}')
                 else:
                     await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
             except NameError:
