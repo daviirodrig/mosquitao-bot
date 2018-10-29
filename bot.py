@@ -91,7 +91,7 @@ async def on_message(message):
             await client.purge_from(message.channel, limit=lim)
             await client.send_message(message.channel, f'{lim} mensagens limpas')
             await client.send_typing(message.channel)
-            time.sleep(3)
+            time.sleep(10)
             await client.purge_from(message.channel, limit=1)
         elif message.content.lower().startswith('$spam'):
             print(f'{tempo} {message.author}: {message.content}')
