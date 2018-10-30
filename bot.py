@@ -2,7 +2,6 @@ import discord
 import random
 import time
 import embeds
-from googletrans import Translator
 
 client = discord.Client()
 
@@ -43,7 +42,8 @@ async def on_message(message):
             opcoes = message.content.split(' ')
             opcoes.remove('$democracia')
             await client.send_message(message.channel,
-                                      f'Digite $votar 1 para votar em {opcoes[0]}\nDigite $votar 2 para votar em {opcoes[1]} ')
+                                      f'Digite $votar 1 para votar em {opcoes[0]}'
+                                      f'\nDigite $votar 2 para votar em {opcoes[1]} ')
             global vote
             vote = True
 
@@ -78,12 +78,7 @@ async def on_message(message):
                                                        f'\n{votos2} votos para {opcoes[1]}')
         elif message.content.lower().startswith('$traduza'):
             print(f'{tempo} {message.author}: {message.content}')
-            to_lang = message.content[9:11]
-            msg = message.content[12:]
-            tradutor = Translator(service_urls=['translate.google.com',
-                                                'translate.google.com.br'])
-            msgtr = tradutor.translate(msg, dest=to_lang)
-            await client.send_message(message.channel, msgtr.text)
+            await client.send_message(message.channel, 'Comando em manutenção')
 
         elif message.content.lower().startswith('$limpar'):
             print(f'{tempo} {message.author}: {message.content}')
@@ -92,15 +87,12 @@ async def on_message(message):
             mess = await client.send_message(message.channel, f'{lim} mensagens limpas')
             time.sleep(3)
             await client.delete_message(mess)
+
         elif message.content.lower().startswith('$spam'):
             print(f'{tempo} {message.author}: {message.content}')
             for c in range(0, 15):
                 time.sleep(0.7)
                 await client.send_message(message.channel, f'A {c}')
-
-        elif message.content.lower().startswith('$pokedex'):
-            await client.send_message(message.channel, 'Comando não implementado')
-            print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$diga'):
             await client.send_message(message.channel, message.content[6:])
@@ -166,6 +158,7 @@ async def on_message(message):
 
     except Exception as error:
         dogeminer = '<@!212680360486633472>'
+        print(error)
         await client.send_message(message.channel, f'Ei {dogeminer}, deu erro')
         await client.send_message(message.channel, f'Error: [{error}]')
 
