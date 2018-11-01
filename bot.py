@@ -90,9 +90,11 @@ async def on_message(message):
 
         elif message.content.lower().startswith('$spam'):
             print(f'{tempo} {message.author}: {message.content}')
+
             for c in range(0, 15):
                 time.sleep(0.7)
                 await client.send_message(message.channel, f'A {c}')
+            time.sleep(10)
 
         elif message.content.lower().startswith('$diga'):
             await client.send_message(message.channel, message.content[6:])
