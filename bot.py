@@ -1,4 +1,5 @@
 import discord
+import requests
 import random
 import time
 import embeds
@@ -35,6 +36,15 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+
+        elif message.content.lower().startswith('$cat'):
+            print(f'{tempo} {message.author}: {message.content}')
+            main_url = 'http://aws.random.cat/meow'
+            cat = requests.get(main_url).json()
+            json_cat = cat['file']
+            e = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+            e.set_image(url=json_cat)
+            await client.send_message(message.channel, embed=e)
 
         elif message.content.lower().startswith('$democracia'):
             print(f'{tempo} {message.author}: {message.content}')
@@ -90,11 +100,9 @@ async def on_message(message):
 
         elif message.content.lower().startswith('$spam'):
             print(f'{tempo} {message.author}: {message.content}')
-
             for c in range(0, 15):
                 time.sleep(0.7)
                 await client.send_message(message.channel, f'A {c}')
-            time.sleep(10)
 
         elif message.content.lower().startswith('$diga'):
             await client.send_message(message.channel, message.content[6:])
