@@ -3,8 +3,12 @@ import discord
 help = embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
 embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me",
                  icon_url="https://goo.gl/Viy31D")
+embed.add_field(name="Help", value="```Mostra esta mensagem```", inline=False)
 embed.add_field(name="Democracia [opção1] [opção2]", value="```Inicia uma votação```", inline=False)
 embed.add_field(name="Resetarvot", value="```Reseta a votação```", inline=False)
+embed.add_field(name="Resultados", value="```Finaliza a votação```", inline=False)
+embed.add_field(name="Spam", value="```Spamma 14 mensagens```", inline=False)
+embed.add_field(name="Cat", value="```Envia uma foto de um gato aleatório```", inline=False)
 embed.add_field(name="Votar [opção]", value="```Vota em uma votação```", inline=False)
 embed.add_field(name="Diga [coisas]", value="```Faz o bot dizer coisas```", inline=False)
 embed.add_field(name="Paz", value="```Mostra a foto de um dedo do meio```", inline=False)
