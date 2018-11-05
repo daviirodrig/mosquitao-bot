@@ -42,7 +42,7 @@ async def on_message(message):
             return
         elif message.content.lower().startswith('$me'):
             emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
-            emb.set_author(name=f'Informações de {message.author.name + message.author.descriminator}')
+            emb.set_author(name=f'Informações de {message.author.name + message.author.discriminator}')
             emb.set_thumbnail(url=message.author.avatar_url)
             emb.add_field(name=':bust_in_silhouette: l Nome', value=message.author.name)
             emb.add_field(name=':id:', value=message.author.id, inline=False)
