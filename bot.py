@@ -5,6 +5,10 @@ import time
 import embeds
 
 client = discord.Client()
+# TODO Arrumar o cmd votar
+# TODO Cmd wtf
+# TODO Terminar o cmd me
+# TODO
 
 
 @client.event
@@ -37,8 +41,8 @@ async def on_message(message):
         if message.author == client.user:
             return
         elif message.content.lower().startswith('$me'):
-            emb = discord.Embed(title='infos', url=message.author.avatar_url, colour=random.randint(0, 0xFFFFFF))
-            emb.set_author(name=f'Informações de {message.author.name}')
+            emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+            emb.set_author(name=f'Informações de {message.author.name + message.author.descriminator}')
             emb.set_thumbnail(url=message.author.avatar_url)
             emb.add_field(name=':bust_in_silhouette: l Nome', value=message.author.name)
             emb.add_field(name=':id:', value=message.author.id, inline=False)
