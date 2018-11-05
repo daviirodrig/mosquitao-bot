@@ -6,7 +6,6 @@ import embeds
 
 client = discord.Client()
 # TODO Arrumar o cmd votar
-# TODO Cmd wtf
 # TODO Terminar o cmd me
 # TODO
 
@@ -40,6 +39,9 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$wtf'):
+            await client.send_file(message.channel, fp='images/wtf.jpg')
+            print(f'{tempo} {message.author}: {message.content}')
         elif message.content.lower().startswith('$me'):
             emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
             emb.set_author(name=f'Informações de {message.author.name + message.author.discriminator}')
