@@ -41,7 +41,7 @@ async def on_message(message):
             emb.set_author(name=f'Informações de {message.author.name}')
             emb.set_thumbnail(url=message.author.avatar_url)
             emb.add_field(name=':bust_in_silhouette: l Nome', value=message.author.name)
-            emb.add_field(name='a', value='b', inline=False)
+            emb.add_field(name=':id:', value=message.author.id, inline=False)
             emb.add_field(name='c', value='d')
 
             await client.send_message(message.channel, embed=emb)
