@@ -7,7 +7,6 @@ import embeds
 client = discord.Client()
 # TODO Arrumar o cmd votar
 # TODO Terminar o cmd me
-# TODO
 
 
 @client.event
@@ -42,14 +41,17 @@ async def on_message(message):
         elif message.content.lower().startswith('$wtf'):
             await client.send_file(message.channel, fp='images/wtf.jpg')
             print(f'{tempo} {message.author}: {message.content}')
+
         elif message.content.lower().startswith('$me'):
             emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
             emb.set_author(name=f'Informações de {message.author.name + message.author.discriminator}')
             emb.set_thumbnail(url=message.author.avatar_url)
-            emb.add_field(name=':bust_in_silhouette: l Nome', value=message.author.name)
-            emb.add_field(name=':id:', value=message.author.id, inline=False)
-            emb.add_field(name='c', value='d')
-
+            emb.add_field(name=':bust_in_silhouette:| Nome', value=f'```{message.author.name}```')
+            emb.add_field(name=':id:| id', value=f'```{message.author.id}```')
+            emb.add_field(name=':robot:| Bot', value=f'```{message.author.bot}```')
+            emb.add_field(name=':alarm_clock:| Criado em', value=f'```{message.author.created_at}```    ')
+            emb.add_field(name=':large_blue_circle:| Status', value=f'```{message.author.status}```')
+            emb.add_field(name=':calendar:| Entrou em', value=f'```{message.author.joined_at}```')
             await client.send_message(message.channel, embed=emb)
 
         elif message.content.lower().startswith('$cat'):
