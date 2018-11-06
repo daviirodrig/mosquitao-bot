@@ -6,7 +6,7 @@ import embeds
 
 client = discord.Client()
 # TODO Arrumar o cmd votar
-# TODO Terminar o cmd me
+# TODO Passar o bot pra Rewrite
 
 
 @client.event
@@ -34,7 +34,7 @@ async def on_member_remove(member):
 
 @client.event
 async def on_message(message):
-    tempo = message.timestamp
+    tempo = f'{message.timestamp:%d-%m-%Y às %H:%M:%S}'
     try:
         if message.author == client.user:
             return
@@ -43,15 +43,26 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$me'):
+            print(message.content[4:])
+            print(f'{tempo} {message.author}: {message.content}')
             emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
             emb.set_author(name=f'Informações de {message.author.name + message.author.discriminator}')
             emb.set_thumbnail(url=message.author.avatar_url)
             emb.add_field(name=':bust_in_silhouette:| Nome', value=f'```{message.author.name}```')
+            emb.add_field(name=':pencil:| Apelido', value=f'```{message.author.nick}```')
             emb.add_field(name=':id:| id', value=f'```{message.author.id}```')
-            emb.add_field(name=':robot:| Bot', value=f'```{message.author.bot}```')
-            emb.add_field(name=':alarm_clock:| Criado em', value=f'```{message.author.created_at}```    ')
-            emb.add_field(name=':large_blue_circle:| Status', value=f'```{message.author.status}```')
-            emb.add_field(name=':calendar:| Entrou em', value=f'```{message.author.joined_at}```')
+            emb.add_field(name=':robot:| É Bot?', value=f'```{message.author.bot}```'
+                          .replace('False', 'Não').replace('True', 'Sim'))
+            emb.add_field(name=':alarm_clock:| Criado em',
+                          value=f'```{message.author.created_at:%d-%m-%Y às %H:%M:%S}```')
+            emb.add_field(name=':large_blue_circle:| Status', value=f'```{message.author.status}```'
+                          .replace('dnd', 'Não pertubar').replace('idle', 'Ausente').replace('online', 'Disponível'))
+            emb.add_field(name=':calendar:| Entrou no clã em',
+                          value=f'```{message.author.joined_at:%d-%m-%Y às %H:%M:%S}```')
+            emb.add_field(name=':joystick:| Game',
+                          value=f'```{message.author.game}```'.replace('None', 'Nenhum'))
+            emb.set_footer(text=f'Pedido por: {message.author.name + message.author.discriminator}',
+                           icon_url=message.author.avatar_url)
             await client.send_message(message.channel, embed=emb)
 
         elif message.content.lower().startswith('$cat'):
@@ -155,7 +166,9 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$ping'):
-            await client.send_message(message.channel, 'Pong!')
+            msg = await client.send_message(message.channel, '<a:loading:509160083305791488>')
+            ms = str(msg.timestamp - message.timestamp)
+            await client.edit_message(msg, f'Pong!, `{ms[8:11]}ms`')
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$pergunta'):
