@@ -38,6 +38,8 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        if message.content.lower().startswith('$'):
+            await client.send_message(message.channel, "Meus comandos estão rm manutenção")
         elif message.content.lower().startswith('$wtf'):
             await client.send_file(message.channel, fp='images/wtf.jpg')
             print(f'{tempo} {message.author}: {message.content}')
