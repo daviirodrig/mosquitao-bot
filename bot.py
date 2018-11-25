@@ -87,7 +87,7 @@ async def on_message(message):
             opcoes = message.content.split(' ')
             opcoes.remove('$democracia')
             global votou
-            list(votou)
+            votou = []
             global vote
             vote = True
             global votos1, votos2
