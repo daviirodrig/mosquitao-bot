@@ -108,7 +108,7 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
             votou.append(message.author)
             if vote:
-                if not votou:
+                if message.author not in votou:
                     if message.content[7] == '1':
                         votos1 += 1
                         await client.send_message(message.channel, f'+1 voto contado para "{opcoes[0]}"')
@@ -192,7 +192,6 @@ async def on_message(message):
                 await client.send_message(message.channel, random.choice(["Sim",
                                                                           "Com certeza",
                                                                           "Talvez",
-                                                                          "Eu acho melhor não",
                                                                           "Eu sei lá porra",
                                                                           "Não"]))
             print(f'{tempo} {message.author}: {message.content}')
@@ -211,6 +210,5 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
     except Exception as err:
         await client.send_message(message.channel, err)
-
 
 client.run('NTA4ODA3OTE5ODc0MzQyOTIx.DsEoFQ.2Ziej9nQ4f726yQTWo6oETULTI0')
