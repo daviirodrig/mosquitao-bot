@@ -5,6 +5,8 @@ import time
 import embeds
 
 client = discord.Client()
+
+
 # TODO Arrumar o cmd votar
 # TODO Passar o bot pra Rewrite
 
@@ -33,17 +35,22 @@ async def on_member_remove(member):
 
 
 @client.event
+async def on_error(error):
+    print(error)
+
+
+@client.event
 async def on_message(message):
     tempo = f'{message.timestamp:%d-%m-%Y às %H:%M:%S}'
     try:
         if message.author == client.user:
             return
+
         elif message.content.lower().startswith('$wtf'):
             await client.send_file(message.channel, fp='images/wtf.jpg')
             print(f'{tempo} {message.author}: {message.content}')
 
         elif message.content.lower().startswith('$me'):
-            print(message.content[4:])
             print(f'{tempo} {message.author}: {message.content}')
             emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
             emb.set_author(name=f'Informações de {message.author.name + message.author.discriminator}')
@@ -79,23 +86,28 @@ async def on_message(message):
             global opcoes
             opcoes = message.content.split(' ')
             opcoes.remove('$democracia')
-            await client.send_message(message.channel, f'Digite $votar 1 para votar em {opcoes[0]}'
-                                                       f'\nDigite $votar 2 para votar em {opcoes[1]} ')
             global vote
             vote = True
+            global votos1, votos2
+            votos1 = 0
+            votos2 = 0
+            await client.send_message(message.channel, f'Digite $votar 1 para votar em {opcoes[0]}'
+                                                       f'\nDigite $votar 2 para votar em {opcoes[1]} ')
 
         elif message.content.lower().startswith('$resetarvot'):
             print(f'{tempo} {message.author}: {message.content}')
             vote = False
-            global votos1, votos2
             votos1 = 0
             votos2 = 0
             await client.send_message(message.channel, f'Votação resetada')
 
         elif message.content.lower().startswith('$votar'):
             print(f'{tempo} {message.author}: {message.content}')
-            try:
-                if vote:
+            global votou
+            list(votou)
+            votou.append(message.author)
+            if vote:
+                if not votou:
                     if message.content[7] == '1':
                         votos1 += 1
                         await client.send_message(message.channel, f'+1 voto contado para "{opcoes[0]}"')
@@ -106,9 +118,10 @@ async def on_message(message):
                         await client.send_message(message.channel,
                                                   f'Número de votação inválido {"<@!" + message.author.id + ">"}')
                 else:
-                    await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
-            except NameError:
-                await client.send_message(message.channel, 'Nehuma votação está ocorrendo no momento')
+                    await client.send_message(message.channel, f'Você já votou,{message.author.mention}')
+
+            else:
+                await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
 
         elif message.content.lower().startswith('$resultados'):
             print(f'{tempo} {message.author}: {message.content}')
