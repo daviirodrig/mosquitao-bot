@@ -106,9 +106,11 @@ async def on_message(message):
 
         elif message.content.lower().startswith('$votar'):
             print(f'{tempo} {message.author}: {message.content}')
-            votou.append(message.author)
             if vote:
-                if message.author not in votou:
+                if message.author.name in votou:
+                    await client.send_message(message.channel, f'Você já votou, {message.author.mention}')
+                else:
+                    votou.append(message.author.name)
                     if message.content[7] == '1':
                         votos1 += 1
                         await client.send_message(message.channel, f'+1 voto contado para "{opcoes[0]}"')
@@ -118,11 +120,12 @@ async def on_message(message):
                     else:
                         await client.send_message(message.channel,
                                                   f'Número de votação inválido {"<@!" + message.author.id + ">"}')
-                else:
-                    await client.send_message(message.channel, f'Você já votou,{message.author.mention}')
-
             else:
                 await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
+
+            print(f'votou = {votou}')
+            print(f'vote = {vote}')
+            print(f'votos1 = {votos1}')
 
         elif message.content.lower().startswith('$resultados'):
             print(f'{tempo} {message.author}: {message.content}')
