@@ -86,6 +86,8 @@ async def on_message(message):
             global opcoes
             opcoes = message.content.split(' ')
             opcoes.remove('$democracia')
+            global votou
+            list(votou)
             global vote
             vote = True
             global votos1, votos2
@@ -99,12 +101,11 @@ async def on_message(message):
             vote = False
             votos1 = 0
             votos2 = 0
+            votou = []
             await client.send_message(message.channel, f'Votação resetada')
 
         elif message.content.lower().startswith('$votar'):
             print(f'{tempo} {message.author}: {message.content}')
-            global votou
-            list(votou)
             votou.append(message.author)
             if vote:
                 if not votou:
@@ -210,5 +211,6 @@ async def on_message(message):
             print(f'{tempo} {message.author}: {message.content}')
     except Exception as err:
         await client.send_message(message.channel, err)
+
 
 client.run('NTA4ODA3OTE5ODc0MzQyOTIx.DsEoFQ.2Ziej9nQ4f726yQTWo6oETULTI0')
