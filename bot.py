@@ -5,10 +5,12 @@ import time
 import embeds
 
 client = discord.Client()
+vote = False
 
 
-# TODO Arrumar o cmd votar
 # TODO Passar o bot pra Rewrite
+# TODO Comando a praçaénossa
+# TODO Jogo de Cartas
 
 
 @client.event
@@ -45,6 +47,12 @@ async def on_message(message):
     try:
         if message.author == client.user:
             return
+        elif message.content.lower().startswith('$escolha'):
+            escolhas = message.content[9:].split(' ')
+            escolhido = random.choice(escolhas)
+            await client.send_message(message.channel, f'A opção escolhida foi')
+            time.sleep(1)
+            await client.send_message(message.channel, f'{escolhido}')
 
         elif message.content.lower().startswith('$wtf'):
             await client.send_file(message.channel, fp='images/wtf.jpg')
@@ -93,16 +101,9 @@ async def on_message(message):
             global votos1, votos2
             votos1 = 0
             votos2 = 0
-            await client.send_message(message.channel, f'Digite $votar 1 para votar em {opcoes[0]}'
-                                                       f'\nDigite $votar 2 para votar em {opcoes[1]} ')
-
-        elif message.content.lower().startswith('$resetarvot'):
-            print(f'{tempo} {message.author}: {message.content}')
-            vote = False
-            votos1 = 0
-            votos2 = 0
-            votou = []
-            await client.send_message(message.channel, f'Votação resetada')
+            await client.send_message(message.channel,
+                                      f'Digite $votar 1 para votar em {opcoes[0]}'
+                                      f'\nDigite $votar 2 para votar em {opcoes[1]} ')
 
         elif message.content.lower().startswith('$votar'):
             print(f'{tempo} {message.author}: {message.content}')
@@ -123,17 +124,18 @@ async def on_message(message):
             else:
                 await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
 
-            print(f'votou = {votou}')
-            print(f'vote = {vote}')
-            print(f'votos1 = {votos1}')
-
         elif message.content.lower().startswith('$resultados'):
-            print(f'{tempo} {message.author}: {message.content}')
-            await client.send_message(message.channel, f'{votos1} votos para {opcoes[0]}'
-                                                       f'\n{votos2} votos para {opcoes[1]}')
-        elif message.content.lower().startswith('$traduza'):
-            print(f'{tempo} {message.author}: {message.content}')
-            await client.send_message(message.channel, 'Comando em manutenção')
+            if vote:
+                print(f'{tempo} {message.author}: {message.content}')
+                await client.send_message(message.channel, f'Votação encerrada!')
+                await client.send_message(message.channel,
+                                          f'{votos1} votos para {opcoes[0]}'f'\n{votos2} votos para {opcoes[1]}')
+                vote = False
+                votos1 = 0
+                votos2 = 0
+                votou = []
+            else:
+                await client.send_message(message.channel, 'Nenhuma votação está ocorrendo no momento')
 
         elif message.content.lower().startswith('$limpar'):
             print(f'{tempo} {message.author}: {message.content}')
@@ -142,12 +144,6 @@ async def on_message(message):
             msg = await client.send_message(message.channel, f'{lim} mensagens limpas')
             time.sleep(3)
             await client.delete_message(msg)
-
-        elif message.content.lower().startswith('$spam'):
-            print(f'{tempo} {message.author}: {message.content}')
-            for c in range(0, 15):
-                time.sleep(0.7)
-                await client.send_message(message.channel, f'A {c}')
 
         elif message.content.lower().startswith('$diga'):
             await client.send_message(message.channel, message.content[6:])
@@ -165,7 +161,7 @@ async def on_message(message):
             except discord.errors.InvalidArgument:
                 await client.send_message(message.channel, ':dvd: Você prescisa estar em um canal de voz!')
 
-        elif message.content.startswith('$sair'):
+        elif message.content.lower().startswith('$sair'):
             print(f'{tempo} {message.author}: {message.content}')
             try:
                 canaldevoz = client.voice_client_in(message.server)
