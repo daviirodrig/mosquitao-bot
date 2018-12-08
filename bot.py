@@ -48,16 +48,16 @@ async def on_message(message):
         if message.author == client.user:
             return
         elif message.content.lower().startswith('$cancer'):
-            text = """´´´-╭┻-━━┻╮-_
-                          ┃╭╮╭╮┃
-                        ╭┫▕▎▕▎┣╮
-                        ╰┓┳╰╯┳┏╯ Special Delivery For A Super Awesome Friend! <3
-                        ╭┛╰━━╯┗━━━╮
-                        ┃┃    ┏━╭╰╯╮
-                        ┃┃    ┃┏┻━━┻┓
-                        ╰┫ ╭╮ ┃ Cancer ┃
-                          ┃ ┃┃ ┃╰━━━━╯
-                        ╭┛ ┃┃ ┗-´´´"""
+            text = """```-╭┻-━━┻╮-_
+ ┃╭╮╭╮┃
+╭┫▕▎▕▎┣╮
+╰┓┳╰╯┳┏╯
+╭┛╰━━╯┗━━━╮
+┃┃    ┏━╭╰╯╮
+┃┃    ┃┏┻━━┻┓
+╰┫ ╭╮ ┃┃ Cancer ┃
+ ┃ ┃┃ ┃╰━━━━╯
+╭┛ ┃┃ ┗-```"""
             await client.send_message(message.channel, text)
             
         elif message.content.lower().startswith('$escolha'):
