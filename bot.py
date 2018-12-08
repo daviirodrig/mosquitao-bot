@@ -48,16 +48,18 @@ async def on_message(message):
         if message.author == client.user:
             return
         elif message.content.lower().startswith('$cancer'):
-            await client.send_message(message.channel, '-╭┻-━━┻╮-_
- ┃╭╮╭╮┃
-╭┫▕▎▕▎┣╮
-╰┓┳╰╯┳┏╯ Special Delivery For A Super Awesome Friend! <3
-╭┛╰━━╯┗━━━╮
-┃┃    ┏━╭╰╯╮
-┃┃    ┃┏┻━━┻┓
-╰┫ ╭╮ ┃┃ Cancer ┃
- ┃ ┃┃ ┃╰━━━━╯
-╭┛ ┃┃ ┗-')
+            text = """´´´-╭┻-━━┻╮-_
+                          ┃╭╮╭╮┃
+                        ╭┫▕▎▕▎┣╮
+                        ╰┓┳╰╯┳┏╯ Special Delivery For A Super Awesome Friend! <3
+                        ╭┛╰━━╯┗━━━╮
+                        ┃┃    ┏━╭╰╯╮
+                        ┃┃    ┃┏┻━━┻┓
+                        ╰┫ ╭╮ ┃ Cancer ┃
+                          ┃ ┃┃ ┃╰━━━━╯
+                        ╭┛ ┃┃ ┗-´´´"""
+            await client.send_message(message.channel, embed=embed)
+            
         elif message.content.lower().startswith('$escolha'):
             escolhas = message.content[9:].split(' ')
             escolhido = random.choice(escolhas)
