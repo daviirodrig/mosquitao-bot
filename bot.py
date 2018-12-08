@@ -58,7 +58,7 @@ async def on_message(message):
                         ╰┫ ╭╮ ┃ Cancer ┃
                           ┃ ┃┃ ┃╰━━━━╯
                         ╭┛ ┃┃ ┗-´´´"""
-            await client.send_message(message.channel, embed=embed)
+            await client.send_message(message.channel, text)
             
         elif message.content.lower().startswith('$escolha'):
             escolhas = message.content[9:].split(' ')
