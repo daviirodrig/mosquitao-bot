@@ -6,7 +6,7 @@ from discord.ext import commands
 from secret import TOKEN
 
 description = "Um Bot MUITO FODA"
-bot = commands.Bot(command_prefix='$', description=description, )
+bot = commands.Bot(command_prefix='$', description=description)
 bot.remove_command('help')
 
 
@@ -14,7 +14,23 @@ bot.remove_command('help')
 async def on_ready():
     print('AE CARAIO')
     print(f'LOGGED COMO {bot.user.name}')
-    print('------')
+    print('----------------------------')
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    error = getattr(error, 'original', error)
+    if hasattr(ctx.command, 'on_error'):
+        return
+
+    elif isinstance(error, commands.BadArgument):
+        if ctx.command.qualified_name == 'gnomed':
+            return await ctx.send(f'Não consegui achar este membro.')
+
+
+@bot.event
+async def on_command(ctx):
+    print(f'{ctx.message.created_at:%d-%m-%Y às %H:%M:%S} {ctx.message.author}: {ctx.message.content}')
 
 
 @bot.event
@@ -128,7 +144,7 @@ async def wtf(ctx):
 async def help(ctx):
     embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
     embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me", icon_url="https://goo.gl/Viy31D")
-    embed.add_field(name="Me", value="```Mostra informações sobre você```", inline=True)
+    embed.add_field(name="Info [@nome]", value="```Mostra informações sobre a pessoa marcada```", inline=True)
     embed.add_field(name="Cat", value="```Envia uma foto de um gato aleatório```", inline=True)
     embed.add_field(name="Democracia [opção1] [opção2]", value="```Inicia uma votação```", inline=True)
     embed.add_field(name="Escolha [coisas]", value="```Escolhe uma das coisas que você digitou```", inline=True)
