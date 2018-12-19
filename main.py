@@ -180,6 +180,7 @@ async def help(ctx):
     embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me", icon_url="https://goo.gl/Viy31D")
     embed.add_field(name="Info [@nome]", value="```Mostra informações sobre a pessoa marcada```", inline=True)
     embed.add_field(name="Cat", value="```Envia uma foto de um gato aleatório```", inline=True)
+    embed.add_field(name="Wtf", value="```Excuse me what the fuck```", inline=True)
     embed.add_field(name="Democracia [opção1] [opção2]", value="```Inicia uma votação```", inline=True)
     embed.add_field(name="Escolha [coisas]", value="```Escolhe uma das coisas que você digitou```", inline=True)
     embed.add_field(name="Resultados", value="```Mostra o resultado da votação```", inline=True)
