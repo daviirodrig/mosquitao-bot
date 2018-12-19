@@ -65,16 +65,50 @@ async def cat(ctx):
     await ctx.send(embed=e)
 
 
-"""
-@bot.command()
-async def democracia(ctx, *opcoes: str):
+@bot.group()
+async def democracia(ctx, *coisa: str):
+    global votos1, votos2, votou, vote, opcoes
+    coisas = ''
     votou = []
     vote = True
     votos1 = 0
     votos2 = 0
-    await ctx.send('Calma ae que esse comando n ta pronto ainda')
+    for palavra in coisa:
+        coisas += palavra
+        coisas += ' '
+    opcoes = coisas.split(' ')
+    await ctx.send(f'Digite $votar 1 para votar em {opcoes[0]}'
+                   f'\nDigite $votar 2 para votar em {opcoes[1]} ')
+    print(opcoes)
 
-"""
+
+@bot.command()
+async def votar(ctx, numero):
+    global votos1, votos2
+    if vote:
+        if ctx.author.name in votou:
+            await ctx.send(f'Você já votou, {ctx.message.author.mention}')
+        else:
+            votou.append(ctx.author.name)
+            if numero == '1':
+                votos1 += 1
+                await ctx.send(f'+1 voto contado para "{opcoes[0]}"')
+            elif numero == '2':
+                votos2 += 1
+                await ctx.send(f'+1 voto contado para "{opcoes[1]}"')
+            else:
+                await ctx.send(f'Número de votação inválido {"<@!" + ctx.message.author.id + ">"}')
+    else:
+        await ctx.send('Nenhuma votação está ocorrendo no momento')
+
+
+@bot.command()
+async def resultados(ctx):
+    if vote:
+        await ctx.send(f'Votação encerrada!')
+        await ctx.send(f'{votos1} votos para {opcoes[0]}'f'\n{votos2} votos para {opcoes[1]}')
+    else:
+        await ctx.send('Nenhuma votação está ocorrendo no momento')
 
 
 @bot.command()
