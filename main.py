@@ -2,6 +2,7 @@ import discord
 import time
 import random
 import requests
+from datetime import datetime
 from discord.ext import commands
 from secret import TOKEN
 
@@ -30,7 +31,12 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_command(ctx):
-    print(f'{ctx.message.created_at:%d-%m-%Y às %H:%M:%S} {ctx.message.author}: {ctx.message.content}')
+    def datetime_from_utc_to_local(utc_datetime):
+        now_timestamp = time.time()
+        offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
+        return utc_datetime + offset
+    print(f'{datetime_from_utc_to_local(ctx.message.created_at):%d-%m-%Y às %H:%M:%S} {ctx.message.author}'
+          f': {ctx.message.content}')
 
 
 @bot.event
