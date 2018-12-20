@@ -205,7 +205,7 @@ async def info(ctx, user: discord.Member):
     emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
     emb.set_author(name=f'Informações de {user.name + user.discriminator}')
     emb.set_thumbnail(url=user.avatar_url)
-    emb.add_field(name=':bust_in_silhouette:| Nome', value=f'```{user.name}```')
+    emb.add_field(name=':busts_in_silhouette:| Nome', value=f'```{user.name}```')
     emb.add_field(name=':pencil:| Apelido', value=f'```{user.nick}```'.replace('None', 'Nenhum'))
     emb.add_field(name=':id:| id', value=f'```{user.id}```')
     emb.add_field(name=':robot:| É Bot?', value=f'```{user.bot}```'.replace('False', 'Não').replace('True', 'Sim'))
