@@ -7,7 +7,7 @@ from discord.ext import commands
 from secret import TOKEN
 
 description = "Um Bot MUITO FODA"
-bot = commands.Bot(command_prefix='$', description=description)
+bot = commands.Bot(command_prefix='$', description=description, case_insensitive=True)
 bot.remove_command('help')
 
 
@@ -40,16 +40,17 @@ async def on_command(ctx):
 
 
 @bot.event
-async def on_member_join(ctx, member):
+async def on_member_join(member):
+    canal = bot.get_channel(297130716985032714)
     msg = f"{member.mention} Entrou no Clã Do Mosquito, ae caraiou"
-    await ctx.send(msg)
+    await canal.send(msg)
 
 
 @bot.event
-async def on_member_remove(ctx, member):
-    canal = bot.get_channel("297130716985032714")
+async def on_member_remove(member):
+    canal = bot.get_channel(297130716985032714)
     msg = f"{member.mention} Saiu do clã, kkk otário"
-    await ctx.send(canal, msg)
+    await canal.send(msg)
 
 
 @bot.command()
