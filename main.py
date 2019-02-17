@@ -23,10 +23,11 @@ async def on_command_error(ctx, error):
     error = getattr(error, 'original', error)
     if hasattr(ctx.command, 'on_error'):
         return
-
+    elif isinstance(error, commands.MissingRequiredArgument):
+        return await ctx.send('Este comando prescisa de algum argumento\nManda um $help para ver os comandos')
     elif isinstance(error, commands.BadArgument):
         if ctx.command.qualified_name == 'gnomed':
-            return await ctx.send(f'Não consegui achar este membro.')
+            return await ctx.send('Não consegui achar este membro.')
 
 
 @bot.event
