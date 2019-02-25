@@ -13,9 +13,12 @@ bot.remove_command('help')
 
 @bot.event
 async def on_ready():
-    print('AE CARAIO')
-    print(f'LOGGED COMO {bot.user.name}')
+    print('Bot iniciado')
+    print(f'Logado como {bot.user.name}')
     print('----------------------------')
+    if bot.user.name == 'Mosquitão':
+        canal = bot.get_user(212680360486633472)
+        await canal.send('Bot iniciou')
     await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
