@@ -226,7 +226,10 @@ async def info(ctx, user: discord.Member):
                       'online', 'Disponível'))
     emb.add_field(name=':calendar:| Entrou no clã em', value=f'```{user.joined_at:%d-%m-%Y às %H:%M:%S}```')
     if user.activity is not None:
-        emb.add_field(name=':joystick:| Game', value=f'```{user.activity.name}```'.replace('None', 'Nenhum'))
+        if user.activity.name == 'Spotify':
+            emb.add_field(name=':loud_sound:| Ouvindo', value=f'```{user.activity.title} - {user.activity.artist}```')
+        else:
+            emb.add_field(name=':joystick:| Game', value=f'```{user.activity.name}```'.replace('None', 'Nenhum'))
     else:
         emb.add_field(name=':joystick:| Game', value='```Nenhum```')
     emb.set_footer(text=f'Pedido por: {ctx.author.name + ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
