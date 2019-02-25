@@ -16,6 +16,7 @@ async def on_ready():
     print('AE CARAIO')
     print(f'LOGGED COMO {bot.user.name}')
     print('----------------------------')
+    await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
 @bot.event
@@ -28,6 +29,8 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.BadArgument):
         if ctx.command.qualified_name == 'gnomed':
             return await ctx.send('Não consegui achar este membro.')
+    elif isinstance(error, commands.CommandNotFound):
+        return await ctx.send('Comando não encontrado :/')
 
 
 @bot.event
