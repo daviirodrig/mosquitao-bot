@@ -31,7 +31,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingRequiredArgument):
         return await ctx.send('Este comando prescisa de algum argumento\nManda um $help para ver os comandos')
     elif isinstance(error, commands.BadArgument):
-        return await ctx.send('Não consegui achar este membro.')
+        return await ctx.send('Argumento inválido')
     elif isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
     else:
