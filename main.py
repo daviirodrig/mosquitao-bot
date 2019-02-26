@@ -5,8 +5,9 @@ import requests
 from datetime import datetime
 from discord.ext import commands
 from secret import TOKEN
-
+print('\033[1;34;0m')
 description = "Um Bot MUITO FODA"
+vote = False
 bot = commands.Bot(command_prefix='$', description=description, case_insensitive=True)
 bot.remove_command('help')
 
@@ -30,10 +31,11 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingRequiredArgument):
         return await ctx.send('Este comando prescisa de algum argumento\nManda um $help para ver os comandos')
     elif isinstance(error, commands.BadArgument):
-        if ctx.command.qualified_name == 'gnomed':
-            return await ctx.send('Não consegui achar este membro.')
+        return await ctx.send('Não consegui achar este membro.')
     elif isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
+    else:
+        print(f'\033[1;31;0mUm erro ocorreu\n{error}\033[1;34;0m')
 
 
 @bot.event
@@ -81,37 +83,40 @@ async def cat(ctx):
 
 @bot.group()
 async def democracia(ctx, *coisa: str):
-    global votos1, votos2, votou, vote, opcoes
-    coisas = ''
+    global votos1, votos2, votou, vote, coisas
+    coisas = []
     votou = []
     vote = True
     votos1 = 0
     votos2 = 0
     for palavra in coisa:
-        coisas += palavra
-        coisas += ' '
-    opcoes = coisas.split(' ')
-    await ctx.send(f'Digite $votar 1 para votar em {opcoes[0]}'
-                   f'\nDigite $votar 2 para votar em {opcoes[1]} ')
-    print(opcoes)
+        coisas.append(palavra)
+    if len(coisas) != 2:
+        if len(coisas) < 2:
+            await ctx.send('Este comando precisa de duas opções')
+        elif len(coisas) > 2:
+            await ctx.send('Este comando suporta apenas duas opções')
+    else:
+        await ctx.send(f'Digite $votar 1 para votar em {coisas[0]}'
+                       f'\nDigite $votar 2 para votar em {coisas[1]} ')
 
 
 @bot.command()
-async def votar(ctx, numero):
+async def votar(ctx, numero: int):
     global votos1, votos2
     if vote:
         if ctx.author.name in votou:
             await ctx.send(f'Você já votou, {ctx.message.author.mention}')
         else:
             votou.append(ctx.author.name)
-            if numero == '1':
+            if numero == 1:
                 votos1 += 1
-                await ctx.send(f'+1 voto contado para "{opcoes[0]}"')
-            elif numero == '2':
+                await ctx.send(f'+1 voto contado para "{coisas[0]}"')
+            elif numero == 2:
                 votos2 += 1
-                await ctx.send(f'+1 voto contado para "{opcoes[1]}"')
+                await ctx.send(f'+1 voto contado para "{coisas[1]}"')
             else:
-                await ctx.send(f'Número de votação inválido {"<@!" + ctx.message.author.id + ">"}')
+                await ctx.send(f'Número de votação inválido {ctx.message.author.mention}')
     else:
         await ctx.send('Nenhuma votação está ocorrendo no momento')
 
@@ -120,7 +125,7 @@ async def votar(ctx, numero):
 async def resultados(ctx):
     if vote:
         await ctx.send(f'Votação encerrada!')
-        await ctx.send(f'{votos1} votos para {opcoes[0]}'f'\n{votos2} votos para {opcoes[1]}')
+        await ctx.send(f'{votos1} votos para {coisas[0]}'f'\n{votos2} votos para {coisas[1]}')
     else:
         await ctx.send('Nenhuma votação está ocorrendo no momento')
 
@@ -168,9 +173,9 @@ async def pintao(ctx):
 
 
 @bot.command()
-async def diga(ctx, *coisas):
+async def diga(ctx, *dizer):
     frase = ''
-    for word in coisas:
+    for word in dizer:
         frase += word
         frase += ' '
     await ctx.send(frase)
