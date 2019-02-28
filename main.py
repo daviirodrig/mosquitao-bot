@@ -5,7 +5,6 @@ import requests
 from datetime import datetime
 from discord.ext import commands
 from secret import TOKEN
-print('\033[1;34;0m')
 description = "Um Bot MUITO FODA"
 vote = False
 bot = commands.Bot(command_prefix='$', description=description, case_insensitive=True)
@@ -31,7 +30,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingRequiredArgument):
         return await ctx.send('Este comando prescisa de algum argumento\nManda um $help para ver os comandos')
     elif isinstance(error, commands.BadArgument):
-        return await ctx.send('Argumento inválido')
+        return await ctx.send('Não consegui achar este membro.')
     elif isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
     else:
@@ -173,11 +172,7 @@ async def pintao(ctx):
 
 
 @bot.command()
-async def diga(ctx, *dizer):
-    frase = ''
-    for word in dizer:
-        frase += word
-        frase += ' '
+async def diga(ctx, *, frase):
     await ctx.send(frase)
 
 
