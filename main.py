@@ -2,7 +2,6 @@ import discord
 import time
 import random
 import requests
-from datetime import datetime
 from discord.ext import commands
 from secret import TOKEN
 description = "Um Bot MUITO FODA"
@@ -39,12 +38,9 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_command(ctx):
-    def datetime_from_utc_to_local(utc_datetime):
-        now_timestamp = time.time()
-        offset = datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)
-        return utc_datetime + offset
-    print(f'{datetime_from_utc_to_local(ctx.message.created_at):%d-%m-%Y às %H:%M:%S} {ctx.message.author}'
-          f': {ctx.message.content}')
+    hora = int(str(ctx.message.created_at)[11:13]) - 3
+    print(f'{ctx.message.created_at:%d/%m/%Y às} {hora}:{ctx.message.created_at:%M:%S}'
+          f' {ctx.message.author}: {ctx.message.content}')
 
 
 @bot.event
@@ -65,7 +61,7 @@ async def on_member_remove(member):
 async def gnomed(ctx, pessoa: discord.Member):
     gnome = 'https://j.gifs.com/rRKn4E.gif'
     ee = discord.Embed(colour=random.randint(0, 0xFFFFFF, ))
-    ee.set_author(name=f'{pessoa.name} foi gnomado por {ctx.author.name}!!!!!')
+    ee.set_author(name=f'{pessoa.nick} foi gnomado por {ctx.author.nick}!!!')
     ee.set_image(url=gnome)
     await ctx.send(embed=ee)
 
@@ -179,7 +175,7 @@ async def diga(ctx, *, frase):
 @bot.command()
 async def escolha(ctx, *escolhas: str):
     await ctx.send('E a opção escolhida foi')
-    time.sleep(1)
+    time.sleep(0.5)
     await ctx.send(random.choice(escolhas))
 
 
@@ -237,5 +233,6 @@ async def info(ctx, user: discord.Member):
         emb.add_field(name=':joystick:| Game', value='```Nenhum```')
     emb.set_footer(text=f'Pedido por: {ctx.author.name + ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
     await ctx.send(embed=emb)
+
 
 bot.run(TOKEN)
