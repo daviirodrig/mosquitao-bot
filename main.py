@@ -175,7 +175,7 @@ async def felps(ctx):
 
 @bot.command()
 async def pintao(ctx):
-    await ctx.send(file=discord.File('images/pintao.jpg'))
+    await ctx.send(file=discord.File('images/pintao.png'))
 
 
 @bot.command()
