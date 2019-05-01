@@ -153,6 +153,17 @@ async def ping(ctx):
 
 
 @bot.command()
+async def rng(ctx, de: int, ate: int, dados: int):
+    soma = 0
+    for x in range(1, dados + 1):
+        sort = random.randint(de, ate)
+        soma += sort
+        await ctx.send(f'O {x}º numero sorteado foi {sort}')
+    if dados > 1:
+        await ctx.send(f'O número sorteado foi {soma}')
+
+
+@bot.command()
 async def paz(ctx):
     await ctx.send(file=discord.File('images/paz.jpg'))
 
@@ -164,7 +175,7 @@ async def felps(ctx):
 
 @bot.command()
 async def pintao(ctx):
-    await ctx.send(file=discord.File('images/pintao.png'))
+    await ctx.send(file=discord.File('images/paz.jpg'))
 
 
 @bot.command()
