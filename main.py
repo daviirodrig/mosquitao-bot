@@ -161,7 +161,7 @@ async def rng(ctx, de: int, ate: int, dados: int):
         soma += sort
         await ctx.send(f'O {x}º numero sorteado foi {sort}')
     if dados > 1:
-        await ctx.send(f'O número sorteado foi {soma}')
+        await ctx.send(f'A soma desses números é {soma}')
 
 
 @bot.command()
