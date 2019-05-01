@@ -4,6 +4,7 @@ import random
 import requests
 from discord.ext import commands
 from secret import TOKEN
+
 description = "Um Bot MUITO FODA"
 vote = False
 bot = commands.Bot(command_prefix='$', description=description, case_insensitive=True)
