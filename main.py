@@ -46,16 +46,25 @@ async def on_command(ctx):
 
 @bot.event
 async def on_member_join(member):
-    canal = bot.get_channel(297130716985032714)
-    msg = f"{member.mention} Entrou no Clã Do Mosquito, ae caraiou"
-    await canal.send(msg)
+    try:
+        canal = bot.get_channel(297130716985032714)
+        msg = f"{member.mention} Entrou no Clã Do Mosquito, ae caraiou"
+        await canal.send(msg)
+    except AttributeError:
+        pass
 
 
 @bot.event
 async def on_member_remove(member):
-    canal = bot.get_channel(297130716985032714)
-    msg = f"{member.mention} Saiu do clã, kkk otário"
-    await canal.send(msg)
+    try:
+        if member.id == bot.user.id:
+            print('sou eu')
+        else:
+            canal = bot.get_channel(297130716985032714)
+            msg = f"{member.mention} Saiu do clã, kkk otário"
+            await canal.send(msg)
+    except AttributeError:
+        pass
 
 
 @bot.command()
@@ -147,13 +156,6 @@ async def pergunta(ctx):
 
 
 @bot.command()
-async def ping(ctx):
-    msg = await ctx.send('<a:loading:509160083305791488>')
-    ms = str(msg.created_at - ctx.message.created_at)
-    await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
-
-
-@bot.command()
 async def rng(ctx, de: int, ate: int, dados: int):
     soma = 0
     for x in range(1, dados + 1):
@@ -162,6 +164,13 @@ async def rng(ctx, de: int, ate: int, dados: int):
         await ctx.send(f'O {x}º numero sorteado foi {sort}')
     if dados > 1:
         await ctx.send(f'A soma desses números é {soma}')
+
+
+@bot.command()
+async def ping(ctx):
+    msg = await ctx.send('<a:loading:509160083305791488>')
+    ms = str(msg.created_at - ctx.message.created_at)
+    await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
 
 
 @bot.command()
