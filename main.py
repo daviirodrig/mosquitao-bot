@@ -238,6 +238,7 @@ async def help(ctx):
     embed.add_field(name="Sair", value="```O bot sai do canal de voz```", inline=True)
     embed.add_field(name="Pintao", value="```Mostra o pintão do alan```", inline=True)
     embed.add_field(name="Felps", value="```Mostra uma foto do felps```", inline=True)
+    embed.add_field(name="Zap", value="```😂 👌```", inline=True)
     embed.add_field(name="Ping", value="```Pong!```", inline=True)
     embed.add_field(name="Limpar [Quantidade]", value="```Limpa uma certa quantidade de mensagens.```", inline=True)
     embed.add_field(name="Pergunta [Sua pergunta]", value="```O bot responde perguntas objetivas```", inline=True)
