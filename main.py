@@ -88,7 +88,8 @@ async def cat(ctx):
 
 @bot.group()
 async def democracia(ctx, *coisa: str):
-    global votos1, votos2, votou, vote, coisas
+    global votos1, votos2, votou, vote, coisas, user
+    user = ctx.author.id
     coisas = []
     votou = []
     vote = True
@@ -113,12 +114,14 @@ async def votar(ctx, numero: int):
         if ctx.author.name in votou:
             await ctx.send(f'Você já votou, {ctx.message.author.mention}')
         else:
-            votou.append(ctx.author.name)
+            
             if numero == 1:
                 votos1 += 1
+                votou.append(ctx.author.name)
                 await ctx.send(f'+1 voto contado para "{coisas[0]}"')
             elif numero == 2:
                 votos2 += 1
+                votou.append(ctx.author.name)
                 await ctx.send(f'+1 voto contado para "{coisas[1]}"')
             else:
                 await ctx.send(f'Número de votação inválido {ctx.message.author.mention}')
@@ -129,8 +132,11 @@ async def votar(ctx, numero: int):
 @bot.command()
 async def resultados(ctx):
     if vote:
-        await ctx.send(f'Votação encerrada!')
-        await ctx.send(f'{votos1} votos para {coisas[0]}'f'\n{votos2} votos para {coisas[1]}')
+        if ctx.author.id == user:
+            await ctx.send(f'Votação encerrada!')
+            await ctx.send(f'{votos1} votos para {coisas[0]}'f'\n{votos2} votos para {coisas[1]}')
+        else:
+            await ctx.send(f'Apenas quem iniciou a votação pode finalizá-la')
     else:
         await ctx.send('Nenhuma votação está ocorrendo no momento')
 
@@ -157,6 +163,9 @@ async def pergunta(ctx):
 
 @bot.command()
 async def rng(ctx, de: int, ate: int, dados: int):
+    if dados > 5:
+        await ctx.send('O número máximo de números é `5`')
+        return
     soma = 0
     for x in range(1, dados + 1):
         sort = random.randint(de, ate)
@@ -171,6 +180,12 @@ async def ping(ctx):
     msg = await ctx.send('<a:loading:509160083305791488>')
     ms = str(msg.created_at - ctx.message.created_at)
     await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
+
+
+
+@bot.command()
+async def zap(ctx):
+    await ctx.send(file=discord.File('images/zap.jpg'))
 
 
 @bot.command()
@@ -212,6 +227,7 @@ async def help(ctx):
     embed.add_field(name="Info [@nome]", value="```Mostra informações sobre a pessoa marcada```", inline=True)
     embed.add_field(name="Cat", value="```Envia uma foto de um gato aleatório```", inline=True)
     embed.add_field(name="Wtf", value="```Excuse me what the fuck```", inline=True)
+    embed.add_field(name="Rng [inicio] [fim] [quantidade]", value="```difGera um ou vários números aleatórios\nEx: `$rng 1 20 1` para um D20```", inline=True)
     embed.add_field(name="Democracia [opção1] [opção2]", value="```Inicia uma votação```", inline=True)
     embed.add_field(name="Escolha [coisas]", value="```Escolhe uma das coisas que você digitou```", inline=True)
     embed.add_field(name="Resultados", value="```Mostra o resultado da votação```", inline=True)
