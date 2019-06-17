@@ -16,9 +16,8 @@ async def on_ready():
     print('Bot iniciado')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
-    if bot.user.name == 'Mosquitão':
-        canal = bot.get_user(212680360486633472)
-        await canal.send('Bot iniciou')
+    if bot.user.name == 'Mosquitão': canal = bot.get_user(212680360486633472)
+    await canal.send('Bot iniciou')
     await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
@@ -28,9 +27,9 @@ async def on_command_error(ctx, error):
     if hasattr(ctx.command, 'on_error'):
         return
     elif isinstance(error, commands.MissingRequiredArgument):
-        return await ctx.send('Este comando prescisa de algum argumento\nManda um $help para ver os comandos')
+        return await ctx.send('Este comando prescisa de algum argumento\nManda um `$help` para ver os comandos')
     elif isinstance(error, commands.BadArgument):
-        return await ctx.send('Não consegui achar este membro.')
+        return await ctx.send('Erro no argumento')
     elif isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
     else:
@@ -103,8 +102,8 @@ async def democracia(ctx, *coisa: str):
         elif len(coisas) > 2:
             await ctx.send('Este comando suporta apenas duas opções')
     else:
-        await ctx.send(f'Digite $votar 1 para votar em {coisas[0]}'
-                       f'\nDigite $votar 2 para votar em {coisas[1]} ')
+        await ctx.send(f'Digite `$votar 1` para votar em `{coisas[0]}`'
+                       f'\nDigite `$votar 2` para votar em `{coisas[1]}` ')
 
 
 @bot.command()
@@ -113,8 +112,7 @@ async def votar(ctx, numero: int):
     if vote:
         if ctx.author.name in votou:
             await ctx.send(f'Você já votou, {ctx.message.author.mention}')
-        else:
-            
+        else: 
             if numero == 1:
                 votos1 += 1
                 votou.append(ctx.author.name)
@@ -157,7 +155,6 @@ async def pergunta(ctx):
         await ctx.send(random.choice(["Sim",
                                       "Com certeza",
                                       "Talvez",
-                                      "Eu sei lá porra",
                                       "Não"]))
 
 
@@ -180,7 +177,6 @@ async def ping(ctx):
     msg = await ctx.send('<a:loading:509160083305791488>')
     ms = str(msg.created_at - ctx.message.created_at)
     await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
-
 
 
 @bot.command()
