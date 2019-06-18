@@ -16,8 +16,9 @@ async def on_ready():
     print('Bot iniciado')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
-    if bot.user.name == 'Mosquitão': canal = bot.get_user(212680360486633472)
-    await canal.send('Bot iniciou')
+    if bot.user.name == 'Mosquitão':
+        canal = bot.get_user(212680360486633472) 
+        await canal.send('Bot iniciou')
     await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
@@ -33,7 +34,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
     else:
-        print(f'\033[1;31;0mUm erro ocorreu\n{error}\033[1;34;0m')
+        print(f'Um erro ocorreu\n{error}')
 
 
 @bot.event
@@ -178,6 +179,11 @@ async def ping(ctx):
     ms = str(msg.created_at - ctx.message.created_at)
     await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
 
+# Comandos de Imagem
+@bot.command()
+async def otaku(ctx):
+    await ctx.send(file=discord.File('images/otaku.png'))
+
 
 @bot.command()
 async def zap(ctx):
@@ -192,6 +198,11 @@ async def paz(ctx):
 @bot.command()
 async def felps(ctx):
     await ctx.send(file=discord.File('images/felps.png'))
+
+
+@bot.command()
+async def wtf(ctx):
+    await ctx.send(file=discord.File('images/wtf.jpg'))
 
 
 @bot.command()
@@ -211,11 +222,9 @@ async def escolha(ctx, *escolhas: str):
     await ctx.send(random.choice(escolhas))
 
 
-@bot.command()
-async def wtf(ctx):
-    await ctx.send(file=discord.File('images/wtf.jpg'))
 
 
+# Comandos gigantes com embed
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
