@@ -1,14 +1,12 @@
 import discord
-import os
 import time
 import random
 import requests
 from discord.ext import commands
 from secret import TOKEN
 
-description = "Um Bot MUITO FODA"
 vote = False
-bot = commands.Bot(command_prefix='$', description=description, case_insensitive=True)
+bot = commands.Bot(command_prefix='$', case_insensitive=True)
 bot.remove_command('help')
 
 
@@ -68,17 +66,24 @@ async def on_member_remove(member):
         pass
 
 
-@bot.command()
+# Comandos
+@bot.command(usage='@alguém')
 async def gnomed(ctx, pessoa: discord.Member):
+    """
+    Gnoma pessoas
+    """
     gnome = 'https://j.gifs.com/rRKn4E.gif'
     ee = discord.Embed(colour=random.randint(0, 0xFFFFFF, ))
-    ee.set_author(name=f'{pessoa.nick} foi gnomado por {ctx.author.nick}!!!')
+    ee.set_author(name=f'{pessoa.nick if pessoa.nick else pessoa.name} foi gnomado por {ctx.author.nick if ctx.author.nick else ctx.author.name}!!!')
     ee.set_image(url=gnome)
     await ctx.send(embed=ee)
 
 
 @bot.command()
 async def cat(ctx):
+    """
+    Manda uma foto aleatória de um gato.
+    """
     main_url = 'http://aws.random.cat/meow'
     gato = requests.get(main_url).json()
     json_cat = gato['file']
@@ -87,7 +92,7 @@ async def cat(ctx):
     await ctx.send(embed=e)
 
 
-@bot.group()
+@bot.command(usage='[Opção 1] [Opção 2]')
 async def democracia(ctx, *coisa: str):
     global votos1, votos2, votou, vote, coisas, user
     user = ctx.author.id
@@ -175,8 +180,10 @@ async def rng(ctx, de: int, ate: int, dados: int):
 
 
 @bot.command()
-async def run(ctx, cmd):
-    await ctx.send(os.system(cmd))
+async def escolha(ctx, *escolhas: str):
+    await ctx.send('E a opção escolhida foi')
+    time.sleep(0.5)
+    await ctx.send(random.choice(escolhas))
 
 
 @bot.command()
@@ -184,6 +191,7 @@ async def ping(ctx):
     msg = await ctx.send('<a:loading:509160083305791488>')
     ms = str(msg.created_at - ctx.message.created_at)
     await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
+
 
 # Comandos de Imagem
 @bot.command()
@@ -221,24 +229,16 @@ async def diga(ctx, *, frase):
     await ctx.send(frase)
 
 
-@bot.command()
-async def escolha(ctx, *escolhas: str):
-    await ctx.send('E a opção escolhida foi')
-    time.sleep(0.5)
-    await ctx.send(random.choice(escolhas))
-
-
-
-
-# Comandos gigantes com embed
+# Comandos gigantes com embed 
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
     embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me", icon_url="https://goo.gl/Viy31D")
     embed.add_field(name="Info [@nome]", value="```Mostra informações sobre a pessoa marcada```", inline=True)
+    embed.add_field(name="Gnomed [@nome]", value="```Gnoma alguém```", inline=True)
     embed.add_field(name="Cat", value="```Envia uma foto de um gato aleatório```", inline=True)
     embed.add_field(name="Wtf", value="```Excuse me what the fuck```", inline=True)
-    embed.add_field(name="Rng [inicio] [fim] [quantidade]", value="```difGera um ou vários números aleatórios\nEx: `$rng 1 20 1` para um D20```", inline=True)
+    embed.add_field(name="Rng [inicio] [fim] [quantidade]", value="```Gera um ou vários números aleatórios\nEx: `$rng 1 20 1` para um D20```", inline=True)
     embed.add_field(name="Democracia [opção1] [opção2]", value="```Inicia uma votação```", inline=True)
     embed.add_field(name="Escolha [coisas]", value="```Escolhe uma das coisas que você digitou```", inline=True)
     embed.add_field(name="Resultados", value="```Mostra o resultado da votação```", inline=True)
