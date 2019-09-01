@@ -148,6 +148,8 @@ async def resultados(ctx):
 
 @bot.command()
 async def limpar(ctx, lim: int):
+    if lim > 20:
+        await ctx.send('O Limite máximo de mensangens é `20`')
     await ctx.channel.purge(limit=(lim + 1))
     msg = await ctx.send(f'{lim + 1} mensagens limpas')
     time.sleep(3)
