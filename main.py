@@ -222,6 +222,11 @@ async def wtf(ctx):
 
 
 @bot.command()
+async def paiva(ctx):
+    await ctx.send(file=discord.File('images/paiva.png'))
+
+
+@bot.command()
 async def pintao(ctx):
     await ctx.send(file=discord.File('images/pintao.png'))
 
