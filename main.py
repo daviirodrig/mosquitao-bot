@@ -23,19 +23,19 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
-@bot.event
-async def on_command_error(ctx, error):
-    error = getattr(error, 'original', error)
-    if hasattr(ctx.command, 'on_error'):
-        return
-    elif isinstance(error, commands.MissingRequiredArgument):
-        return await ctx.send('Este comando prescisa de algum argumento\nManda um `$help` para ver os comandos')
-    elif isinstance(error, commands.BadArgument):
-        return await ctx.send('Erro no argumento')
-    elif isinstance(error, commands.CommandNotFound):
-        return await ctx.send('Comando não encontrado :/')
-    else:
-        print(f'Um erro ocorreu\n{error}')
+# @bot.event
+# async def on_command_error(ctx, error):
+#     error = getattr(error, 'original', error)
+#     if hasattr(ctx.command, 'on_error'):
+#         return
+#     elif isinstance(error, commands.MissingRequiredArgument):
+#         return await ctx.send('Este comando prescisa de algum argumento\nManda um `$help` para ver os comandos')
+#     elif isinstance(error, commands.BadArgument):
+#         return await ctx.send('Erro no argumento')
+#     elif isinstance(error, commands.CommandNotFound):
+#         return await ctx.send('Comando não encontrado :/')
+#     else:
+#         print(f'Um erro ocorreu\n{error}')
 
 
 @bot.event
@@ -188,6 +188,22 @@ async def escolha(ctx, *escolhas: str):
     await ctx.send('E a opção escolhida foi')
     time.sleep(0.5)
     await ctx.send(random.choice(escolhas))
+
+
+@bot.command()
+async def reddit(ctx, *subreddits):
+    if not subreddits:
+        subreddits = []
+    subreddit = random.choice(subreddits)
+    url = f'https://www.reddit.com/r/{subreddit}.json'
+    headers = {'User-Agent': 'Python bot requeest 1.0'}
+    json = requests.get(url, headers=headers).json()
+    escolhido = random.choice(json['data']['children'])
+    title = escolhido['data']['title']
+    image_url = escolhido['data']['url']
+    e = discord.Embed(title=title)
+    e.set_image(url=image_url)
+    await ctx.send(embed=e)
 
 
 @bot.command()
