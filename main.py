@@ -4,6 +4,8 @@ import random
 import requests
 from discord.ext import commands
 from secret import TOKEN
+from chanGet import main as getChan
+
 
 vote = False
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
@@ -189,6 +191,13 @@ async def escolha(ctx, *escolhas: str):
 
 
 @bot.command()
+async def chan(ctx):
+    e = discord.Embed()
+    e.set_image(url=getChan(1))
+    await ctx.send(embed=e)
+
+
+@bot.command()
 async def ping(ctx):
     msg = await ctx.send('<a:loading:509160083305791488>')
     ms = str(msg.created_at - ctx.message.created_at)
@@ -236,7 +245,7 @@ async def diga(ctx, *, frase):
     await ctx.send(frase)
 
 
-# Comandos gigantes com embed 
+# Comandos gigantes com embed
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
@@ -250,6 +259,7 @@ async def help(ctx):
     embed.add_field(name="Escolha [coisas]", value="```Escolhe uma das coisas que você digitou```", inline=True)
     embed.add_field(name="Resultados", value="```Mostra o resultado da votação```", inline=True)
     embed.add_field(name="Votar [opção]", value="```Vota em uma votação```", inline=True)
+    embed.add_field(name="Chan", value="```Manda uma imagem aleatória de TODO o 4chan```", inline=True)
     embed.add_field(name="Diga [coisas]", value="```Faz o bot dizer coisas```", inline=True)
     embed.add_field(name="Paz", value="```Mostra a foto de um dedo do meio```", inline=True)
     embed.add_field(name="Entrar", value="```O bot entra em seu canal de voz```", inline=True)
