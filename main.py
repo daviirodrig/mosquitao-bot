@@ -198,10 +198,20 @@ async def reddit(ctx, *subreddits):
     url = f'https://www.reddit.com/r/{subreddit}.json'
     headers = {'User-Agent': 'Python bot requeest 1.0'}
     json = requests.get(url, headers=headers).json()
+    if json.get('message'):
+        msg = f'{json["message"]}\n'
+    if json.get('reason'):
+        msg += f'Motivo: {json["reason"]}\n'
+    if json.get('quarantine_message'):
+        msg += f'Motivo da quarentena: {json["quarantine_message"]}'
+    if msg:
+        await ctx.send(msg)
+        return
     escolhido = random.choice(json['data']['children'])
     title = escolhido['data']['title']
     image_url = escolhido['data']['url']
-    e = discord.Embed(title=title)
+    post_url = 'https://www.reddit.com' + escolhido['data']['permalink']
+    e = discord.Embed(title=title, url=post_url)
     e.set_image(url=image_url)
     await ctx.send(embed=e)
 
