@@ -2,8 +2,10 @@ import discord
 import time
 import random
 import requests
+import praw
+import prawcore
 from discord.ext import commands
-from secret import TOKEN
+from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
 from chanGet import main as getChan
 
 
@@ -34,8 +36,6 @@ async def on_ready():
 #         return await ctx.send('Erro no argumento')
 #     elif isinstance(error, commands.CommandNotFound):
 #         return await ctx.send('Comando não encontrado :/')
-#     else:
-#         print(f'Um erro ocorreu\n{error}')
 
 
 @bot.event
@@ -191,29 +191,36 @@ async def escolha(ctx, *escolhas: str):
 
 
 @bot.command()
-async def reddit(ctx, *subreddits):
-    if not subreddits:
-        subreddits = []
-    subreddit = random.choice(subreddits)
-    url = f'https://www.reddit.com/r/{subreddit}.json'
-    headers = {'User-Agent': 'Python bot requeest 1.0'}
-    json = requests.get(url, headers=headers).json()
-    if json.get('message'):
-        msg = f'{json["message"]}\n'
-    if json.get('reason'):
-        msg += f'Motivo: {json["reason"]}\n'
-    if json.get('quarantine_message'):
-        msg += f'Motivo da quarentena: {json["quarantine_message"]}'
-    if msg:
-        await ctx.send(msg)
-        return
-    escolhido = random.choice(json['data']['children'])
-    title = escolhido['data']['title']
-    image_url = escolhido['data']['url']
-    post_url = 'https://www.reddit.com' + escolhido['data']['permalink']
-    e = discord.Embed(title=title, url=post_url)
-    e.set_image(url=image_url)
-    await ctx.send(embed=e)
+async def reddit(ctx, subreddits=None):
+# TODO: Arrumar subreddits quarentenados, privados e banidos
+    redd = praw.Reddit(client_id=REDDIT_ID,
+                       client_secret=REDDIT_SECRET,
+                       user_agent='python/requests:mosquitaobot:1.0 (by /u/davioitu)')
+    if subreddits is None:
+        sub = redd.random_subreddit(nsfw=False)
+    elif str(subreddits).lower() == 'nsfw':
+        sub = redd.random_subreddit(nsfw=True)
+    else:
+        sub = redd.subreddit(subreddits)
+    ranpost = sub.random()
+    if ranpost is None:
+        ranpost = random.choice(list(sub.hot()))
+    while len(ranpost.selftext) >= 1024:
+        ranpost = sub.random()
+        if ranpost is None:
+            ranpost = random.choice(list(sub.hot()))
+    emb = discord.Embed(title=ranpost.title, url=ranpost.shortlink)
+    if ranpost.is_self:
+        emb.add_field(value=ranpost.selftext, name='Texto')
+    else:
+        if ranpost.url[0:17] == 'https://i.redd.it':
+            emb.set_image(url=ranpost.url)
+        else:
+            emb.add_field(name='Link', value=ranpost.url)
+    author_url = '/u/' + ranpost.author.name
+    sub_name = '/r/' + ranpost.subreddit.display_name.lower()
+    emb.set_author(name=sub_name + ' by ' + author_url)
+    await ctx.send(embed=emb)
 
 
 @bot.command()
