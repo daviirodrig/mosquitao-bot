@@ -1,28 +1,31 @@
-import discord
+""" Main file to run the bot """
 import time
 import random
-import requests
 import praw
-import prawcore
+import requests
+import discord
 from discord.ext import commands
 from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
 from chanGet import main as getChan
 
 
-vote = False
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
 bot.remove_command('help')
 
 
 @bot.event
 async def on_ready():
+    """
+    Função para quando o bot iniciar
+    """
     print('Bot iniciado')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
     if bot.user.name == 'Mosquitão':
-        canal = bot.get_user(212680360486633472) 
+        canal = bot.get_user(212680360486633472)
         await canal.send('Bot iniciou')
-    await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
+    await bot.change_presence(activity=
+                              discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
 # @bot.event
@@ -40,6 +43,9 @@ async def on_ready():
 
 @bot.event
 async def on_command(ctx):
+    """
+    Função para printar quando alguém usar comandos.
+    """
     hora = int(str(ctx.message.created_at)[11:13]) - 3
     print(f'{ctx.message.created_at:%d/%m/%Y às} {hora}:{ctx.message.created_at:%M:%S}'
           f' {ctx.message.author}: {ctx.message.content}')
@@ -47,6 +53,9 @@ async def on_command(ctx):
 
 @bot.event
 async def on_member_join(member):
+    """
+    Função para quando alguém entrar no servidor.
+    """
     try:
         canal = bot.get_channel(297130716985032714)
         msg = f"{member.mention} Entrou no Clã Do Mosquito, ae caraiou"
@@ -57,6 +66,9 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
+    """
+    Função para quando alguém sair do servidor.
+    """
     try:
         if member.id == bot.user.id:
             print('sou eu')
@@ -72,13 +84,13 @@ async def on_member_remove(member):
 @bot.command(usage='@alguém')
 async def gnomed(ctx, pessoa: discord.Member):
     """
-    Gnoma pessoas
+    Gnoma pessoas.
     """
     gnome = 'https://j.gifs.com/rRKn4E.gif'
-    ee = discord.Embed(colour=random.randint(0, 0xFFFFFF, ))
-    ee.set_author(name=f'{pessoa.nick if pessoa.nick else pessoa.name} foi gnomado por {ctx.author.nick if ctx.author.nick else ctx.author.name}!!!')
-    ee.set_image(url=gnome)
-    await ctx.send(embed=ee)
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF, ))
+    emb.set_author(name=f'{pessoa.nick if pessoa.nick else pessoa.name} foi gnomado por {ctx.author.nick if ctx.author.nick else ctx.author.name}!!!')
+    emb.set_image(url=gnome)
+    await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -89,13 +101,16 @@ async def cat(ctx):
     main_url = 'http://aws.random.cat/meow'
     gato = requests.get(main_url).json()
     json_cat = gato['file']
-    e = discord.Embed(colour=random.randint(0, 0xFFFFFF))
-    e.set_image(url=json_cat)
-    await ctx.send(embed=e)
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url=json_cat)
+    await ctx.send(embed=emb)
 
 
 @bot.command(usage='[Opção 1] [Opção 2]')
 async def democracia(ctx, *coisa: str):
+    """
+    Comando para criar votações democráticas.
+    """
     global votos1, votos2, votou, vote, coisas, user
     user = ctx.author.id
     coisas = []
@@ -117,11 +132,14 @@ async def democracia(ctx, *coisa: str):
 
 @bot.command()
 async def votar(ctx, numero: int):
+    """
+    Comando para votar em votações criadas pelo $democracia.
+    """
     global votos1, votos2
     if vote:
         if ctx.author.name in votou:
             await ctx.send(f'Você já votou, {ctx.message.author.mention}')
-        else: 
+        else:
             if numero == 1:
                 votos1 += 1
                 votou.append(ctx.author.name)
@@ -138,6 +156,9 @@ async def votar(ctx, numero: int):
 
 @bot.command()
 async def resultados(ctx):
+    """
+    Comando para mostrar resultados da votação.
+    """
     if vote:
         if ctx.author.id == user:
             await ctx.send(f'Votação encerrada!')
@@ -150,8 +171,11 @@ async def resultados(ctx):
 
 @bot.command()
 async def limpar(ctx, lim: int):
-    if lim > 20:
-        await ctx.send('O Limite máximo de mensangens é `20`')
+    """
+    Comando para limpar mensagens.
+    """
+    if lim > 30:
+        await ctx.send('O Limite máximo de mensangens é `30`')
     await ctx.channel.purge(limit=(lim + 1))
     msg = await ctx.send(f'{lim + 1} mensagens limpas')
     time.sleep(3)
@@ -160,6 +184,9 @@ async def limpar(ctx, lim: int):
 
 @bot.command()
 async def pergunta(ctx):
+    """
+    O bot responde perguntas objetivas (sim ou não).
+    """
     if 'sentido da vida' in ctx.message.content.lower():
         await ctx.send('**42**')
     else:
@@ -170,13 +197,16 @@ async def pergunta(ctx):
 
 
 @bot.command()
-async def rng(ctx, de: int, ate: int, dados: int):
+async def rng(ctx, inicio: int, ate: int, dados: int):
+    """
+    Comando para gerar números aleatórios.
+    """
     if dados > 5:
-        await ctx.send('O número máximo de números é `5`')
+        await ctx.send('O número máximo de dados é `5`')
         return
     soma = 0
     for x in range(1, dados + 1):
-        sort = random.randint(de, ate)
+        sort = random.randint(inicio, ate)
         soma += sort
         await ctx.send(f'O {x}º numero sorteado foi {sort}')
     if dados > 1:
@@ -185,6 +215,9 @@ async def rng(ctx, de: int, ate: int, dados: int):
 
 @bot.command()
 async def escolha(ctx, *escolhas: str):
+    """
+    Comando para deixar o bot escolher entre várias opções.
+    """
     await ctx.send('E a opção escolhida foi')
     time.sleep(0.5)
     await ctx.send(random.choice(escolhas))
@@ -192,6 +225,9 @@ async def escolha(ctx, *escolhas: str):
 
 @bot.command()
 async def reddit(ctx, subreddits=None):
+    """
+    Pega um post aleatório de um subreddit específico ou aleatório
+    """
 # TODO: Arrumar subreddits quarentenados, privados e banidos
     redd = praw.Reddit(client_id=REDDIT_ID,
                        client_secret=REDDIT_SECRET,
@@ -225,56 +261,78 @@ async def reddit(ctx, subreddits=None):
 
 @bot.command()
 async def chan(ctx):
-    e = discord.Embed()
-    e.set_image(url=getChan(1))
-    await ctx.send(embed=e)
+    """
+    Manda uma foto aleatória do 4chan.
+    """
+    emb = discord.Embed()
+    emb.set_image(url=getChan(1))
+    await ctx.send(embed=emb)
 
 
 @bot.command()
 async def ping(ctx):
+    """
+    Comando para ver a latência do bot.
+    """
     msg = await ctx.send('<a:loading:509160083305791488>')
-    ms = str(msg.created_at - ctx.message.created_at)
-    await msg.edit(content=f'Pong!, `{ms[8:11]}ms`')
+    bot_ms = str(msg.created_at - ctx.message.created_at)
+    await msg.edit(content=f'Pong!, `{bot_ms[8:11]}ms`')
 
 
 # Comandos de Imagem
 @bot.command()
-async def otaku(ctx):
-    await ctx.send(file=discord.File('images/otaku.png'))
-
-
-@bot.command()
 async def zap(ctx):
+    """
+    Engraçadão pô
+    """
     await ctx.send(file=discord.File('images/zap.jpg'))
 
 
 @bot.command()
 async def paz(ctx):
+    """
+    Dedo do meio = Símbolo de paz
+    """
     await ctx.send(file=discord.File('images/paz.jpg'))
 
 
 @bot.command()
 async def felps(ctx):
+    """
+    Felps.
+    """
     await ctx.send(file=discord.File('images/felps.png'))
 
 
 @bot.command()
 async def wtf(ctx):
+    """
+    Excuse me what the fuck?
+    """
     await ctx.send(file=discord.File('images/wtf.jpg'))
 
 
 @bot.command()
 async def paiva(ctx):
+    """
+    Punheta.
+    """
     await ctx.send(file=discord.File('images/paiva.png'))
 
 
 @bot.command()
 async def pintao(ctx):
+    """
+    Mostra o pintão foda do Alan.
+    """
     await ctx.send(file=discord.File('images/pintao.png'))
 
 
 @bot.command()
 async def diga(ctx, *, frase):
+    """
+    Faz o bot dizer algo.
+    """
     await ctx.send(frase)
 
 
