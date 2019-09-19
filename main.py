@@ -44,7 +44,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
     canal = bot.get_user(212680360486633472)
-    return await canal.send(f'Erro: {type(error)}\nArgs: {error.args}')
+    return await canal.send(f'O comando `{ctx.command}` gerou o erro: {type(error)}Args: {error.args}')
 
 
 @bot.event
