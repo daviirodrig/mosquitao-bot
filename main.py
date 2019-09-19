@@ -89,8 +89,20 @@ async def on_member_remove(member):
 
 
 @bot.command()
-async def errou(ctx):
-    raise Exception('Errou KKKKK')
+async def entrar(ctx):
+    """
+    Comando para entrar no canal de voz.
+    """
+    canal_de_voz = ctx.author.voice.channel
+    await canal_de_voz.connect()
+
+
+@bot.command()
+async def sair(ctx):
+    """
+    Comando para sair do canal de voz.
+    """
+    await ctx.voice_client.disconnect()
 
 
 # Comandos
