@@ -93,6 +93,8 @@ async def entrar(ctx):
     """
     Comando para entrar no canal de voz.
     """
+    if not discord.opus.is_loaded():
+        discord.opus.load_opus('libopus.so')
     canal_de_voz = ctx.author.voice.channel
     await canal_de_voz.connect()
 
