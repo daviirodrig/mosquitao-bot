@@ -28,17 +28,23 @@ async def on_ready():
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
-# @bot.event
-# async def on_command_error(ctx, error):
-#     error = getattr(error, 'original', error)
-#     if hasattr(ctx.command, 'on_error'):
-#         return
-#     elif isinstance(error, commands.MissingRequiredArgument):
-#         return await ctx.send('Este comando prescisa de algum argumento\nManda um `$help` para ver os comandos')
-#     elif isinstance(error, commands.BadArgument):
-#         return await ctx.send('Erro no argumento')
-#     elif isinstance(error, commands.CommandNotFound):
-#         return await ctx.send('Comando não encontrado :/')
+@bot.event
+async def on_command_error(ctx, error):
+    """
+    Função para lidar com erros em comandos
+    """
+    error = getattr(error, 'original', error)
+    if hasattr(ctx.command, 'on_error'):
+        return
+    if isinstance(error, commands.MissingRequiredArgument):
+        return await ctx.send('Este comando prescisa de algum argumento'
+                              'Manda um `$help` para ver os comandos')
+    if isinstance(error, commands.BadArgument):
+        return await ctx.send('Erro no argumento')
+    if isinstance(error, commands.CommandNotFound):
+        return await ctx.send('Comando não encontrado :/')
+    canal = bot.get_user(212680360486633472)
+    return await canal.send(f'Erro: {type(error)}\nArgs: {error.args}')
 
 
 @bot.event
@@ -80,6 +86,11 @@ async def on_member_remove(member):
         pass
 
 
+@bot.command()
+async def errou(ctx):
+    raise Exception('Errou KKKKK')
+
+
 # Comandos
 @bot.command(usage='@alguém')
 async def gnomed(ctx, pessoa: discord.Member):
@@ -88,7 +99,9 @@ async def gnomed(ctx, pessoa: discord.Member):
     """
     gnome = 'https://j.gifs.com/rRKn4E.gif'
     emb = discord.Embed(colour=random.randint(0, 0xFFFFFF, ))
-    emb.set_author(name=f'{pessoa.nick if pessoa.nick else pessoa.name} foi gnomado por {ctx.author.nick if ctx.author.nick else ctx.author.name}!!!')
+    nome = pessoa.nick if pessoa.nick else pessoa.name
+    autor = ctx.author.nick if ctx.author.nick else ctx.author.name
+    emb.set_author(name=f'{nome} foi gnomado por {autor}!!')
     emb.set_image(url=gnome)
     await ctx.send(embed=emb)
 
@@ -111,8 +124,8 @@ async def democracia(ctx, *coisa: str):
     """
     Comando para criar votações democráticas.
     """
-    global votos1, votos2, votou, vote, coisas, user
-    user = ctx.author.id
+    global votos1, votos2, votou, vote, coisas, user_iniciou_vote
+    user_iniciou_vote = ctx.author.id
     coisas = []
     votou = []
     vote = True
@@ -160,7 +173,7 @@ async def resultados(ctx):
     Comando para mostrar resultados da votação.
     """
     if vote:
-        if ctx.author.id == user:
+        if ctx.author.id == user_iniciou_vote:
             await ctx.send(f'Votação encerrada!')
             await ctx.send(f'{votos1} votos para {coisas[0]}'f'\n{votos2} votos para {coisas[1]}')
         else:
@@ -205,10 +218,10 @@ async def rng(ctx, inicio: int, ate: int, dados: int):
         await ctx.send('O número máximo de dados é `5`')
         return
     soma = 0
-    for x in range(1, dados + 1):
+    for number in range(1, dados + 1):
         sort = random.randint(inicio, ate)
         soma += sort
-        await ctx.send(f'O {x}º numero sorteado foi {sort}')
+        await ctx.send(f'O {number}º numero sorteado foi {sort}')
     if dados > 1:
         await ctx.send(f'A soma desses números é {soma}')
 
@@ -339,6 +352,9 @@ async def diga(ctx, *, frase):
 # Comandos gigantes com embed
 @bot.command()
 async def help(ctx):
+    """
+    Isso que você tá lendo
+    """
     embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
     embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me", icon_url="https://goo.gl/Viy31D")
     embed.add_field(name="Info [@nome]", value="```Mostra informações sobre a pessoa marcada```", inline=True)
@@ -370,6 +386,9 @@ async def help(ctx):
 
 @bot.command()
 async def info(ctx, user: discord.Member):
+    """
+    Pega informações de um usuário
+    """
     emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
     emb.set_author(name=f'Informações de {user.name + user.discriminator}')
     emb.set_thumbnail(url=user.avatar_url)
