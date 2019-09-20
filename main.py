@@ -3,6 +3,7 @@ import time
 import random
 import praw
 import requests
+import youtube_dl
 import discord
 from discord.ext import commands
 from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
@@ -37,7 +38,7 @@ async def on_command_error(ctx, error):
     if hasattr(ctx.command, 'on_error'):
         return
     if isinstance(error, commands.MissingRequiredArgument):
-        return await ctx.send('Este comando prescisa de algum argumento'
+        return await ctx.send('Este comando prescisa de algum argumento\n'
                               'Manda um `$help` para ver os comandos')
     if isinstance(error, commands.BadArgument):
         return await ctx.send('Erro no argumento')
@@ -86,6 +87,71 @@ async def on_member_remove(member):
             await canal.send(msg)
     except AttributeError:
         pass
+
+# Comandos de Música
+ytdl_format_options = {
+    'format': 'bestaudio/best',
+    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+}
+ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+ffmpeg_options = {
+    'options': '-vn'
+}
+
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume=0.5):
+        super().__init__(source, volume)
+
+        self.data = data
+
+        self.title = data.get('title')
+        self.url = data.get('url')
+
+    @classmethod
+    async def from_url(cls, url, *, loop=None, stream=False):
+        loop = loop
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+
+        if 'entries' in data:
+            # take first item from a playlist
+            data = data['entries'][0]
+
+        filename = data['url'] if stream else ytdl.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+
+
+
+@bot.command()
+async def play(ctx, *, url):
+    """
+    Comando para tocar música
+    """
+    async with ctx.typing():
+        player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
+        ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+    
+    await ctx.send('Tocando agora: {}'.format(player.title))
+
+
+
+@play.before_invoke
+async def certeza_que_entrou(ctx):
+    if ctx.voice_client is None:
+        if ctx.author.voice:
+            await ctx.author.voice.channel.connect()
+        else:
+            await ctx.send("Você precisa estar conectado à um canal de voz.")
+    elif ctx.voice_client.is_playing():
+        ctx.voice_client.stop()
 
 
 @bot.command()
