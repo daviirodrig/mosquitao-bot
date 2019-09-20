@@ -1,3 +1,4 @@
 discord.py[voice]
 requests
 praw
+youtube_dl
