@@ -157,6 +157,7 @@ async def stream(ctx, *, url):
     await ctx.send('Tocando agora: {}'.format(player.title))
 
 
+@stream.before_invoke
 @play.before_invoke
 async def certeza_que_entrou(ctx):
     if ctx.voice_client is None:
