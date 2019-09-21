@@ -89,9 +89,9 @@ async def on_member_remove(member):
         pass
 
 # Comandos de Música
-ytdl_format_options = {
+YTDL_FORMAT_OPTIONS = {
     'format': 'bestaudio/best',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'outtmpl': './songs/%(extractor)s-%(id)s-%(title)s.%(ext)s',
     'restrictfilenames': True,
     'noplaylist': True,
     'nocheckcertificate': True,
@@ -102,12 +102,15 @@ ytdl_format_options = {
     'default_search': 'auto',
     'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
-ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-ffmpeg_options = {
+YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
+FFMPEG_OPTIONS = {
     'options': '-vn'
 }
 
 class YTDLSource(discord.PCMVolumeTransformer):
+    """
+    Pegar do yt
+    """
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
 
@@ -119,14 +122,14 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+        data = await loop.run_in_executor(None, lambda: YT_DL.extract_info(url, download=not stream))
 
         if 'entries' in data:
             # take first item from a playlist
             data = data['entries'][0]
 
-        filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+        filename = data['url'] if stream else YT_DL.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
 
 
 
@@ -136,11 +139,22 @@ async def play(ctx, *, url):
     Comando para tocar música
     """
     async with ctx.typing():
-        player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
+        player = await YTDLSource.from_url(url, loop=bot.loop, stream=False)
         ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-    
+
     await ctx.send('Tocando agora: {}'.format(player.title))
 
+
+@bot.command()
+async def stream(ctx, *, url):
+    """
+    Comando para tocar música
+    """
+    async with ctx.typing():
+        player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
+        ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+
+    await ctx.send('Tocando agora: {}'.format(player.title))
 
 
 @play.before_invoke
