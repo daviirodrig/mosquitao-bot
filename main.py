@@ -2,6 +2,7 @@
 import time
 import random
 import praw
+import prawcore
 import requests
 import youtube_dl
 import discord
@@ -362,7 +363,12 @@ async def reddit(ctx, subreddits=None):
     elif str(subreddits).lower() == 'nsfw':
         sub = redd.random_subreddit(nsfw=True)
     else:
-        sub = redd.subreddit(subreddits)
+        try:
+            sub = redd.subreddit(subreddits)
+            sub.quaran.opt_in()
+        except prawcore.exceptions.Forbidden:
+            sub.quaran.opt_in()
+            sub = redd.subreddit(subreddits)
     ranpost = sub.random()
     if ranpost is None:
         ranpost = random.choice(list(sub.hot()))
