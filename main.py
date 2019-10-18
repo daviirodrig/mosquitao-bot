@@ -11,7 +11,7 @@ from chanGet import main as getChan
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
-bot.remove_command('help')
+# bot.remove_command('help')
 
 
 @bot.event
@@ -160,6 +160,9 @@ async def stream(ctx, *, url):
 @stream.before_invoke
 @play.before_invoke
 async def certeza_que_entrou(ctx):
+    """
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    """
     if ctx.voice_client is None:
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
@@ -201,6 +204,18 @@ async def gnomed(ctx, pessoa: discord.Member):
     emb.set_author(name=f'{nome} foi gnomado por {autor}!!')
     emb.set_image(url=gnome)
     await ctx.send(embed=emb)
+
+
+@bot.command()
+async def jesus(ctx):
+    """
+    Reinicia o bot
+    """
+# TODO: Mensagem quando voltar
+    await ctx.send('Flws ae seus judeus kkk')
+    heroku_api = f'https://api.heroku.com/apps/mosquitao-bot/dynos/worker'
+    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer a417cff6-36a3-4fdb-b5d5-3ecd3a5177e9', 'Accept': 'application/vnd.heroku+json; version=3'}
+    requests.delete(heroku_api, headers=headers)
 
 
 @bot.command()
@@ -438,7 +453,7 @@ async def pintao(ctx):
     await ctx.send(file=discord.File('images/pintao.png'))
 
 
-@bot.command()
+@bot.command(usage="[algo]")
 async def diga(ctx, *, frase):
     """
     Faz o bot dizer algo.
@@ -446,42 +461,7 @@ async def diga(ctx, *, frase):
     await ctx.send(frase)
 
 
-# Comandos gigantes com embed
-@bot.command()
-async def help(ctx):
-    """
-    Isso que você tá lendo
-    """
-    embed = discord.Embed(title="", url="https://mosquitao.glitch.me", color=0xc0c0c0)
-    embed.set_author(name="Comandos do bot", url="https://mosquitao.glitch.me", icon_url="https://goo.gl/Viy31D")
-    embed.add_field(name="Info [@nome]", value="```Mostra informações sobre a pessoa marcada```", inline=True)
-    embed.add_field(name="Gnomed [@nome]", value="```Gnoma alguém```", inline=True)
-    embed.add_field(name="Cat", value="```Envia uma foto de um gato aleatório```", inline=True)
-    embed.add_field(name="Wtf", value="```Excuse me what the fuck```", inline=True)
-    embed.add_field(name="Rng [inicio] [fim] [quantidade]", value="```Gera um ou vários números aleatórios\nEx: `$rng 1 20 1` para um D20```", inline=True)
-    embed.add_field(name="Democracia [opção1] [opção2]", value="```Inicia uma votação```", inline=True)
-    embed.add_field(name="Escolha [coisas]", value="```Escolhe uma das coisas que você digitou```", inline=True)
-    embed.add_field(name="Resultados", value="```Mostra o resultado da votação```", inline=True)
-    embed.add_field(name="Votar [opção]", value="```Vota em uma votação```", inline=True)
-    embed.add_field(name="Chan", value="```Manda uma imagem aleatória de TODO o 4chan```", inline=True)
-    embed.add_field(name="Diga [coisas]", value="```Faz o bot dizer coisas```", inline=True)
-    embed.add_field(name="Paz", value="```Mostra a foto de um dedo do meio```", inline=True)
-    embed.add_field(name="Entrar", value="```O bot entra em seu canal de voz```", inline=True)
-    embed.add_field(name="Sair", value="```O bot sai do canal de voz```", inline=True)
-    embed.add_field(name="Pintao", value="```Mostra o pintão do alan```", inline=True)
-    embed.add_field(name="Felps", value="```Mostra uma foto do felps```", inline=True)
-    embed.add_field(name="Paiva", value="```Define paiva com apenas uma imagem```", inline=True)
-    embed.add_field(name="Zap", value="```😂 👌```", inline=True)
-    embed.add_field(name="Ping", value="```Pong!```", inline=True)
-    embed.add_field(name="Limpar [Quantidade]", value="```Limpa uma certa quantidade de mensagens.```", inline=True)
-    embed.add_field(name="Pergunta [Sua pergunta]", value="```O bot responde perguntas objetivas```", inline=True)
-    embed.add_field(name="Help", value="```Isso ae que vc está lendo```", inline=True)
-    embed.set_footer(text="Prefixo: $")
-    await ctx.send('Mandei na DM')
-    await ctx.author.send(embed=embed)
-
-
-@bot.command()
+@bot.command(usage="[@alguém]")
 async def info(ctx, user: discord.Member):
     """
     Pega informações de um usuário
