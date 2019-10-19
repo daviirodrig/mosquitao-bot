@@ -221,6 +221,7 @@ async def jesus(ctx):
     if ctx.author.id == 212680360486633472:
         with open('reiniciou.txt', 'w') as file:
             file.write('True')
+            print('AAA')
         await ctx.send('Flws ae seus judeus kkk')
         heroku_api = f'https://api.heroku.com/apps/mosquitao-bot/dynos/worker'
         headers = {'Content-type': 'application/json', 'Authorization': 'Bearer a417cff6-36a3-4fdb-b5d5-3ecd3a5177e9', 'Accept': 'application/vnd.heroku+json; version=3'}
