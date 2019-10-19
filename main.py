@@ -354,7 +354,6 @@ async def reddit(ctx, subreddits=None):
     """
     Pega um post aleatório de um subreddit específico ou aleatório
     """
-# TODO: Arrumar subreddits quarentenados, privados e banidos
     redd = praw.Reddit(client_id=REDDIT_ID,
                        client_secret=REDDIT_SECRET,
                        user_agent='python/requests:mosquitaobot:1.0 (by /u/davioitu)')
@@ -365,10 +364,14 @@ async def reddit(ctx, subreddits=None):
     else:
         try:
             sub = redd.subreddit(subreddits)
-            sub.quaran.opt_in()
+            print(sub.subreddit_type)
         except prawcore.exceptions.Forbidden:
-            sub.quaran.opt_in()
-            sub = redd.subreddit(subreddits)
+            try:
+                sub.quaran.opt_in()
+                sub = redd.subreddit(subreddits)
+            except prawcore.exceptions.Forbidden:
+                await ctx.send('O subreddit escolhido não existe ou não é publico.')
+                return
     ranpost = sub.random()
     if ranpost is None:
         ranpost = random.choice(list(sub.hot()))
