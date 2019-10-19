@@ -26,6 +26,12 @@ async def on_ready():
     if bot.user.name == 'Mosquitão':
         canal = bot.get_user(212680360486633472)
         await canal.send('Bot iniciou')
+    with open('reiniciou.txt', 'r') as file:
+        if file.read() == 'True':
+            with open('reiniciou.txt', 'w') as file:
+                file.write('False')
+                channel = bot.get_channel(457593426473517078)
+                await channel.send('To de volta, porra')
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
@@ -81,7 +87,7 @@ async def on_member_remove(member):
     """
     try:
         if member.id == bot.user.id:
-            print('sou eu')
+            return
         else:
             canal = bot.get_channel(297130716985032714)
             msg = f"{member.mention} Saiu do clã, kkk otário"
@@ -212,11 +218,15 @@ async def jesus(ctx):
     """
     Reinicia o bot
     """
-# TODO: Mensagem quando voltar
-    await ctx.send('Flws ae seus judeus kkk')
-    heroku_api = f'https://api.heroku.com/apps/mosquitao-bot/dynos/worker'
-    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer a417cff6-36a3-4fdb-b5d5-3ecd3a5177e9', 'Accept': 'application/vnd.heroku+json; version=3'}
-    requests.delete(heroku_api, headers=headers)
+    if ctx.author.id == 212680360486633472:
+        with open('reiniciou.txt', 'w') as file:
+            file.write('True')
+        await ctx.send('Flws ae seus judeus kkk')
+        heroku_api = f'https://api.heroku.com/apps/mosquitao-bot/dynos/worker'
+        headers = {'Content-type': 'application/json', 'Authorization': 'Bearer a417cff6-36a3-4fdb-b5d5-3ecd3a5177e9', 'Accept': 'application/vnd.heroku+json; version=3'}
+        requests.delete(heroku_api, headers=headers)
+    else:
+        await ctx.send('Você não tem permissão para usar este comando!')
 
 
 @bot.command()
