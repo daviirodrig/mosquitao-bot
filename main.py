@@ -27,10 +27,6 @@ async def on_ready():
     if bot.user.name == 'Mosquitão':
         canal = bot.get_user(212680360486633472)
         await canal.send('Bot iniciou')
-    if os.environ['REINICIOU'] == 'True':
-        os.putenv('REINICIOU', 'False')
-        channel = bot.get_channel(457593426473517078)
-        await channel.send('To de volta, porra')
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
@@ -218,7 +214,6 @@ async def jesus(ctx):
     Reinicia o bot
     """
     if ctx.author.id == 212680360486633472:
-        os.putenv('REINICIOU', 'True')
         await ctx.send('Flws ae seus judeus kkk')
         heroku_api = f'https://api.heroku.com/apps/mosquitao-bot/dynos/worker'
         headers = {'Content-type': 'application/json', 'Authorization': 'Bearer a417cff6-36a3-4fdb-b5d5-3ecd3a5177e9', 'Accept': 'application/vnd.heroku+json; version=3'}
