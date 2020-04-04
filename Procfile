@@ -1,1 +1,1 @@
-worker: python main.py
+urgentworker: python main.py
