@@ -209,20 +209,6 @@ async def gnomed(ctx, pessoa: discord.Member):
 
 
 @bot.command()
-async def jesus(ctx):
-    """
-    Reinicia o bot
-    """
-    if ctx.author.id == 212680360486633472:
-        await ctx.send('Flws ae seus judeus kkk')
-        heroku_api = f'https://api.heroku.com/apps/mosquitao-bot/dynos/worker'
-        headers = {'Content-type': 'application/json', 'Authorization': 'Bearer a417cff6-36a3-4fdb-b5d5-3ecd3a5177e9', 'Accept': 'application/vnd.heroku+json; version=3'}
-        requests.delete(heroku_api, headers=headers)
-    else:
-        await ctx.send('Você não tem permissão para usar este comando!')
-
-
-@bot.command()
 async def cat(ctx):
     """
     Manda uma foto aleatória de um gato.
@@ -422,7 +408,9 @@ async def zap(ctx):
     """
     Engraçadão pô
     """
-    await ctx.send(file=discord.File('images/zap.jpg'))
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url="https://i.imgur.com/bW8xeTy.jpg")
+    await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -430,7 +418,9 @@ async def paz(ctx):
     """
     Dedo do meio = Símbolo de paz
     """
-    await ctx.send(file=discord.File('images/paz.jpg'))
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url="https://i.imgur.com/LfnWoxA.jpg")
+    await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -438,7 +428,9 @@ async def felps(ctx):
     """
     Felps.
     """
-    await ctx.send(file=discord.File('images/felps.png'))
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url="https://i.imgur.com/NSoXoLG.png")
+    await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -446,7 +438,9 @@ async def wtf(ctx):
     """
     Excuse me what the fuck?
     """
-    await ctx.send(file=discord.File('images/wtf.jpg'))
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url="https://i.imgur.com/6C0SewT.jpg")
+    await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -454,7 +448,9 @@ async def paiva(ctx):
     """
     Punheta.
     """
-    await ctx.send(file=discord.File('images/paiva.png'))
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url="https://i.imgur.com/iY4MaXu.png")
+    await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -462,7 +458,9 @@ async def pintao(ctx):
     """
     Mostra o pintão foda do Alan.
     """
-    await ctx.send(file=discord.File('images/pintao.png'))
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    emb.set_image(url="https://i.imgur.com/6MLe4Uw.png")
+    await ctx.send(embed=emb)
 
 
 @bot.command(usage="[algo]")

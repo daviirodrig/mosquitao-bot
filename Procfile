@@ -1,1 +1,0 @@
-urgentworker: python main.py
