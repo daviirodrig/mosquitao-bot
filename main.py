@@ -10,6 +10,8 @@ import discord
 from discord.ext import commands
 from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
 from chanGet import main as getChan
+from PIL import Image
+from io import BytesIO
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
@@ -24,9 +26,6 @@ async def on_ready():
     print('Bot iniciado')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
-#    if bot.user.name == 'Mosquitão':
-#        canal = bot.get_user(212680360486633472)
-#        await canal.send('Bot iniciou')
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
@@ -387,9 +386,10 @@ async def chan(ctx):
     """
     Manda uma foto aleatória do 4chan.
     """
-    emb = discord.Embed()
-    emb.set_image(url=getChan(1))
-    await ctx.send(embed=emb)
+    async with ctx.channel.typing():
+        emb = discord.Embed()
+        emb.set_image(url=getChan(1))
+        await ctx.send(embed=emb)
 
 
 @bot.command()
@@ -401,6 +401,26 @@ async def ping(ctx):
     bot_ms = str(msg.created_at - ctx.message.created_at)
     await msg.edit(content=f'Pong!, `{bot_ms[8:11]}ms`')
 
+
+@bot.command()
+async def emojo(ctx, emoji_name):
+    """
+    Criação automática de emojis :)
+    """
+    async with ctx.channel.typing():
+        async for message in ctx.message.channel.history(limit=50):
+            if message.embeds != []:
+                img = Image.open(BytesIO(requests.get(message.embeds[0].image.url).content))
+                imagem = BytesIO()
+                img.save(imagem, format="PNG" if img.mode == "RGBA" else "JPEG")
+                img = imagem.getvalue()
+                break
+            if message.attachments:
+                last_msg = message
+                img = await last_msg.attachments[0].read()
+                break
+        emo = await ctx.message.guild.create_custom_emoji(name=emoji_name, image=img)
+        await ctx.send(f"Emoji criado com sucesso! {str(emo)}")
 
 # Comandos de Imagem
 @bot.command()
