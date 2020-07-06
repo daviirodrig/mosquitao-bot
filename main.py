@@ -24,6 +24,7 @@ async def on_ready():
     """
     Função para quando o bot iniciar
     """
+    print('----------------------------')
     print(f'Bot iniciado {datetime.now(tz=timezone(timedelta(hours=-3)))}')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
