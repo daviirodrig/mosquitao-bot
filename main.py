@@ -140,6 +140,7 @@ async def play(ctx, *, url):
     Comando para tocar música
     """
     async with ctx.typing():
+        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs")
         player = await YTDLSource.from_url(url, loop=bot.loop, stream=False)
         ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
 
