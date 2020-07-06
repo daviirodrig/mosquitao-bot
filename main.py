@@ -7,6 +7,7 @@ import prawcore
 import requests
 import youtube_dl
 import discord
+from datetime import datetime, timezone, timedelta
 from discord.ext import commands
 from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
 from chanGet import main as getChan
@@ -23,7 +24,7 @@ async def on_ready():
     """
     Função para quando o bot iniciar
     """
-    print('Bot iniciado')
+    print(f'Bot iniciado {datetime.now(tz=timezone(timedelta(hours=-3)))}')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
     await bot.change_presence(activity=
@@ -56,9 +57,7 @@ async def on_command(ctx):
     """
     Função para printar quando alguém usar comandos.
     """
-    hora = int(str(ctx.message.created_at)[11:13]) - 3
-    print(f'{ctx.message.created_at:%d/%m/%Y às} {hora}:{ctx.message.created_at:%M:%S}'
-          f' {ctx.message.author}: {ctx.message.content}')
+    print(f'{datetime.now(tz=timezone(timedelta(hours=-3)))} {ctx.message.author}: {ctx.message.content}')
 
 
 @bot.event
