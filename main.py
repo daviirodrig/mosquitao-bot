@@ -429,6 +429,18 @@ async def emojo(ctx, emoji_name):
         emo = await ctx.message.guild.create_custom_emoji(name=emoji_name, image=img)
         await ctx.send(f"Emoji criado com sucesso! {str(emo)}")
 
+
+@bot.command()
+async def dog(ctx):
+    """
+    Foto aleatória de Doguinho AYAYA
+    """
+    emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+    foto = requests.get("https://random.dog/woof.json").json()["url"]
+    emb.set_image(url=foto)
+    await ctx.send(embed=emb)
+
+
 # Comandos de Imagem
 @bot.command()
 async def zap(ctx):
