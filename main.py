@@ -338,11 +338,12 @@ async def escolha(ctx, *escolhas: str):
     await ctx.send(random.choice(escolhas))
 
 
-@bot.command()
+@bot.command(usage="[nome do subreddit]")
 async def reddit(ctx, subreddits=None):
     """
     Pega um post aleatório de um subreddit específico ou aleatório
     """
+    loop_count = 0
     redd = praw.Reddit(client_id=REDDIT_ID,
                        client_secret=REDDIT_SECRET,
                        user_agent='python/requests:mosquitaobot:1.0 (by /u/davioitu)')
@@ -353,32 +354,37 @@ async def reddit(ctx, subreddits=None):
     else:
         try:
             sub = redd.subreddit(subreddits)
-            print(sub.subreddit_type)
-        except prawcore.exceptions.Forbidden:
             try:
                 sub.quaran.opt_in()
-                sub = redd.subreddit(subreddits)
             except prawcore.exceptions.Forbidden:
-                await ctx.send('O subreddit escolhido não existe ou não é publico.')
-                return
+                pass
+            a = sub.random()
+            del(a)
+        except (prawcore.exceptions.Forbidden, prawcore.exceptions.NotFound):
+            await ctx.send("Aparentemente tem algo errado nesse subreddit :/")
+            return
     ranpost = sub.random()
     if ranpost is None:
         ranpost = random.choice(list(sub.hot()))
-    while len(ranpost.selftext) >= 1024:
-        ranpost = sub.random()
-        if ranpost is None:
-            ranpost = random.choice(list(sub.hot()))
+    while ranpost != None:
+        ranpost = sub.random() if ranpost is not None else random.choice(list(sub.hot()))
+        loop_count += 1
+        if ranpost.url.endswith(("jpg", "png", "gif")) or ranpost.url.startswith(("https://imgur.com", "https://i.imgur.com")):
+            break
+        if ranpost.is_self and len(ranpost.selftext) <= 1024:
+            emb = discord.Embed(title=ranpost.title, url=ranpost.shortlink)
+            emb.add_field(value=ranpost.selftext, name='Texto')
+            break
+        if loop_count > 10:
+            return await ctx.send("Rodei, rodei esse sub e não achei um post que consiga postar bad bad :/")
     emb = discord.Embed(title=ranpost.title, url=ranpost.shortlink)
     if ranpost.is_self:
         emb.add_field(value=ranpost.selftext, name='Texto')
-    else:
-        if ranpost.url[0:17] == 'https://i.redd.it':
-            emb.set_image(url=ranpost.url)
-        else:
-            emb.add_field(name='Link', value=ranpost.url)
-    author_url = '/u/' + ranpost.author.name
-    sub_name = '/r/' + ranpost.subreddit.display_name.lower()
-    emb.set_author(name=sub_name + ' by ' + author_url)
+    elif ranpost.url.endswith(("jpg", "png", "gif")) or ranpost.url.startswith(("https://imgur.com", "https://i.imgur.com")):
+        emb.set_image(url=ranpost.url)
+    author_name = '/u/' + ranpost.author.name
+    sub_name = '/r/' + ranpost.subreddit.display_name
+    emb.set_author(name=sub_name + ' by ' + author_name)
     await ctx.send(embed=emb)
 
 
