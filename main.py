@@ -369,7 +369,7 @@ async def reddit(ctx, subreddits=None):
     while ranpost != None:
         ranpost = sub.random() if ranpost is not None else random.choice(list(sub.hot()))
         loop_count += 1
-        if ranpost.url.endswith(("jpg", "png", "gif")) or ranpost.url.startswith("https://i.imgur.com"):
+        if ranpost.url.endswith(("jpg", "png", "gif", "jpeg", "bmp")):
             break
         if ranpost.is_self and len(ranpost.selftext) <= 1024:
             emb = discord.Embed(title=ranpost.title, url=ranpost.shortlink)
@@ -380,7 +380,7 @@ async def reddit(ctx, subreddits=None):
     emb = discord.Embed(title=ranpost.title, url=ranpost.shortlink)
     if ranpost.is_self:
         emb.add_field(value=ranpost.selftext, name='Texto')
-    elif ranpost.url.endswith(("jpg", "png", "gif")) or ranpost.url.startswith(("https://imgur.com", "https://i.imgur.com")):
+    elif ranpost.url.endswith(("jpg", "png", "gif")):
         emb.set_image(url=ranpost.url)
     author_name = '/u/' + ranpost.author.name
     sub_name = '/r/' + ranpost.subreddit.display_name
