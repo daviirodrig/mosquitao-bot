@@ -290,7 +290,7 @@ async def limpar(ctx, lim: int):
     Comando para limpar mensagens.
     """
     if lim > 30:
-        await ctx.send('O Limite máximo de mensangens é `30`')
+        return await ctx.send('O Limite máximo de mensangens é `30`')
     await ctx.channel.purge(limit=(lim + 1))
     msg = await ctx.send(f'{lim + 1} mensagens limpas')
     time.sleep(3)
