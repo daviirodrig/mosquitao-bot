@@ -7,6 +7,7 @@ import prawcore
 import requests
 import youtube_dl
 import discord
+import asyncio
 from datetime import datetime, timezone, timedelta
 from discord.ext import commands
 from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
@@ -16,6 +17,8 @@ from io import BytesIO
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
+song_queue = []
+now_pl = None
 # bot.remove_command('help')
 
 
@@ -84,7 +87,7 @@ async def on_member_remove(member):
             return
         else:
             canal = bot.get_channel(297130716985032714)
-            msg = f"{member.mention} Saiu do clã, kkk otário"
+            msg = f"{member.name} Saiu do clã, kkk otário"
             await canal.send(msg)
     except AttributeError:
         pass
@@ -107,6 +110,12 @@ YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
 FFMPEG_OPTIONS = {
     'options': '-vn'
 }
+
+
+#@bot.command()
+#async def play():
+
+
 
 class YTDLSource(discord.PCMVolumeTransformer):
     """
@@ -133,54 +142,66 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
 
 
+def play_next(ctx, player):
+    if len(song_queue) >= 1:
+        del song_queue[0]
+        ctx.voice_client.play(player, after=lambda e: play_next(ctx, player))
+        global now_pl
+        now_pl = player
+        asyncio.run_coroutine_threadsafe(ctx.send("Não tem mais na lista :)"))
+
+
+@bot.command(aliases=['tocando', 'nowplaying', 'tocandoagora'])
+async def np(ctx):
+    """
+    View song now playing
+    """
+    if now_pl is None: return await ctx.send("Aparentemente nada está tocando :/")
+    await ctx.send(f"Tocando agora: `{now_pl.title}` do canal {now_pl}")
+
 
 @bot.command()
 async def play(ctx, *, url):
     """
     Comando para tocar música
     """
-    async with ctx.typing():
-        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs")
-        player = await YTDLSource.from_url(url, loop=bot.loop, stream=False)
-        ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-    await ctx.send('Tocando agora: {}'.format(player.title))
-
-
-@bot.command()
-async def stream(ctx, *, url):
-    """
-    Comando para tocar música
-    """
-    async with ctx.typing():
-        player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
-        ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-    await ctx.send('Tocando agora: {}'.format(player.title))
-
-
-@stream.before_invoke
-@play.before_invoke
-async def certeza_que_entrou(ctx):
-    """
-    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-    """
     if ctx.voice_client is None:
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
         else:
-            await ctx.send("Você precisa estar conectado à um canal de voz.")
-    elif ctx.voice_client.is_playing():
-        ctx.voice_client.stop()
+            return await ctx.send("Você precisa estar conectado à um canal de voz.")
+    async with ctx.typing():
+        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
+        if not ctx.voice_client.is_playing():
+            player = await YTDLSource.from_url(url, loop=bot.loop, stream=False)
+            song_queue.append(player)
+            ctx.voice_client.play(player, after=lambda e: play_next(ctx, player))
+            await ctx.send(f'Tocando agora: {player.title}')
+        else:
+            song_queue.append(url)
+            await ctx.send(f"{url} adicionada à lista")
 
 
-@bot.command()
+#@stream.before_invoke
+#@play.before_invoke
+#async def certeza_que_entrou(ctx):
+#    """
+#    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+#    """
+#    if ctx.voice_client is None:
+#        if ctx.author.voice:
+#            await ctx.author.voice.channel.connect()
+#        else:
+#            await ctx.send("Você precisa estar conectado à um canal de voz.")
+#    elif ctx.voice_client.is_playing():
+#        ctx.voice_client.stop()
+
+
+@bot.command(aliases=["join"])
 async def entrar(ctx):
     """
     Comando para entrar no canal de voz.
     """
-    if not discord.opus.is_loaded():
-        discord.opus.load_opus('libopus.so')
     canal_de_voz = ctx.author.voice.channel
     await canal_de_voz.connect()
 
