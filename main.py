@@ -17,9 +17,21 @@ from io import BytesIO
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
+YTDL_FORMAT_OPTIONS = {
+    'format': 'bestaudio/best',
+    'outtmpl': './songs/%(extractor)s-%(id)s.%(ext)s',
+    'restrictfilenames': False,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+}
 song_queue = []
 now_pl = None
-# bot.remove_command('help')
 
 
 @bot.event
@@ -34,12 +46,10 @@ async def on_ready():
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
-
+"""
 @bot.event
 async def on_command_error(ctx, error):
-    """
-    Função para lidar com erros em comandos
-    """
+#   Função para lidar com erros em comandos
     error = getattr(error, 'original', error)
     if hasattr(ctx.command, 'on_error'):
         return
@@ -54,7 +64,7 @@ async def on_command_error(ctx, error):
     return await canal.send(f'O comando `{ctx.command}` invocado por `{ctx.author.name}`\n'
                             f'Gerou o erro: `{type(error)}`\n'
                             f'Args: `{error.args}`\n')
-
+"""
 
 @bot.event
 async def on_command(ctx):
@@ -93,28 +103,29 @@ async def on_member_remove(member):
         pass
 
 # Comandos de Música
-YTDL_FORMAT_OPTIONS = {
-    'format': 'bestaudio/best',
-    'outtmpl': './songs/%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
-}
 YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
 FFMPEG_OPTIONS = {
     'options': '-vn'
 }
 
 
-#@bot.command()
-#async def play():
-
+@bot.command()
+async def play(ctx, *, url):
+    if ctx.voice_client is None:
+        if ctx.author.voice:
+            await ctx.author.voice.channel.connect()
+        else:
+            return await ctx.send("Você precisa estar conectado em um canal de voz.")
+    async with ctx.typing():
+        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
+        song_dl = YT_DL.extract_info(url)
+        song_info = song_dl["entries"][0]
+        song_path = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
+        print(song_path)
+        ctx.voice_client.play(discord.FFmpegPCMAudio(source=song_path))
+        emb = discord.Embed(title=song_info["title"], url=song_info["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_thumbnail(url=song_info["thumbnail"])
+        await ctx.send(f"Tocando agora: {song_info['title']}")
 
 
 class YTDLSource(discord.PCMVolumeTransformer):
@@ -161,7 +172,7 @@ async def np(ctx):
 
 
 @bot.command()
-async def play(ctx, *, url):
+async def playa(ctx, *, url):
     """
     Comando para tocar música
     """
