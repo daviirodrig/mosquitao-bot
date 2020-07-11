@@ -120,7 +120,7 @@ async def play(ctx, *, url):
         os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
         song_dl = YT_DL.extract_info(url)
         song_info = song_dl["entries"][0]
-        song_info["requester"] = ctx.author.name
+        song_info["requester"] = ctx.author
         song_path = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
         print(song_path)
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=song_path))
@@ -128,7 +128,7 @@ async def play(ctx, *, url):
         emb.set_author(name=f"Canal: {song_info['uploader']}", url=song_info["uploader_url"])
         emb.set_thumbnail(url=song_info["thumbnail"])
         emb.add_field(name="Duração", value=timedelta(seconds=song_info["duration"]), inline=True)
-        emb.add_field(name="Pedido por", value=song_info["requester"], inline=True)
+        emb.add_field(name="Pedido por", value=song_info["requester"].name, inline=True)
         emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
         await ctx.send(embed=emb)
 
