@@ -120,37 +120,17 @@ async def play(ctx, *, url):
         os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
         song_dl = YT_DL.extract_info(url)
         song_info = song_dl["entries"][0]
+        song_info["requester"] = ctx.author.name
         song_path = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
         print(song_path)
         ctx.voice_client.play(discord.FFmpegPCMAudio(source=song_path))
         emb = discord.Embed(title=song_info["title"], url=song_info["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(name=f"Canal: {song_info['uploader']}", url=song_info["uploader_url"])
         emb.set_thumbnail(url=song_info["thumbnail"])
-        await ctx.send(f"Tocando agora: {song_info['title']}")
-
-
-class YTDLSource(discord.PCMVolumeTransformer):
-    """
-    Pegar do yt
-    """
-    def __init__(self, source, *, data, volume=0.5):
-        super().__init__(source, volume)
-
-        self.data = data
-
-        self.title = data.get('title')
-        self.url = data.get('url')
-
-    @classmethod
-    async def from_url(cls, url, *, loop=None, stream=False):
-        loop = loop
-        data = await loop.run_in_executor(None, lambda: YT_DL.extract_info(url, download=not stream))
-
-        if 'entries' in data:
-            # take first item from a playlist
-            data = data['entries'][0]
-
-        filename = data['url'] if stream else YT_DL.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
+        emb.add_field(name="Duração", value=timedelta(seconds=song_info["duration"]), inline=True)
+        emb.add_field(name="Pedido por", value=song_info["requester"], inline=True)
+        emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
+        await ctx.send(embed=emb)
 
 
 def play_next(ctx, player):
@@ -165,47 +145,10 @@ def play_next(ctx, player):
 @bot.command(aliases=['tocando', 'nowplaying', 'tocandoagora'])
 async def np(ctx):
     """
-    View song now playing
+    O que está tocando?
     """
     if now_pl is None: return await ctx.send("Aparentemente nada está tocando :/")
     await ctx.send(f"Tocando agora: `{now_pl.title}` do canal {now_pl}")
-
-
-@bot.command()
-async def playa(ctx, *, url):
-    """
-    Comando para tocar música
-    """
-    if ctx.voice_client is None:
-        if ctx.author.voice:
-            await ctx.author.voice.channel.connect()
-        else:
-            return await ctx.send("Você precisa estar conectado à um canal de voz.")
-    async with ctx.typing():
-        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
-        if not ctx.voice_client.is_playing():
-            player = await YTDLSource.from_url(url, loop=bot.loop, stream=False)
-            song_queue.append(player)
-            ctx.voice_client.play(player, after=lambda e: play_next(ctx, player))
-            await ctx.send(f'Tocando agora: {player.title}')
-        else:
-            song_queue.append(url)
-            await ctx.send(f"{url} adicionada à lista")
-
-
-#@stream.before_invoke
-#@play.before_invoke
-#async def certeza_que_entrou(ctx):
-#    """
-#    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-#    """
-#    if ctx.voice_client is None:
-#        if ctx.author.voice:
-#            await ctx.author.voice.channel.connect()
-#        else:
-#            await ctx.send("Você precisa estar conectado à um canal de voz.")
-#    elif ctx.voice_client.is_playing():
-#        ctx.voice_client.stop()
 
 
 @bot.command(aliases=["join"])
@@ -217,7 +160,7 @@ async def entrar(ctx):
     await canal_de_voz.connect()
 
 
-@bot.command()
+@bot.command(aliases=["leave"])
 async def sair(ctx):
     """
     Comando para sair do canal de voz.
