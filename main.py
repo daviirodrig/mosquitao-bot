@@ -21,18 +21,20 @@ YTDL_FORMAT_OPTIONS = {
     'format': 'bestaudio/best',
     'outtmpl': './songs/%(extractor)s-%(id)s.%(ext)s',
     'restrictfilenames': False,
-    'noplaylist': True,
+    'noplaylist': False,
     'nocheckcertificate': True,
     'ignoreerrors': False,
     'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
+    'quiet': False,
+    'no_warnings': False,
+    'verbose': True,
     'default_search': 'auto',
     'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
+YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
+ta_playando = None
 song_queue = []
-now_pl = None
-
+skipou = False
 
 @bot.event
 async def on_ready():
@@ -102,12 +104,6 @@ async def on_member_remove(member):
     except AttributeError:
         pass
 
-# Comandos de Música
-YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
-FFMPEG_OPTIONS = {
-    'options': '-vn'
-}
-
 
 @bot.command()
 async def play(ctx, *, url):
@@ -119,27 +115,92 @@ async def play(ctx, *, url):
     async with ctx.typing():
         os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
         song_dl = YT_DL.extract_info(url)
-        song_info = song_dl["entries"][0]
-        song_info["requester"] = ctx.author
-        song_path = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
-        print(song_path)
-        ctx.voice_client.play(discord.FFmpegPCMAudio(source=song_path))
-        emb = discord.Embed(title=song_info["title"], url=song_info["webpage_url"], colour=random.randint(0, 0xFFFFFF))
-        emb.set_author(name=f"Canal: {song_info['uploader']}", url=song_info["uploader_url"])
-        emb.set_thumbnail(url=song_info["thumbnail"])
-        emb.add_field(name="Duração", value=timedelta(seconds=song_info["duration"]), inline=True)
-        emb.add_field(name="Pedido por", value=song_info["requester"].name, inline=True)
+        if song_dl["_type"] == "playlist":
+            for song in song_dl['entries']:
+                song["ctx"] = ctx
+                song["requester"] = ctx.author
+                song["song_path"] = f'./songs/{song["extractor"]}-{song["id"]}.{song["ext"]}'
+                song["play_source"] = discord.FFmpegPCMAudio(source=song["song_path"])
+            song_queue.extend(song_dl["entries"])
+            if len(song_dl['entries']) > 1:
+                await ctx.send(f"Adicionei `{len(song_dl['entries'])}` musicas na lista.")
+        else:
+            song_info = song_dl["entries"][0] if song_dl.get("entries") else song_dl
+            song_info["ctx"] = ctx
+            song_info["requester"] = ctx.author
+            song_info["song_path"] = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
+            song_queue.append(song_info)
+        if ctx.voice_client.is_playing():
+            return await ctx.send(F"{song_queue[-1]['title']} adicionada à lista.")
+        emb = discord.Embed(title=song_queue[-1]["title"], url=song_queue[-1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(name=f"Canal: {song_queue[0]['uploader']}", url=song_queue[-1]["uploader_url"])
+        emb.set_thumbnail(url=song_queue[-1]["thumbnail"])
+        emb.add_field(name="Duração", value=timedelta(seconds=song_queue[-1]["duration"]), inline=True)
+        emb.add_field(name="Pedido por", value=song_queue[-1]["requester"].name, inline=True)
         emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
+        ctx.voice_client.play(song_queue[-1]['play_source'], after=lambda e: play_next(ctx=ctx))
+        global ta_playando
+        ta_playando = song_queue[-1]
         await ctx.send(embed=emb)
+        print("ayy")
 
 
-def play_next(ctx, player):
-    if len(song_queue) >= 1:
-        del song_queue[0]
-        ctx.voice_client.play(player, after=lambda e: play_next(ctx, player))
-        global now_pl
-        now_pl = player
-        asyncio.run_coroutine_threadsafe(ctx.send("Não tem mais na lista :)"))
+def play_next(ctx):
+    if len(song_queue) > 1:
+        global ta_playando
+        for i, songa in enumerate(song_queue):
+            if songa["song_path"] == ta_playando["song_path"]:
+                index = i
+                break
+        if song_queue[index]["ctx"].voice_client.is_playing(): song_queue[index]["ctx"].voice_client.stop()
+        song_queue[index+1]["ctx"].voice_client.play(song_queue[index+1]['play_source'], after=lambda e: play_next(ctx=ctx))
+        ta_playando = song_queue[index+1]
+        emb = discord.Embed(title=song_queue[index+1]["title"], url=song_queue[index+1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(name=f"Canal: {song_queue[index+1]['uploader']}", url=song_queue[index+1]["uploader_url"])
+        emb.set_thumbnail(url=song_queue[index+1]["thumbnail"])
+        emb.add_field(name="Duração", value=timedelta(seconds=song_queue[index+1]["duration"]), inline=True)
+        emb.add_field(name="Pedido por", value=song_queue[index+1]["requester"].name, inline=True)
+        emb.set_footer(text="Conectado a " + song_queue[index+1]["ctx"].voice_client.endpoint)
+        asyncio.run_coroutine_threadsafe(song_queue[index+1]["ctx"].send(embed=emb), bot.loop)
+        del song_queue[index]
+    else:
+        pass
+
+
+@bot.command(aliases=["queue"])
+async def lista(ctx):
+    """
+    Lista de músicas
+    """
+    msg = "```css"
+    for i, song in enumerate(song_queue):
+        msg += f"\n{i} - {song['title']}"
+    msg += "\n```"
+    await ctx.send(msg)
+
+
+@bot.command()
+async def pause(ctx):
+    """
+    Pausa a música
+    """
+    ctx.voice_client.pause()
+
+
+@bot.command()
+async def resume(ctx):
+    """
+    Pausa a música
+    """
+    ctx.voice_client.resume()
+
+
+@bot.command(aliases=["skip"])
+async def pular(ctx):
+    """
+    Pula música
+    """
+    play_next(ctx)
 
 
 @bot.command(aliases=['tocando', 'nowplaying', 'tocandoagora'])
@@ -147,8 +208,13 @@ async def np(ctx):
     """
     O que está tocando?
     """
-    if now_pl is None: return await ctx.send("Aparentemente nada está tocando :/")
-    await ctx.send(f"Tocando agora: `{now_pl.title}` do canal {now_pl}")
+    emb = discord.Embed(title=ta_playando["title"], url=ta_playando["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+    emb.set_author(name=f"Canal: {ta_playando['uploader']}", url=ta_playando["uploader_url"])
+    emb.set_thumbnail(url=ta_playando["thumbnail"])
+    emb.add_field(name="Duração", value=timedelta(seconds=ta_playando["duration"]), inline=True)
+    emb.add_field(name="Pedido por", value=ta_playando["requester"].name, inline=True)
+    emb.set_footer(text="Conectado a " + ta_playando["ctx"].voice_client.endpoint)
+    await ctx.send(embed=emb)
 
 
 @bot.command(aliases=["join"])
@@ -160,11 +226,13 @@ async def entrar(ctx):
     await canal_de_voz.connect()
 
 
-@bot.command(aliases=["leave"])
+@bot.command(aliases=["leave", "stop"])
 async def sair(ctx):
     """
     Comando para sair do canal de voz.
     """
+    if ctx.voice_client is None:
+        return await ctx.send("Nem to conectado em lugar nenhum, ta louco?")
     await ctx.voice_client.disconnect()
 
 
