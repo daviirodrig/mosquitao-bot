@@ -25,9 +25,9 @@ YTDL_FORMAT_OPTIONS = {
     'nocheckcertificate': True,
     'ignoreerrors': False,
     'logtostderr': False,
-    'quiet': False,
+    'quiet': True,
     'no_warnings': False,
-    'verbose': True,
+    'verbose': False,
     'default_search': 'auto',
     'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
@@ -142,7 +142,6 @@ async def play(ctx, *, url):
         global ta_playando
         ta_playando = song_queue[-1]
         await ctx.send(embed=emb)
-        print("ayy")
 
 
 def play_next(ctx):
