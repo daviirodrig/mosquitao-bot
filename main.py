@@ -7,6 +7,7 @@ import prawcore
 import requests
 import youtube_dl
 import discord
+import asyncio
 from datetime import datetime, timezone, timedelta
 from discord.ext import commands
 from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
@@ -16,8 +17,24 @@ from io import BytesIO
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
-# bot.remove_command('help')
-
+YTDL_FORMAT_OPTIONS = {
+    'format': 'bestaudio/best',
+    'outtmpl': './songs/%(extractor)s-%(id)s.%(ext)s',
+    'restrictfilenames': False,
+    'noplaylist': False,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': False,
+    'no_warnings': False,
+    'verbose': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+}
+YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
+ta_playando = None
+song_queue = []
+skipou = False
 
 @bot.event
 async def on_ready():
@@ -31,12 +48,10 @@ async def on_ready():
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
-
+"""
 @bot.event
 async def on_command_error(ctx, error):
-    """
-    Função para lidar com erros em comandos
-    """
+#   Função para lidar com erros em comandos
     error = getattr(error, 'original', error)
     if hasattr(ctx.command, 'on_error'):
         return
@@ -51,7 +66,7 @@ async def on_command_error(ctx, error):
     return await canal.send(f'O comando `{ctx.command}` invocado por `{ctx.author.name}`\n'
                             f'Gerou o erro: `{type(error)}`\n'
                             f'Args: `{error.args}`\n')
-
+"""
 
 @bot.event
 async def on_command(ctx):
@@ -84,112 +99,140 @@ async def on_member_remove(member):
             return
         else:
             canal = bot.get_channel(297130716985032714)
-            msg = f"{member.mention} Saiu do clã, kkk otário"
+            msg = f"{member.name} Saiu do clã, kkk otário"
             await canal.send(msg)
     except AttributeError:
         pass
 
-# Comandos de Música
-YTDL_FORMAT_OPTIONS = {
-    'format': 'bestaudio/best',
-    'outtmpl': './songs/%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'quiet': True,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
-}
-YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
-FFMPEG_OPTIONS = {
-    'options': '-vn'
-}
-
-class YTDLSource(discord.PCMVolumeTransformer):
-    """
-    Pegar do yt
-    """
-    def __init__(self, source, *, data, volume=0.5):
-        super().__init__(source, volume)
-
-        self.data = data
-
-        self.title = data.get('title')
-        self.url = data.get('url')
-
-    @classmethod
-    async def from_url(cls, url, *, loop=None, stream=False):
-        loop = loop
-        data = await loop.run_in_executor(None, lambda: YT_DL.extract_info(url, download=not stream))
-
-        if 'entries' in data:
-            # take first item from a playlist
-            data = data['entries'][0]
-
-        filename = data['url'] if stream else YT_DL.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
-
-
 
 @bot.command()
 async def play(ctx, *, url):
-    """
-    Comando para tocar música
-    """
-    async with ctx.typing():
-        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs")
-        player = await YTDLSource.from_url(url, loop=bot.loop, stream=False)
-        ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-    await ctx.send('Tocando agora: {}'.format(player.title))
-
-
-@bot.command()
-async def stream(ctx, *, url):
-    """
-    Comando para tocar música
-    """
-    async with ctx.typing():
-        player = await YTDLSource.from_url(url, loop=bot.loop, stream=True)
-        ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-    await ctx.send('Tocando agora: {}'.format(player.title))
-
-
-@stream.before_invoke
-@play.before_invoke
-async def certeza_que_entrou(ctx):
-    """
-    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-    """
     if ctx.voice_client is None:
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
         else:
-            await ctx.send("Você precisa estar conectado à um canal de voz.")
-    elif ctx.voice_client.is_playing():
-        ctx.voice_client.stop()
+            return await ctx.send("Você precisa estar conectado em um canal de voz.")
+    async with ctx.typing():
+        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
+        song_dl = YT_DL.extract_info(url)
+        if song_dl["_type"] == "playlist":
+            for song in song_dl['entries']:
+                song["ctx"] = ctx
+                song["requester"] = ctx.author
+                song["song_path"] = f'./songs/{song["extractor"]}-{song["id"]}.{song["ext"]}'
+                song["play_source"] = discord.FFmpegPCMAudio(source=song["song_path"])
+            song_queue.extend(song_dl["entries"])
+            if len(song_dl['entries']) > 1:
+                await ctx.send(f"Adicionei `{len(song_dl['entries'])}` musicas na lista.")
+        else:
+            song_info = song_dl["entries"][0] if song_dl.get("entries") else song_dl
+            song_info["ctx"] = ctx
+            song_info["requester"] = ctx.author
+            song_info["song_path"] = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
+            song_queue.append(song_info)
+        if ctx.voice_client.is_playing():
+            return await ctx.send(F"{song_queue[-1]['title']} adicionada à lista.")
+        emb = discord.Embed(title=song_queue[-1]["title"], url=song_queue[-1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(name=f"Canal: {song_queue[0]['uploader']}", url=song_queue[-1]["uploader_url"])
+        emb.set_thumbnail(url=song_queue[-1]["thumbnail"])
+        emb.add_field(name="Duração", value=timedelta(seconds=song_queue[-1]["duration"]), inline=True)
+        emb.add_field(name="Pedido por", value=song_queue[-1]["requester"].name, inline=True)
+        emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
+        ctx.voice_client.play(song_queue[-1]['play_source'], after=lambda e: play_next(ctx=ctx))
+        global ta_playando
+        ta_playando = song_queue[-1]
+        await ctx.send(embed=emb)
+        print("ayy")
+
+
+def play_next(ctx):
+    if len(song_queue) > 1:
+        global ta_playando
+        for i, songa in enumerate(song_queue):
+            if songa["song_path"] == ta_playando["song_path"]:
+                index = i
+                break
+        if song_queue[index]["ctx"].voice_client.is_playing(): song_queue[index]["ctx"].voice_client.stop()
+        song_queue[index+1]["ctx"].voice_client.play(song_queue[index+1]['play_source'], after=lambda e: play_next(ctx=ctx))
+        ta_playando = song_queue[index+1]
+        emb = discord.Embed(title=song_queue[index+1]["title"], url=song_queue[index+1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(name=f"Canal: {song_queue[index+1]['uploader']}", url=song_queue[index+1]["uploader_url"])
+        emb.set_thumbnail(url=song_queue[index+1]["thumbnail"])
+        emb.add_field(name="Duração", value=timedelta(seconds=song_queue[index+1]["duration"]), inline=True)
+        emb.add_field(name="Pedido por", value=song_queue[index+1]["requester"].name, inline=True)
+        emb.set_footer(text="Conectado a " + song_queue[index+1]["ctx"].voice_client.endpoint)
+        asyncio.run_coroutine_threadsafe(song_queue[index+1]["ctx"].send(embed=emb), bot.loop)
+        del song_queue[index]
+    else:
+        pass
+
+
+@bot.command(aliases=["queue"])
+async def lista(ctx):
+    """
+    Lista de músicas
+    """
+    msg = "```css"
+    for i, song in enumerate(song_queue):
+        msg += f"\n{i} - {song['title']}"
+    msg += "\n```"
+    await ctx.send(msg)
 
 
 @bot.command()
+async def pause(ctx):
+    """
+    Pausa a música
+    """
+    ctx.voice_client.pause()
+
+
+@bot.command()
+async def resume(ctx):
+    """
+    Pausa a música
+    """
+    ctx.voice_client.resume()
+
+
+@bot.command(aliases=["skip"])
+async def pular(ctx):
+    """
+    Pula música
+    """
+    play_next(ctx)
+
+
+@bot.command(aliases=['tocando', 'nowplaying', 'tocandoagora'])
+async def np(ctx):
+    """
+    O que está tocando?
+    """
+    emb = discord.Embed(title=ta_playando["title"], url=ta_playando["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+    emb.set_author(name=f"Canal: {ta_playando['uploader']}", url=ta_playando["uploader_url"])
+    emb.set_thumbnail(url=ta_playando["thumbnail"])
+    emb.add_field(name="Duração", value=timedelta(seconds=ta_playando["duration"]), inline=True)
+    emb.add_field(name="Pedido por", value=ta_playando["requester"].name, inline=True)
+    emb.set_footer(text="Conectado a " + ta_playando["ctx"].voice_client.endpoint)
+    await ctx.send(embed=emb)
+
+
+@bot.command(aliases=["join"])
 async def entrar(ctx):
     """
     Comando para entrar no canal de voz.
     """
-    if not discord.opus.is_loaded():
-        discord.opus.load_opus('libopus.so')
     canal_de_voz = ctx.author.voice.channel
     await canal_de_voz.connect()
 
 
-@bot.command()
+@bot.command(aliases=["leave", "stop"])
 async def sair(ctx):
     """
     Comando para sair do canal de voz.
     """
+    if ctx.voice_client is None:
+        return await ctx.send("Nem to conectado em lugar nenhum, ta louco?")
     await ctx.voice_client.disconnect()
 
 
