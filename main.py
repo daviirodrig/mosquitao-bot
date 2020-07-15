@@ -48,7 +48,7 @@ async def on_ready():
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
-"""
+
 @bot.event
 async def on_command_error(ctx, error):
 #   Função para lidar com erros em comandos
@@ -66,7 +66,7 @@ async def on_command_error(ctx, error):
     return await canal.send(f'O comando `{ctx.command}` invocado por `{ctx.author.name}`\n'
                             f'Gerou o erro: `{type(error)}`\n'
                             f'Args: `{error.args}`\n')
-"""
+
 
 @bot.event
 async def on_command(ctx):
