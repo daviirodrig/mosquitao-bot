@@ -10,13 +10,15 @@ import discord
 import asyncio
 from datetime import datetime, timezone, timedelta
 from discord.ext import commands
-from secret import TOKEN, REDDIT_SECRET, REDDIT_ID
 from chanGet import main as getChan
 from PIL import Image
 from io import BytesIO
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
+REDDIT_ID = os.getenv("REDDIT_ID")
+REDDIT_SECRET = os.getenv("REDDIT_SECRET")
+TOKEN = os.getenv("MosquitaoToken")
 YTDL_FORMAT_OPTIONS = {
     'format': 'bestaudio/best',
     'outtmpl': './songs/%(extractor)s-%(id)s.%(ext)s',
@@ -29,12 +31,12 @@ YTDL_FORMAT_OPTIONS = {
     'no_warnings': False,
     'verbose': False,
     'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+    'source_address': '0.0.0.0'
 }
 YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
 ta_playando = None
 song_queue = []
-skipou = False
+
 
 @bot.event
 async def on_ready():
@@ -332,12 +334,11 @@ async def limpar(ctx, lim: int):
     Comando para limpar mensagens.
     """
     if lim > 30:
-        return await ctx.send('O Limite máximo de mensangens é `30`')
-    else:
-        await ctx.channel.purge(limit=(lim + 1))
-        msg = await ctx.send(f'{lim + 1} mensagens limpas')
-        time.sleep(3)
-        await msg.delete()
+        return await ctx.send('O Limite máximo de mensagens é `30`')
+    await ctx.channel.purge(limit=(lim + 1))
+    msg = await ctx.send(f'{lim + 1} mensagens limpas')
+    time.sleep(3)
+    await msg.delete()
 
 
 @bot.command()
