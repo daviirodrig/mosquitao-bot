@@ -56,7 +56,7 @@ async def on_ready():
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
-"""
+
 @bot.event
 async def on_command_error(ctx, error):
 #   Função para lidar com erros em comandos
@@ -74,7 +74,7 @@ async def on_command_error(ctx, error):
     return await canal.send(f'O comando `{ctx.command}` invocado por `{ctx.author.name}`\n'
                             f'Gerou o erro: `{type(error)}`\n'
                             f'Args: `{error.args}`\n')
-"""
+
 
 @bot.event
 async def on_command(ctx):
@@ -146,14 +146,12 @@ async def play(ctx, *, url):
         emb.add_field(name="Pedido por", value=song_queue[-1]["requester"].name, inline=True)
         emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
         ctx.voice_client.play(song_queue[-1]['play_source'], after=lambda e: play_next(ctx=ctx))
-        global ta_playando
         ta_playando = song_queue[-1]
         await ctx.send(embed=emb)
 
 
 def play_next(ctx):
     if len(song_queue) > 1:
-        global ta_playando
         for i, songa in enumerate(song_queue):
             if songa["song_path"] == ta_playando["song_path"]:
                 index = i
@@ -475,7 +473,6 @@ async def emojo(ctx, emoji_name):
                 last_msg = message
                 img = await last_msg.attachments[0].read()
                 break
-        prin
         emo = await ctx.message.guild.create_custom_emoji(name=emoji_name, image=img)
         await ctx.send(f"Emoji criado com sucesso! {str(emo)}")
 
