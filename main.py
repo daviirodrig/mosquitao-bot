@@ -4,7 +4,7 @@ import time
 import random
 import praw
 import prawcore
-import requests
+import aiohttp
 import youtube_dl
 import discord
 import asyncio
@@ -16,6 +16,7 @@ from io import BytesIO
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
+OWNER_ID = int(os.getenv("OWNER_ID"))
 REDDIT_ID = os.getenv("REDDIT_ID")
 REDDIT_SECRET = os.getenv("REDDIT_SECRET")
 TOKEN = os.getenv("MosquitaoToken")
@@ -50,7 +51,7 @@ async def on_ready():
     await bot.change_presence(activity=
                               discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
-
+"""
 @bot.event
 async def on_command_error(ctx, error):
 #   Função para lidar com erros em comandos
@@ -64,11 +65,11 @@ async def on_command_error(ctx, error):
         return await ctx.send('Erro no argumento')
     if isinstance(error, commands.CommandNotFound):
         return await ctx.send('Comando não encontrado :/')
-    canal = bot.get_user(212680360486633472)
+    canal = bot.get_user(OWNER_ID)
     return await canal.send(f'O comando `{ctx.command}` invocado por `{ctx.author.name}`\n'
                             f'Gerou o erro: `{type(error)}`\n'
                             f'Args: `{error.args}`\n')
-
+"""
 
 @bot.event
 async def on_command(ctx):
@@ -164,8 +165,6 @@ def play_next(ctx):
         emb.set_footer(text="Conectado a " + song_queue[index+1]["ctx"].voice_client.endpoint)
         asyncio.run_coroutine_threadsafe(song_queue[index+1]["ctx"].send(embed=emb), bot.loop)
         del song_queue[index]
-    else:
-        pass
 
 
 @bot.command(aliases=["queue"])
@@ -191,7 +190,7 @@ async def pause(ctx):
 @bot.command()
 async def resume(ctx):
     """
-    Pausa a música
+    Resume a música
     """
     ctx.voice_client.resume()
 
@@ -199,7 +198,7 @@ async def resume(ctx):
 @bot.command(aliases=["skip"])
 async def pular(ctx):
     """
-    Pula música
+    Pula a música
     """
     play_next(ctx)
 
@@ -257,9 +256,10 @@ async def cat(ctx):
     """
     Manda uma foto aleatória de um gato.
     """
-    main_url = 'http://aws.random.cat/meow'
-    gato = requests.get(main_url).json()
-    json_cat = gato['file']
+    async with aiohttp.ClientSession() as session:
+        async with session.get('http://aws.random.cat/meow') as r:
+            gato = await r.json()
+            json_cat = gato['file']
     emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
     emb.set_image(url=json_cat)
     await ctx.send(embed=emb)
@@ -461,7 +461,9 @@ async def emojo(ctx, emoji_name):
     async with ctx.channel.typing():
         async for message in ctx.message.channel.history(limit=50):
             if message.embeds != []:
-                img = Image.open(BytesIO(requests.get(message.embeds[0].image.url).content))
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(message.embeds[0].image.url) as r:
+                        img = Image.open(BytesIO(await r.read()))
                 imagem = BytesIO()
                 img.save(imagem, format="PNG" if img.mode == "RGBA" else "JPEG")
                 img = imagem.getvalue()
@@ -470,6 +472,7 @@ async def emojo(ctx, emoji_name):
                 last_msg = message
                 img = await last_msg.attachments[0].read()
                 break
+        prin
         emo = await ctx.message.guild.create_custom_emoji(name=emoji_name, image=img)
         await ctx.send(f"Emoji criado com sucesso! {str(emo)}")
 
@@ -480,7 +483,10 @@ async def dog(ctx):
     Foto aleatória de Doguinho AYAYA
     """
     emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
-    foto = requests.get("https://random.dog/woof.json").json()["url"]
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://random.dog/woof.json") as r:
+            dog = await r.json()
+            foto = dog['url']
     emb.set_image(url=foto)
     await ctx.send(embed=emb)
 
