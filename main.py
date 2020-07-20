@@ -31,10 +31,15 @@ YTDL_FORMAT_OPTIONS = {
     'quiet': True,
     'no_warnings': False,
     'verbose': False,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0'
+    'default_search': 'auto'
 }
 YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
+user_iniciou_vote = None
+coisas = []
+votou = []
+vote = False
+votos1 = 0
+votos2 = 0
 ta_playando = None
 song_queue = []
 
@@ -100,10 +105,9 @@ async def on_member_remove(member):
     try:
         if member.id == bot.user.id:
             return
-        else:
-            canal = bot.get_channel(297130716985032714)
-            msg = f"{member.name} Saiu do clã, kkk otário"
-            await canal.send(msg)
+        canal = bot.get_channel(297130716985032714)
+        msg = f"{member.name} Saiu do clã, kkk otário"
+        await canal.send(msg)
     except AttributeError:
         pass
 
@@ -154,7 +158,8 @@ def play_next(ctx):
             if songa["song_path"] == ta_playando["song_path"]:
                 index = i
                 break
-        if song_queue[index]["ctx"].voice_client.is_playing(): song_queue[index]["ctx"].voice_client.stop()
+        if song_queue[index]["ctx"].voice_client.is_playing():
+            song_queue[index]["ctx"].voice_client.stop()
         song_queue[index+1]["ctx"].voice_client.play(song_queue[index+1]['play_source'], after=lambda e: play_next(ctx=ctx))
         ta_playando = song_queue[index+1]
         emb = discord.Embed(title=song_queue[index+1]["title"], url=song_queue[index+1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
@@ -270,7 +275,6 @@ async def democracia(ctx, *coisa: str):
     """
     Comando para criar votações democráticas.
     """
-    global votos1, votos2, votou, vote, coisas, user_iniciou_vote
     user_iniciou_vote = ctx.author.id
     coisas = []
     votou = []
@@ -294,7 +298,6 @@ async def votar(ctx, numero: int):
     """
     Comando para votar em votações criadas pelo $democracia.
     """
-    global votos1, votos2
     if vote:
         if ctx.author.name in votou:
             await ctx.send(f'Você já votou, {ctx.message.author.mention}')
@@ -410,7 +413,7 @@ async def reddit(ctx, subreddits=None):
     ranpost = sub.random()
     if ranpost is None:
         ranpost = random.choice(list(sub.hot()))
-    while ranpost != None:
+    while ranpost is not None:
         ranpost = sub.random() if ranpost is not None else random.choice(list(sub.hot()))
         loop_count += 1
         if ranpost.url.endswith(("jpg", "png", "gif", "jpeg", "bmp")):
