@@ -277,17 +277,6 @@ async def gnomed(ctx, pessoa: discord.Member):
 
 
 @bot.command()
-async def debug(ctx, to_eval):
-    output = eval(to_eval)
-    if len(str(output)) < 1999:
-        await ctx.send(str(output))
-    else:
-        with open("output.log", "w") as f:
-            f.write(str(output))
-        await ctx.send(file=discord.File("output.log"))
-
-
-@bot.command()
 async def cat(ctx):
     """
     Manda uma foto aleatória de um gato.
