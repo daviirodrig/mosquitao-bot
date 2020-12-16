@@ -13,9 +13,11 @@ from discord.ext import commands
 from chanGet import main as getChan
 from PIL import Image
 from io import BytesIO
+from dotenv import load_dotenv, find_dotenv
 
 
 bot = commands.Bot(command_prefix='$', case_insensitive=True)
+load_dotenv()
 OWNER_ID = int(os.getenv("OWNER_ID"))
 REDDIT_ID = os.getenv("REDDIT_ID")
 REDDIT_SECRET = os.getenv("REDDIT_SECRET")
@@ -34,14 +36,14 @@ YTDL_FORMAT_OPTIONS = {
     'default_search': 'auto'
 }
 YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
-user_iniciou_vote = None
-coisas = []
-votou = []
-vote = False
-votos1 = 0
-votos2 = 0
-ta_playando = None
-song_queue = []
+bot.user_iniciou_vote = None
+bot.coisas = []
+bot.votou = []
+bot.vote = False
+bot.votos1 = 0
+bot.votos2 = 0
+bot.ta_playando = None
+bot.song_queue = []
 
 
 @bot.event
@@ -53,13 +55,12 @@ async def on_ready():
     print(f'Bot iniciado {datetime.now(tz=timezone(timedelta(hours=-3)))}')
     print(f'Logado como {bot.user.name}')
     print('----------------------------')
-    await bot.change_presence(activity=
-                              discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
+    await bot.change_presence(activity=discord.Game(name=f'bosta na cara de {len(bot.users)} pessoas'))
 
 
 @bot.event
 async def on_command_error(ctx, error):
-#   Função para lidar com erros em comandos
+    #   Função para lidar com erros em comandos
     error = getattr(error, 'original', error)
     if hasattr(ctx.command, 'on_error'):
         return
@@ -120,54 +121,70 @@ async def play(ctx, *, url):
         else:
             return await ctx.send("Você precisa estar conectado em um canal de voz.")
     async with ctx.typing():
-        os.system("rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs") # Limpa o cache da pasta songs
+        # Limpa o cache da pasta songs
+        os.system(
+            "rd /s /q songs") if os.name == "nt" else os.system("rm -rf songs")
         song_dl = YT_DL.extract_info(url)
         if song_dl["_type"] == "playlist":
             for song in song_dl['entries']:
                 song["ctx"] = ctx
                 song["requester"] = ctx.author
                 song["song_path"] = f'./songs/{song["extractor"]}-{song["id"]}.{song["ext"]}'
-                song["play_source"] = discord.FFmpegPCMAudio(source=song["song_path"])
-            song_queue.extend(song_dl["entries"])
+                song["play_source"] = discord.FFmpegPCMAudio(
+                    source=song["song_path"])
+            bot.song_queue.extend(song_dl["entries"])
             if len(song_dl['entries']) > 1:
                 await ctx.send(f"Adicionei `{len(song_dl['entries'])}` musicas na lista.")
         else:
-            song_info = song_dl["entries"][0] if song_dl.get("entries") else song_dl
+            song_info = song_dl["entries"][0] if song_dl.get(
+                "entries") else song_dl
             song_info["ctx"] = ctx
             song_info["requester"] = ctx.author
             song_info["song_path"] = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
-            song_queue.append(song_info)
+            bot.song_queue.append(song_info)
         if ctx.voice_client.is_playing():
-            return await ctx.send(F"{song_queue[-1]['title']} adicionada à lista.")
-        emb = discord.Embed(title=song_queue[-1]["title"], url=song_queue[-1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
-        emb.set_author(name=f"Canal: {song_queue[0]['uploader']}", url=song_queue[-1]["uploader_url"])
-        emb.set_thumbnail(url=song_queue[-1]["thumbnail"])
-        emb.add_field(name="Duração", value=timedelta(seconds=song_queue[-1]["duration"]), inline=True)
-        emb.add_field(name="Pedido por", value=song_queue[-1]["requester"].name, inline=True)
+            return await ctx.send(F"{bot.song_queue[-1]['title']} adicionada à lista.")
+        emb = discord.Embed(title=bot.song_queue[-1]["title"], url=bot.song_queue[-1]
+                            ["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(
+            name=f"Canal: {bot.song_queue[0]['uploader']}", url=bot.song_queue[-1]["uploader_url"])
+        emb.set_thumbnail(url=bot.song_queue[-1]["thumbnail"])
+        emb.add_field(name="Duração", value=timedelta(
+            seconds=bot.song_queue[-1]["duration"]), inline=True)
+        emb.add_field(name="Pedido por",
+                      value=bot.song_queue[-1]["requester"].name, inline=True)
         emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
-        ctx.voice_client.play(song_queue[-1]['play_source'], after=lambda e: play_next(ctx=ctx))
-        ta_playando = song_queue[-1]
+        ctx.voice_client.play(
+            bot.song_queue[-1]['play_source'], after=lambda e: play_next(ctx=ctx))
+        bot.ta_playando = bot.song_queue[-1]
         await ctx.send(embed=emb)
 
 
 def play_next(ctx):
-    if len(song_queue) > 1:
-        for i, songa in enumerate(song_queue):
-            if songa["song_path"] == ta_playando["song_path"]:
+    if len(bot.song_queue) > 1:
+        for i, songa in enumerate(bot.song_queue):
+            if songa["song_path"] == bot.ta_playando["song_path"]:
                 index = i
                 break
-        if song_queue[index]["ctx"].voice_client.is_playing():
-            song_queue[index]["ctx"].voice_client.stop()
-        song_queue[index+1]["ctx"].voice_client.play(song_queue[index+1]['play_source'], after=lambda e: play_next(ctx=ctx))
-        ta_playando = song_queue[index+1]
-        emb = discord.Embed(title=song_queue[index+1]["title"], url=song_queue[index+1]["webpage_url"], colour=random.randint(0, 0xFFFFFF))
-        emb.set_author(name=f"Canal: {song_queue[index+1]['uploader']}", url=song_queue[index+1]["uploader_url"])
-        emb.set_thumbnail(url=song_queue[index+1]["thumbnail"])
-        emb.add_field(name="Duração", value=timedelta(seconds=song_queue[index+1]["duration"]), inline=True)
-        emb.add_field(name="Pedido por", value=song_queue[index+1]["requester"].name, inline=True)
-        emb.set_footer(text="Conectado a " + song_queue[index+1]["ctx"].voice_client.endpoint)
-        asyncio.run_coroutine_threadsafe(song_queue[index+1]["ctx"].send(embed=emb), bot.loop)
-        del song_queue[index]
+        if bot.song_queue[index]["ctx"].voice_client.is_playing():
+            bot.song_queue[index]["ctx"].voice_client.stop()
+        bot.song_queue[index+1]["ctx"].voice_client.play(
+            bot.song_queue[index+1]['play_source'], after=lambda e: play_next(ctx=ctx))
+        bot.ta_playando = bot.song_queue[index+1]
+        emb = discord.Embed(title=bot.song_queue[index+1]["title"], url=bot.song_queue[index+1]
+                            ["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+        emb.set_author(
+            name=f"Canal: {bot.song_queue[index+1]['uploader']}", url=bot.song_queue[index+1]["uploader_url"])
+        emb.set_thumbnail(url=bot.song_queue[index+1]["thumbnail"])
+        emb.add_field(name="Duração", value=timedelta(
+            seconds=bot.song_queue[index+1]["duration"]), inline=True)
+        emb.add_field(name="Pedido por",
+                      value=bot.song_queue[index+1]["requester"].name, inline=True)
+        emb.set_footer(text="Conectado a " +
+                       bot.song_queue[index+1]["ctx"].voice_client.endpoint)
+        asyncio.run_coroutine_threadsafe(
+            bot.song_queue[index+1]["ctx"].send(embed=emb), bot.loop)
+        del bot.song_queue[index]
 
 
 @bot.command(aliases=["queue"])
@@ -176,8 +193,8 @@ async def lista(ctx):
     Lista de músicas
     """
     msg = "```css"
-    for i, song in enumerate(song_queue):
-        msg += f"\n{i} - {song['title']}"
+    for i, song in enumerate(bot.song_queue):
+        msg += f"\n{i+1} - {song['title']}"
     msg += "\n```"
     await ctx.send(msg)
 
@@ -211,12 +228,17 @@ async def np(ctx):
     """
     O que está tocando?
     """
-    emb = discord.Embed(title=ta_playando["title"], url=ta_playando["webpage_url"], colour=random.randint(0, 0xFFFFFF))
-    emb.set_author(name=f"Canal: {ta_playando['uploader']}", url=ta_playando["uploader_url"])
-    emb.set_thumbnail(url=ta_playando["thumbnail"])
-    emb.add_field(name="Duração", value=timedelta(seconds=ta_playando["duration"]), inline=True)
-    emb.add_field(name="Pedido por", value=ta_playando["requester"].name, inline=True)
-    emb.set_footer(text="Conectado a " + ta_playando["ctx"].voice_client.endpoint)
+    emb = discord.Embed(
+        title=bot.ta_playando["title"], url=bot.ta_playando["webpage_url"], colour=random.randint(0, 0xFFFFFF))
+    emb.set_author(
+        name=f"Canal: {bot.ta_playando['uploader']}", url=bot.ta_playando["uploader_url"])
+    emb.set_thumbnail(url=bot.ta_playando["thumbnail"])
+    emb.add_field(name="Duração", value=timedelta(
+        seconds=bot.ta_playando["duration"]), inline=True)
+    emb.add_field(name="Pedido por",
+                  value=bot.ta_playando["requester"].name, inline=True)
+    emb.set_footer(text="Conectado a " +
+                   bot.ta_playando["ctx"].voice_client.endpoint)
     await ctx.send(embed=emb)
 
 
@@ -255,6 +277,17 @@ async def gnomed(ctx, pessoa: discord.Member):
 
 
 @bot.command()
+async def debug(ctx, to_eval):
+    output = eval(to_eval)
+    if len(str(output)) < 1999:
+        await ctx.send(str(output))
+    else:
+        with open("output.log", "w") as f:
+            f.write(str(output))
+        await ctx.send(file=discord.File("output.log"))
+
+
+@bot.command()
 async def cat(ctx):
     """
     Manda uma foto aleatória de um gato.
@@ -273,22 +306,22 @@ async def democracia(ctx, *coisa: str):
     """
     Comando para criar votações democráticas.
     """
-    user_iniciou_vote = ctx.author.id
-    coisas = []
-    votou = []
-    vote = True
-    votos1 = 0
-    votos2 = 0
+    bot.user_iniciou_vote = ctx.author.id
+    bot.coisas = []
+    bot.votou = []
+    bot.vote = True
+    bot.votos1 = 0
+    bot.votos2 = 0
     for palavra in coisa:
-        coisas.append(palavra)
-    if len(coisas) != 2:
-        if len(coisas) < 2:
+        bot.coisas.append(palavra)
+    if len(bot.coisas) != 2:
+        if len(bot.coisas) < 2:
             await ctx.send('Este comando precisa de duas opções')
-        elif len(coisas) > 2:
+        elif len(bot.coisas) > 2:
             await ctx.send('Este comando suporta apenas duas opções')
     else:
-        await ctx.send(f'Digite `$votar 1` para votar em `{coisas[0]}`'
-                       f'\nDigite `$votar 2` para votar em `{coisas[1]}` ')
+        await ctx.send(f'Digite `$votar 1` para votar em `{bot.coisas[0]}`'
+                       f'\nDigite `$votar 2` para votar em `{bot.coisas[1]}` ')
 
 
 @bot.command()
@@ -296,18 +329,18 @@ async def votar(ctx, numero: int):
     """
     Comando para votar em votações criadas pelo $democracia.
     """
-    if vote:
-        if ctx.author.name in votou:
+    if bot.vote:
+        if ctx.author.name in bot.votou:
             await ctx.send(f'Você já votou, {ctx.message.author.mention}')
         else:
             if numero == 1:
-                votos1 += 1
-                votou.append(ctx.author.name)
-                await ctx.send(f'+1 voto contado para "{coisas[0]}"')
+                bot.votos1 += 1
+                bot.votou.append(ctx.author.name)
+                await ctx.send(f'+1 voto contado para "{bot.coisas[0]}"')
             elif numero == 2:
-                votos2 += 1
-                votou.append(ctx.author.name)
-                await ctx.send(f'+1 voto contado para "{coisas[1]}"')
+                bot.votos2 += 1
+                bot.votou.append(ctx.author.name)
+                await ctx.send(f'+1 voto contado para "{bot.coisas[1]}"')
             else:
                 await ctx.send(f'Número de votação inválido {ctx.message.author.mention}')
     else:
@@ -319,10 +352,10 @@ async def resultados(ctx):
     """
     Comando para mostrar resultados da votação.
     """
-    if vote:
-        if ctx.author.id == user_iniciou_vote:
+    if bot.vote:
+        if ctx.author.id == bot.user_iniciou_vote:
             await ctx.send(f'Votação encerrada!')
-            await ctx.send(f'{votos1} votos para {coisas[0]}'f'\n{votos2} votos para {coisas[1]}')
+            await ctx.send(f'{bot.votos1} votos para {bot.coisas[0]}'f'\n{bot.votos2} votos para {bot.coisas[1]}')
         else:
             await ctx.send(f'Apenas quem iniciou a votação pode finalizá-la')
     else:
@@ -466,7 +499,8 @@ async def emojo(ctx, emoji_name):
                     async with session.get(message.embeds[0].image.url) as r:
                         img = Image.open(BytesIO(await r.read()))
                 imagem = BytesIO()
-                img.save(imagem, format="PNG" if img.mode == "RGBA" else "JPEG")
+                img.save(imagem, format="PNG" if img.mode ==
+                         "RGBA" else "JPEG")
                 img = imagem.getvalue()
                 break
             if message.attachments:
@@ -568,23 +602,31 @@ async def info(ctx, user: discord.Member):
     emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
     emb.set_author(name=f'Informações de {user.name + user.discriminator}')
     emb.set_thumbnail(url=user.avatar_url)
-    emb.add_field(name=':busts_in_silhouette:| Nome', value=f'```{user.name}```')
-    emb.add_field(name=':pencil:| Apelido', value=f'```{user.nick}```'.replace('None', 'Nenhum'))
+    emb.add_field(name=':busts_in_silhouette:| Nome',
+                  value=f'```{user.name}```')
+    emb.add_field(name=':pencil:| Apelido',
+                  value=f'```{user.nick}```'.replace('None', 'Nenhum'))
     emb.add_field(name=':id:| id', value=f'```{user.id}```')
-    emb.add_field(name=':robot:| É Bot?', value=f'```{user.bot}```'.replace('False', 'Não').replace('True', 'Sim'))
-    emb.add_field(name=':alarm_clock:| Criado em', value=f'```{user.created_at:%d-%m-%Y às %H:%M:%S}```')
+    emb.add_field(name=':robot:| É Bot?', value=f'```{user.bot}```'.replace(
+        'False', 'Não').replace('True', 'Sim'))
+    emb.add_field(name=':alarm_clock:| Criado em',
+                  value=f'```{user.created_at:%d-%m-%Y às %H:%M:%S}```')
     emb.add_field(name=':large_blue_circle:| Status',
                   value=f'```{user.status}```'.replace('dnd', 'Não pertubar').replace('idle', 'Ausente').replace(
                       'online', 'Disponível'))
-    emb.add_field(name=':calendar:| Entrou no clã em', value=f'```{user.joined_at:%d-%m-%Y às %H:%M:%S}```')
+    emb.add_field(name=':calendar:| Entrou no clã em',
+                  value=f'```{user.joined_at:%d-%m-%Y às %H:%M:%S}```')
     if user.activity is not None:
         if user.activity.name == 'Spotify':
-            emb.add_field(name=':loud_sound:| Ouvindo', value=f'```{user.activity.title} - {user.activity.artist}```')
+            emb.add_field(name=':loud_sound:| Ouvindo',
+                          value=f'```{user.activity.title} - {user.activity.artist}```')
         else:
-            emb.add_field(name=':joystick:| Game', value=f'```{user.activity.name}```'.replace('None', 'Nenhum'))
+            emb.add_field(name=':joystick:| Game',
+                          value=f'```{user.activity.name}```'.replace('None', 'Nenhum'))
     else:
         emb.add_field(name=':joystick:| Game', value='```Nenhum```')
-    emb.set_footer(text=f'Pedido por: {ctx.author.name + ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
+    emb.set_footer(
+        text=f'Pedido por: {ctx.author.name + ctx.author.discriminator}', icon_url=ctx.author.avatar_url)
     await ctx.send(embed=emb)
 
 
