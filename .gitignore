@@ -105,3 +105,4 @@ venv.bak/
 
 .vscode/
 secret.py
+songs/
