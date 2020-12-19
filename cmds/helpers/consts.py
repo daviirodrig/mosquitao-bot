@@ -15,8 +15,8 @@ YTDL_FORMAT_OPTIONS = {
     "nocheckcertificate": True,
     "ignoreerrors": False,
     "logtostderr": False,
-    "quiet": False,
+    "quiet": True,
     "no_warnings": False,
-    "verbose": True,
+    "verbose": False,
     "default_search": "auto",
 }
