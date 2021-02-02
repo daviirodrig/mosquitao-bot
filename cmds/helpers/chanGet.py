@@ -55,7 +55,7 @@ def r4chan():
 	image = random.choice(imgs)
 
 	#Assemble and return the urls
-	imageurl = 'https://is2.4chan.org/' + board + '/' + image
+	imageurl = 'https://i.4cdn.org/' + board + '/' + image
 	thread = 'https://boards.4chan.org/' + board + '/thread/' + str(thread)
 	return [ imageurl , thread ]
 
