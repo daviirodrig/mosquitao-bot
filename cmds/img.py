@@ -2,8 +2,9 @@
 import random
 import aiohttp
 import discord
-import praw
+import asyncpraw
 import prawcore
+import string
 from discord.ext import commands
 from cmds.helpers.chanGet import main as getChan
 from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET
@@ -25,33 +26,33 @@ class Images(commands.Cog):
         Pega um post aleatório de um subreddit específico ou aleatório
         """
         loop_count = 0
-        redd = praw.Reddit(
+        redd = asyncpraw.Reddit(
             client_id=REDDIT_ID,
             client_secret=REDDIT_SECRET,
             user_agent="python/requests:mosquitaobot:1.0 (by /u/davioitu)",
         )
         if subreddits is None:
-            sub = redd.random_subreddit(nsfw=False)
+            sub = await redd.random_subreddit(nsfw=False)
         elif str(subreddits).lower() == "nsfw":
-            sub = redd.random_subreddit(nsfw=True)
+            sub = await redd.random_subreddit(nsfw=True)
         else:
             try:
-                sub = redd.subreddit(subreddits)
+                sub = await redd.subreddit(subreddits)
                 try:
-                    sub.quaran.opt_in()
+                    await sub.quaran.opt_in()
                 except prawcore.exceptions.Forbidden:
                     pass
-                a = sub.random()
+                a = await sub.random()
                 del a
             except (prawcore.exceptions.Forbidden, prawcore.exceptions.NotFound):
                 await ctx.send("Aparentemente tem algo errado nesse subreddit :/")
                 return
-        ranpost = sub.random()
+        ranpost = await sub.random()
         if ranpost is None:
-            ranpost = random.choice(list(sub.hot()))
+            ranpost = random.choice(list(await sub.hot()))
         while ranpost is not None:
             ranpost = (
-                sub.random() if ranpost is not None else random.choice(list(sub.hot()))
+                await sub.random() if ranpost is not None else random.choice(list(await sub.hot()))
             )
             loop_count += 1
             if ranpost.url.endswith(("jpg", "png", "gif", "jpeg", "bmp")):
@@ -85,6 +86,21 @@ class Images(commands.Cog):
             emb.set_image(url=getChan(1))
             await ctx.send(embed=emb)
 
+
+    @commands.command()
+    async def randomps(self, ctx):
+        """
+        Imagem aleatória do site prntsc
+        """
+        def gerar_link():
+            base_url = "https://prnt.sc/"
+            chars = string.ascii_lowercase + string.digits
+            for _ in range(0, 6):
+                selected_char = random.choice(list(chars))
+                base_url += selected_char
+            return base_url
+        url = gerar_link()
+        return await ctx.send(url)
 
 
     @commands.command(usage="@alguém")
