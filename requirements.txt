@@ -1,4 +1,4 @@
 discord.py[voice]
-praw
+asyncpraw
 youtube_dl
 Pillow
