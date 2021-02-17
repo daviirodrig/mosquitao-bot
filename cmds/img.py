@@ -4,6 +4,7 @@ import aiohttp
 import discord
 import praw
 import prawcore
+import string
 from discord.ext import commands
 from cmds.helpers.chanGet import main as getChan
 from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET
@@ -85,6 +86,21 @@ class Images(commands.Cog):
             emb.set_image(url=getChan(1))
             await ctx.send(embed=emb)
 
+
+    @commands.command()
+    async def randomps(self, ctx):
+        """
+        Imagem aleatória do site prntsc
+        """
+        def gerar_link():
+            base_url = "https://prnt.sc/"
+            chars = string.ascii_lowercase + string.digits
+            for _ in range(0, 6):
+                selected_char = random.choice(list(chars))
+                base_url += selected_char
+            return base_url
+        url = gerar_link()
+        return await ctx.send(url)
 
 
     @commands.command(usage="@alguém")
