@@ -2,3 +2,4 @@ discord.py[voice]
 asyncpraw
 youtube_dl
 Pillow
+python-dotenv
