@@ -1,5 +1,6 @@
 discord.py[voice]
 asyncpraw
+prawcore
 youtube_dl
 Pillow
 python-dotenv
