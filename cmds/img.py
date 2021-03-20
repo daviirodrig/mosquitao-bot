@@ -128,10 +128,14 @@ class Images(commands.Cog):
         Foto aleatória de doguinho AYAYA
         """
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+        foto = None
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://random.dog/woof.json") as r:
-                dog_img = await r.json()
-                foto = dog_img["url"]
+            while foto is None or foto.endswith(".mp4"):
+                async with session.get("https://random.dog/woof.json") as r:
+                    print(foto)
+                    dog_img = await r.json()
+                    foto = dog_img["url"]
+        print(foto)
         emb.set_image(url=foto)
         await ctx.send(embed=emb)
 
