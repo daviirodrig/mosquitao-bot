@@ -35,6 +35,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         return await ctx.send("Comando não encontrado :/")
     canal = bot.get_user(OWNER_ID)
+    if canal is None:
+        canal = await bot.fetch_user(OWNER_ID)
     return await canal.send(
         f"O comando `{ctx.command}` invocado por `{ctx.author.name}`\n"
         f"Gerou o erro: `{type(error)}`\n"
