@@ -16,7 +16,7 @@ async def on_ready():
     print("----------------------------")
     print(
         f"Bot iniciado {datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))}")
-    print(f"Logado como {bot.user.name}")
+    print(f"Logado como {bot.user.name}".encode("UTF-8").decode("UTF-8"))
     print("----------------------------")
 
 
