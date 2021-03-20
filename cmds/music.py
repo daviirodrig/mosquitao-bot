@@ -15,7 +15,7 @@ def setup(bot):
     """
     Setup
     """
-    print("Iniciando load dos comandos de música")
+    print("Iniciando load dos comandos de musica")
     bot.YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
     bot.song_queue = []
     bot.ta_playando = None
