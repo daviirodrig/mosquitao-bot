@@ -133,10 +133,8 @@ class Images(commands.Cog):
         async with aiohttp.ClientSession() as session:
             while foto is None or foto.endswith(".mp4"):
                 async with session.get("https://random.dog/woof.json") as r:
-                    print(foto)
                     dog_img = await r.json()
                     foto = dog_img["url"]
-        print(foto)
         emb.set_image(url=foto)
         await ctx.send(embed=emb)
 
