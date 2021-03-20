@@ -73,6 +73,7 @@ class Images(commands.Cog):
         author_name = "/u/" + ranpost.author.name
         sub_name = "/r/" + ranpost.subreddit.display_name
         emb.set_author(name=sub_name + " by " + author_name)
+        await redd.close()
         await ctx.send(embed=emb)
 
 
