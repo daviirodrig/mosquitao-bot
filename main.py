@@ -52,7 +52,7 @@ async def on_command(ctx):
     Função para printar quando alguém usar comandos.
     """
     print(
-        f"{datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))} {ctx.message.author}: {ctx.message.content}")
+        f"{datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))} {ctx.message.author}: {ctx.message.content}".encode("UTF-8").decode("UTF-8"))
 
 
 @bot.event
