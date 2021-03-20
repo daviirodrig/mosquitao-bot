@@ -1,5 +1,6 @@
 """ Main file to run the bot """
 import datetime
+import traceback
 import discord
 from discord.ext import commands
 from cmds.helpers.consts import OWNER_ID, TOKEN
@@ -15,7 +16,7 @@ async def on_ready():
     print("----------------------------")
     print(
         f"Bot iniciado {datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))}")
-    print(f"Logado como {bot.user.name}")
+    print(f"Logado como {bot.user.name}".encode("UTF-8").decode("UTF-8"))
     print("----------------------------")
 
 
@@ -35,10 +36,14 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         return await ctx.send("Comando não encontrado :/")
     canal = bot.get_user(OWNER_ID)
+    if canal is None:
+        canal = await bot.fetch_user(OWNER_ID)
+    error = traceback.format_exception(type(error), error, error.__traceback__)
+    error_str = "".join(error)
     return await canal.send(
         f"O comando `{ctx.command}` invocado por `{ctx.author.name}`\n"
-        f"Gerou o erro: `{type(error)}`\n"
-        f"Args: `{error.args}`\n")
+        f"Gerou o seguinte erro:\n"
+        f"```{error_str}```")
 
 
 @bot.event

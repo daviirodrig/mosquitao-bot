@@ -73,6 +73,7 @@ class Images(commands.Cog):
         author_name = "/u/" + ranpost.author.name
         sub_name = "/r/" + ranpost.subreddit.display_name
         emb.set_author(name=sub_name + " by " + author_name)
+        await redd.close()
         await ctx.send(embed=emb)
 
 
@@ -128,10 +129,12 @@ class Images(commands.Cog):
         Foto aleatória de doguinho AYAYA
         """
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+        foto = None
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://random.dog/woof.json") as r:
-                dog_img = await r.json()
-                foto = dog_img["url"]
+            while foto is None or foto.endswith(".mp4"):
+                async with session.get("https://random.dog/woof.json") as r:
+                    dog_img = await r.json()
+                    foto = dog_img["url"]
         emb.set_image(url=foto)
         await ctx.send(embed=emb)
 
