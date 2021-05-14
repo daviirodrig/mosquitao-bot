@@ -26,6 +26,21 @@ jobs:
       with:
         source: "."
         target: "~/mosquitao-prod"
+    - name: Setup bot
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        USERNAME: ${{ secrets.USERNAME }}
+        PORT: ${{ secrets.PORT }}
+        KEY: ${{ secrets.SSHKEY }}
+        script: |
+          cd ~/mosquitao-prod
+          apt update -y
+          apt upgrade -y
+          echo "${{ secrets.BOT_TOKEN }}" >> ~/mosquitao-prod/.env
+          echo "${{ secrets.OWNER_ID }}" >> ~/mosquitao-prod/.env
+          echo "${{ secrets.REDDIT_ID }}" >> ~/mosquitao-prod/.env
+          echo "${{ secrets.REDDIT_SECRET }}" >> ~/mosquitao-prod/.env
 
     - name: Executing remote command
       uses: appleboy/ssh-action@master
