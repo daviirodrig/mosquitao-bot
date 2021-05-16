@@ -33,10 +33,10 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           script: |
             cd ~/mosquitao-prod
-            echo "${{ secrets.BOT_TOKEN }}" >> .env
-            echo "${{ secrets.OWNER_ID }}" >> .env
-            echo "${{ secrets.REDDIT_ID }}" >> .env
-            echo "${{ secrets.REDDIT_SECRET }}" >> .env
+            echo "MosquitaoToken=${{ secrets.BOT_TOKEN }}" > .env
+            echo "OWNER_ID=${{ secrets.OWNER_ID }}" >> .env
+            echo "REDDIT_ID=${{ secrets.REDDIT_ID }}" >> .env
+            echo "REDDIT_SECRET=${{ secrets.REDDIT_SECRET }}" >> .env
             apt-get update -y
             apt-get upgrade -y
             apt-get install screen -y
