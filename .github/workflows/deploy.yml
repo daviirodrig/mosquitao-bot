@@ -23,6 +23,7 @@ jobs:
         with:
           source: "."
           target: "~/mosquitao-prod"
+
       - name: Setup bot
         uses: appleboy/ssh-action@master
         with:
