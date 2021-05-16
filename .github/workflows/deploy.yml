@@ -33,13 +33,13 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           script: |
             cd ~/mosquitao-prod
+            echo "${{ secrets.BOT_TOKEN }}" >> .env
+            echo "${{ secrets.OWNER_ID }}" >> .env
+            echo "${{ secrets.REDDIT_ID }}" >> .env
+            echo "${{ secrets.REDDIT_SECRET }}" >> .env
             apt-get update -y
             apt-get upgrade -y
             apt-get install screen -y
-            echo "${{ secrets.BOT_TOKEN }}" >> ~/mosquitao-prod/.env
-            echo "${{ secrets.OWNER_ID }}" >> ~/mosquitao-prod/.env
-            echo "${{ secrets.REDDIT_ID }}" >> ~/mosquitao-prod/.env
-            echo "${{ secrets.REDDIT_SECRET }}" >> ~/mosquitao-prod/.env
 
       - name: Executing remote command
         uses: appleboy/ssh-action@master
