@@ -1,55 +1,52 @@
 # This is a basic workflow to help you get started with Actions
 
 name: Deploy
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   workflow_dispatch:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
+      - name: Copy repository contents via scp
+        uses: appleboy/scp-action@master
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+        with:
+          source: "."
+          target: "~/mosquitao-prod"
+      - name: Setup bot
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            cd ~/mosquitao-prod
+            apt-get update -y
+            apt-get upgrade -y
+            apt-get install screen -y
+            echo "${{ secrets.BOT_TOKEN }}" >> ~/mosquitao-prod/.env
+            echo "${{ secrets.OWNER_ID }}" >> ~/mosquitao-prod/.env
+            echo "${{ secrets.REDDIT_ID }}" >> ~/mosquitao-prod/.env
+            echo "${{ secrets.REDDIT_SECRET }}" >> ~/mosquitao-prod/.env
 
-    - name: Copy repository contents via scp
-      uses: appleboy/scp-action@master
-      env:
-        HOST: ${{ secrets.HOST }}
-        USERNAME: ${{ secrets.USERNAME }}
-        PORT: ${{ secrets.PORT }}
-        KEY: ${{ secrets.SSHKEY }}
-      with:
-        source: "."
-        target: "~/mosquitao-prod"
-    - name: Setup bot
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        USERNAME: ${{ secrets.USERNAME }}
-        PORT: ${{ secrets.PORT }}
-        KEY: ${{ secrets.SSHKEY }}
-        script: |
-          cd ~/mosquitao-prod
-          apt-get update -y
-          apt-get upgrade -y
-          apt-get install screen -y
-          echo "${{ secrets.BOT_TOKEN }}" >> ~/mosquitao-prod/.env
-          echo "${{ secrets.OWNER_ID }}" >> ~/mosquitao-prod/.env
-          echo "${{ secrets.REDDIT_ID }}" >> ~/mosquitao-prod/.env
-          echo "${{ secrets.REDDIT_SECRET }}" >> ~/mosquitao-prod/.env
-
-    - name: Executing remote command
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        USERNAME: ${{ secrets.USERNAME }}
-        PORT: ${{ secrets.PORT }}
-        KEY: ${{ secrets.SSHKEY }}
-        script: |
-          cd ~/mosquitao-prod
-          ./mosquitao-boot.sh
+      - name: Executing remote command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            cd ~/mosquitao-prod
+            ./mosquitao-boot.sh
