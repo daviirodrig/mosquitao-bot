@@ -5,9 +5,13 @@ import discord
 import asyncpraw
 import prawcore
 import string
+from deta import Deta
 from discord.ext import commands
 from cmds.helpers.chanGet import main as getChan
-from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET
+from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET, DETA_KEY
+
+deta = Deta(DETA_KEY)
+image_db = deta.Base("images")
 
 
 def setup(bot):
@@ -147,6 +151,50 @@ class Images(commands.Cog):
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
         emb.set_image(url=json_cat)
         await ctx.send(embed=emb)
+
+    # Comandos de img db
+    @commands.group(invoke_without_command=True)
+    async def img(self, ctx, img_name=None):
+        if img_name == None:
+            await ctx.send("Você precisa digitar uma imagem ou algum dos subcomandos: add, delete ou list")
+        else:
+            res = image_db.get(img_name)
+            if res:
+                img_url = res["url"]
+                emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
+                emb.set_image(url=img_url)
+                await ctx.send(embed=emb)
+            else:
+                await ctx.send("Não encontrei essa imagem")
+
+    @img.command()
+    async def add(self, ctx, img_name):
+        async with ctx.channel.typing():
+            async for message in ctx.message.channel.history(limit=50):
+                if message.embeds != []:
+                    img_url = message.embeds[0].image.url
+                    break
+                if message.attachments:
+                    img_url = message.attachments[0].url
+                    break
+            res = image_db.put({
+                "key": img_name,
+                "url": img_url,
+                "author": ctx.author.name
+            })
+            await ctx.send(f"`{img_name}` adicionado às imagens")
+
+    @img.command()
+    async def delete(self, ctx, img_name):
+        res = image_db.delete(img_name)
+        await ctx.send(f"{img_name} removido das imagens")
+
+    @img.command()
+    async def list(self, ctx):
+        images_fetch = next(image_db.fetch())
+        images_list = [item["key"] for item in images_fetch]
+        images_list_str = ", ".join(images_list)
+        await ctx.send(f"Lista de imagens: {images_list_str}")
 
     @commands.command()
     async def zap(self, ctx):
