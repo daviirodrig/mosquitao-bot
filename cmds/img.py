@@ -158,6 +158,7 @@ class Images(commands.Cog):
         if img_name is None:
             await ctx.send("Você precisa digitar uma imagem ou algum dos subcomandos: add, delete ou list")
         else:
+            image_db = deta.Base("images")
             res = image_db.get(img_name)
             if res:
                 img_url = res["url"]
@@ -177,6 +178,7 @@ class Images(commands.Cog):
                 if message.attachments:
                     img_url = message.attachments[0].url
                     break
+            image_db = deta.Base("images")
             res = image_db.put({
                 "key": img_name,
                 "url": img_url,
@@ -186,11 +188,13 @@ class Images(commands.Cog):
 
     @img.command()
     async def delete(self, ctx, img_name):
+        image_db = deta.Base("images")
         res = image_db.delete(img_name)
         await ctx.send(f"{img_name} removido das imagens")
 
     @img.command()
     async def list(self, ctx):
+        image_db = deta.Base("images")
         images_fetch = next(image_db.fetch())
         images_list = [item["key"] for item in images_fetch]
         images_list_str = ", ".join(images_list)
