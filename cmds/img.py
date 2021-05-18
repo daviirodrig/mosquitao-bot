@@ -18,6 +18,7 @@ def setup(bot):
     bot.add_cog(Images())
     print("Load finalizado")
 
+
 class Images(commands.Cog):
 
     @commands.command(usage="[nome do subreddit]")
@@ -76,7 +77,6 @@ class Images(commands.Cog):
         await redd.close()
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def chan(self, ctx):
         """
@@ -86,7 +86,6 @@ class Images(commands.Cog):
             emb = discord.Embed()
             emb.set_image(url=getChan(1))
             await ctx.send(embed=emb)
-
 
     @commands.command()
     async def randomps(self, ctx):
@@ -102,7 +101,6 @@ class Images(commands.Cog):
             return base_url
         url = gerar_link()
         return await ctx.send(url)
-
 
     @commands.command(usage="@alguém")
     async def gnomed(self, ctx, pessoa: discord.Member):
@@ -122,7 +120,6 @@ class Images(commands.Cog):
         emb.set_image(url=gnome)
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def dog(self, ctx):
         """
@@ -138,7 +135,6 @@ class Images(commands.Cog):
         emb.set_image(url=foto)
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def cat(self, ctx):
         """
@@ -152,7 +148,6 @@ class Images(commands.Cog):
         emb.set_image(url=json_cat)
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def zap(self, ctx):
         """
@@ -161,7 +156,6 @@ class Images(commands.Cog):
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
         emb.set_image(url="https://i.imgur.com/bW8xeTy.jpg")
         await ctx.send(embed=emb)
-
 
     @commands.command()
     async def paz(self, ctx):
@@ -172,7 +166,6 @@ class Images(commands.Cog):
         emb.set_image(url="https://i.imgur.com/LfnWoxA.jpg")
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def felps(self, ctx):
         """
@@ -181,7 +174,6 @@ class Images(commands.Cog):
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
         emb.set_image(url="https://i.imgur.com/NSoXoLG.png")
         await ctx.send(embed=emb)
-
 
     @commands.command()
     async def wtf(self, ctx):
@@ -192,7 +184,6 @@ class Images(commands.Cog):
         emb.set_image(url="https://i.imgur.com/6C0SewT.jpg")
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def paiva(self, ctx):
         """
@@ -201,7 +192,6 @@ class Images(commands.Cog):
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
         emb.set_image(url="https://i.imgur.com/iY4MaXu.png")
         await ctx.send(embed=emb)
-
 
     @commands.command()
     async def pintao(self, ctx):
