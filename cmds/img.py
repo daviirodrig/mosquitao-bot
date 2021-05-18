@@ -155,7 +155,7 @@ class Images(commands.Cog):
     # Comandos de img db
     @commands.group(invoke_without_command=True)
     async def img(self, ctx, img_name=None):
-        if img_name == None:
+        if img_name is None:
             await ctx.send("Você precisa digitar uma imagem ou algum dos subcomandos: add, delete ou list")
         else:
             res = image_db.get(img_name)
