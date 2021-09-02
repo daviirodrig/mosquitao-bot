@@ -3,6 +3,7 @@ from os import getenv
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
+REDDIT_AGENT = getenv("REDDIT_AGENT")
 REDDIT_ID = getenv("REDDIT_ID")
 REDDIT_SECRET = getenv("REDDIT_SECRET")
 OWNER_ID = int(getenv("OWNER_ID"))

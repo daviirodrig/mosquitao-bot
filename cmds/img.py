@@ -8,7 +8,7 @@ import string
 from deta import Deta
 from discord.ext import commands
 from cmds.helpers.chanGet import main as getChan
-from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET, DETA_KEY
+from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET, REDDIT_AGENT, DETA_KEY
 
 deta = Deta(DETA_KEY)
 image_db = deta.Base("images")
@@ -34,7 +34,7 @@ class Images(commands.Cog):
         redd = asyncpraw.Reddit(
             client_id=REDDIT_ID,
             client_secret=REDDIT_SECRET,
-            user_agent="python/requests:mosquitaobot:1.0 (by /u/davioitu)",
+            user_agent=REDDIT_AGENT,
         )
         if subreddits is None:
             sub = await redd.random_subreddit(nsfw=False)
