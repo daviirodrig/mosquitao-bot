@@ -3,7 +3,7 @@ import random
 import aiohttp
 import discord
 import asyncpraw
-import prawcore
+import asyncprawcore
 import string
 from deta import Deta
 from discord.ext import commands
@@ -45,11 +45,11 @@ class Images(commands.Cog):
                 sub = await redd.subreddit(subreddits)
                 try:
                     await sub.quaran.opt_in()
-                except prawcore.exceptions.Forbidden:
+                except asyncprawcore.exceptions.Forbidden:
                     pass
                 a = await sub.random()
                 del a
-            except (prawcore.exceptions.Forbidden, prawcore.exceptions.NotFound):
+            except (asyncprawcore.exceptions.Forbidden, asyncprawcore.exceptions.NotFound):
                 await ctx.send("Aparentemente tem algo errado nesse subreddit :/")
                 return
         ranpost = await sub.random()
