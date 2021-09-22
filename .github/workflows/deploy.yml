@@ -24,7 +24,7 @@ jobs:
           source: "."
           target: "~/mosquitao-prod"
 
-      - name: Setup bot
+      - name: Setup .env
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -39,11 +39,8 @@ jobs:
             echo "REDDIT_SECRET=${{ secrets.REDDIT_SECRET }}" >> .env
             echo "REDDIT_AGENT=${{ secrets.REDDIT_AGENT }}" >> .env
             echo "DETA_KEY=${{ secrets.DETA_KEY }}" >> .env
-            apt-get update -y
-            apt-get upgrade -y
-            apt-get install screen -y
 
-      - name: Executing remote command
+      - name: Run deploy script
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}

@@ -1,4 +1,3 @@
 #!/bin/bash
-screen -SX mosquitao quit
 python3 -m pip install --upgrade -r requirements.txt
-screen -dm -L -Logfile mosquitao.log -S "mosquitao" python3 main.py
+pm2 restart mosquitao --update-env || pm2 start main.py --name=mosquitao --no-autorestart
