@@ -195,7 +195,7 @@ class Images(commands.Cog):
     @img.command()
     async def list(self, ctx):
         image_db = deta.Base("images")
-        images_fetch = next(image_db.fetch())
-        images_list = [item["key"] for item in images_fetch]
+        images_fetch = image_db.fetch()
+        images_list = [item["key"] for item in images_fetch.items]
         images_list_str = ", ".join(images_list)
         await ctx.send(f"Lista de imagens: {images_list_str}")
