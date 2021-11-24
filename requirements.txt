@@ -1,4 +1,4 @@
-discord.py[voice]
+py-cord[voice]
 asyncpraw
 prawcore
 youtube_dl
