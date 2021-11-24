@@ -88,7 +88,7 @@ class Images(commands.Cog):
         """
         async with ctx.channel.typing():
             emb = discord.Embed()
-            emb.set_image(url=getChan())
+            emb.set_image(url=await getChan())
             await ctx.send(embed=emb)
 
     @commands.command()

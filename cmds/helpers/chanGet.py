@@ -47,4 +47,4 @@ async def r4chan():
 
 async def main():
     url = await r4chan()
-    return url
+    return url[0]
