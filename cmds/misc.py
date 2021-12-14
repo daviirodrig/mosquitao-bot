@@ -107,16 +107,16 @@ class Misc(commands.Cog):
                         async with session.get(message.embeds[0].image.url) as req:
                             img = Image.open(BytesIO(await req.read()))
                     imagem = BytesIO()
-                    img.save(imagem,
-                             format="PNG" if img.mode == "RGBA" else "JPEG")
+                    img.save(imagem, format="PNG" if img.mode == "RGBA" else "JPEG")
                     img = imagem.getvalue()
                     break
                 if message.attachments:
                     last_msg = message
                     img = await last_msg.attachments[0].read()
                     break
-            emo = await ctx.message.guild.create_custom_emoji(name=emoji_name,
-                                                              image=img)
+            emo = await ctx.message.guild.create_custom_emoji(
+                name=emoji_name, image=img
+            )
             await ctx.send(f"Emoji criado com sucesso! {str(emo)}")
 
     @commands.command(usage="[@alguém]")
@@ -127,15 +127,15 @@ class Misc(commands.Cog):
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
         emb.set_author(name=f"Informações de {user.name + user.discriminator}")
         emb.set_thumbnail(url=user.avatar_url)
-        emb.add_field(name=":busts_in_silhouette:| Nome",
-                      value=f"```{user.name}```")
-        emb.add_field(name=":pencil:| Apelido",
-                      value=f"```{user.nick}```".replace("None", "Nenhum"))
+        emb.add_field(name=":busts_in_silhouette:| Nome", value=f"```{user.name}```")
+        emb.add_field(
+            name=":pencil:| Apelido",
+            value=f"```{user.nick}```".replace("None", "Nenhum"),
+        )
         emb.add_field(name=":id:| id", value=f"```{user.id}```")
         emb.add_field(
             name=":robot:| É Bot?",
-            value=f"```{user.bot}```".replace("False",
-                                              "Não").replace("True", "Sim"),
+            value=f"```{user.bot}```".replace("False", "Não").replace("True", "Sim"),
         )
         emb.add_field(
             name=":alarm_clock:| Criado em",
@@ -143,8 +143,9 @@ class Misc(commands.Cog):
         )
         emb.add_field(
             name=":blue_circle:| Status",
-            value=f"```{str(user.status)}```".replace("dnd", "Não pertubar").replace(
-                "idle", "Ausente").replace("online", "Disponível"),
+            value=f"```{str(user.status)}```".replace("dnd", "Não pertubar")
+            .replace("idle", "Ausente")
+            .replace("online", "Disponível"),
         )
         emb.add_field(
             name=":calendar:| Entrou no clã em",
@@ -159,8 +160,7 @@ class Misc(commands.Cog):
             else:
                 emb.add_field(
                     name=":joystick:| Game",
-                    value=f"```{user.activity.name}```".replace(
-                        "None", "Nenhum"),
+                    value=f"```{user.activity.name}```".replace("None", "Nenhum"),
                 )
         else:
             emb.add_field(name=":joystick:| Game", value="```Nenhum```")

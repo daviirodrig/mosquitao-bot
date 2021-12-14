@@ -24,7 +24,6 @@ def setup(bot):
 
 
 class Images(commands.Cog):
-
     @commands.command(usage="[nome do subreddit]")
     async def reddit(self, ctx, subreddits=None):
         """
@@ -49,7 +48,10 @@ class Images(commands.Cog):
                     pass
                 a = await sub.random()
                 del a
-            except (asyncprawcore.exceptions.Forbidden, asyncprawcore.exceptions.NotFound):
+            except (
+                asyncprawcore.exceptions.Forbidden,
+                asyncprawcore.exceptions.NotFound,
+            ):
                 await ctx.send("Aparentemente tem algo errado nesse subreddit :/")
                 return
         ranpost = await sub.random()
@@ -57,7 +59,9 @@ class Images(commands.Cog):
             ranpost = random.choice(list(await sub.hot()))
         while ranpost is not None:
             ranpost = (
-                await sub.random() if ranpost is not None else random.choice(list(await sub.hot()))
+                await sub.random()
+                if ranpost is not None
+                else random.choice(list(await sub.hot()))
             )
             loop_count += 1
             if ranpost.url.endswith(("jpg", "png", "gif", "jpeg", "bmp")):
@@ -96,6 +100,7 @@ class Images(commands.Cog):
         """
         Imagem aleatória do site prntsc
         """
+
         def gerar_link():
             base_url = "https://prnt.sc/"
             chars = string.ascii_lowercase + string.digits
@@ -103,6 +108,7 @@ class Images(commands.Cog):
                 selected_char = random.choice(list(chars))
                 base_url += selected_char
             return base_url
+
         url = gerar_link()
         return await ctx.send(url)
 
@@ -156,7 +162,9 @@ class Images(commands.Cog):
     @commands.group(invoke_without_command=True)
     async def img(self, ctx, img_name=None):
         if img_name is None:
-            await ctx.send("Você precisa digitar uma imagem ou algum dos subcomandos: add, delete ou list")
+            await ctx.send(
+                "Você precisa digitar uma imagem ou algum dos subcomandos: add, delete ou list"
+            )
         else:
             image_db = deta.Base("images")
             res = image_db.get(img_name)
@@ -179,11 +187,9 @@ class Images(commands.Cog):
                     img_url = message.attachments[0].url
                     break
             image_db = deta.Base("images")
-            res = image_db.put({
-                "key": img_name,
-                "url": img_url,
-                "author": ctx.author.name
-            })
+            res = image_db.put(
+                {"key": img_name, "url": img_url, "author": ctx.author.name}
+            )
             await ctx.send(f"`{img_name}` adicionado às imagens")
 
     @img.command()

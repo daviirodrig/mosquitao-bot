@@ -10,38 +10,40 @@ cache = {cache: '' for cache in boards}
 async def r4chan():
     board = random.choice(boards)
     threadnums = list()
-    data = ''
+    data = ""
 
-    if (cache[board] != ''):
+    if cache[board] != "":
         data = cache[board]
     else:
         async with aiohttp.ClientSession() as session:
-            async with session.get('http://a.4cdn.org/' + board + '/catalog.json') as r:
+            async with session.get("http://a.4cdn.org/" + board + "/catalog.json") as r:
                 data = await r.json()
         cache[board] = data
         await asyncio.sleep(1.1)
 
     for page in data:
         for thread in page["threads"]:
-            threadnums.append(thread['no'])
+            threadnums.append(thread["no"])
 
     thread = random.choice(threadnums)
 
     # Request the thread information, and get a list of images in that thread; again sleeping for 1.5 seconds
     imgs = list()
     async with aiohttp.ClientSession() as session:
-        async with session.get('http://a.4cdn.org/' + board + '/thread/' + str(thread) + '.json') as r:
+        async with session.get(
+            "http://a.4cdn.org/" + board + "/thread/" + str(thread) + ".json"
+        ) as r:
             pd = await r.json()
-    for post in pd['posts']:
+    for post in pd["posts"]:
         try:
-            imgs.append(str(post['tim']) + str(post['ext']))
+            imgs.append(str(post["tim"]) + str(post["ext"]))
         except:
             pass
     await asyncio.sleep(1.1)
 
     image = random.choice(imgs)
-    imageurl = 'https://i.4cdn.org/' + board + '/' + image
-    thread = 'https://boards.4chan.org/' + board + '/thread/' + str(thread)
+    imageurl = "https://i.4cdn.org/" + board + "/" + image
+    thread = "https://boards.4chan.org/" + board + "/thread/" + str(thread)
     return [imageurl, thread]
 
 

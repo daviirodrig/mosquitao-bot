@@ -48,35 +48,41 @@ class Music(commands.Cog):
                 await ctx.author.voice.channel.connect()
             else:
                 return await ctx.send(
-                    "Você precisa estar conectado em um canal de voz.")
+                    "Você precisa estar conectado em um canal de voz."
+                )
         async with ctx.typing():
             # Limpa o cache da pasta songs
             os.system("rd /s /q songs") if os.name == "nt" else os.system(
-                "rm -rf songs")
+                "rm -rf songs"
+            )
             song_dl = ctx.bot.YT_DL.extract_info(url)
             if song_dl["_type"] == "playlist":
                 for song in song_dl["entries"]:
                     song["ctx"] = ctx
                     song["requester"] = ctx.author
                     song[
-                        "song_path"] = f'./songs/{song["extractor"]}-{song["id"]}.{song["ext"]}'
+                        "song_path"
+                    ] = f'./songs/{song["extractor"]}-{song["id"]}.{song["ext"]}'
                     song["play_source"] = discord.FFmpegPCMAudio(
-                        source=song["song_path"])
+                        source=song["song_path"]
+                    )
                 ctx.bot.song_queue.extend(song_dl["entries"])
                 if len(song_dl["entries"]) > 1:
                     await ctx.send(
-                        f"Adicionei `{len(song_dl['entries'])}` musicas na lista.")
+                        f"Adicionei `{len(song_dl['entries'])}` musicas na lista."
+                    )
             else:
-                song_info = song_dl["entries"][0] if song_dl.get(
-                    "entries") else song_dl
+                song_info = song_dl["entries"][0] if song_dl.get("entries") else song_dl
                 song_info["ctx"] = ctx
                 song_info["requester"] = ctx.author
                 song_info[
-                    "song_path"] = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
+                    "song_path"
+                ] = f'./songs/{song_info["extractor"]}-{song_info["id"]}.{song_info["ext"]}'
                 ctx.bot.song_queue.append(song_info)
             if ctx.voice_client.is_playing():
                 return await ctx.send(
-                    f"{ctx.bot.song_queue[-1]['title']} adicionada à lista.")
+                    f"{ctx.bot.song_queue[-1]['title']} adicionada à lista."
+                )
             emb = discord.Embed(
                 title=ctx.bot.song_queue[-1]["title"],
                 url=ctx.bot.song_queue[-1]["webpage_url"],
@@ -92,12 +98,16 @@ class Music(commands.Cog):
                 value=timedelta(seconds=ctx.bot.song_queue[-1]["duration"]),
                 inline=True,
             )
-            emb.add_field(name="Pedido por",
-                          value=ctx.bot.song_queue[-1]["requester"].name,
-                          inline=True)
+            emb.add_field(
+                name="Pedido por",
+                value=ctx.bot.song_queue[-1]["requester"].name,
+                inline=True,
+            )
             emb.set_footer(text="Conectado a " + ctx.voice_client.endpoint)
-            ctx.voice_client.play(ctx.bot.song_queue[-1]["play_source"],
-                                  after=lambda e: self.play_next(ctx=ctx))
+            ctx.voice_client.play(
+                ctx.bot.song_queue[-1]["play_source"],
+                after=lambda e: self.play_next(ctx=ctx),
+            )
             ctx.bot.ta_playando = ctx.bot.song_queue[-1]
             await ctx.send(embed=emb)
 
@@ -113,7 +123,8 @@ class Music(commands.Cog):
                 ctx.bot.song_queue[index]["ctx"].voice_client.stop()
             ctx.bot.song_queue[index + 1]["ctx"].voice_client.play(
                 ctx.bot.song_queue[index + 1]["play_source"],
-                after=lambda e: self.play_next(ctx=ctx))
+                after=lambda e: self.play_next(ctx=ctx),
+            )
             ctx.bot.ta_playando = ctx.bot.song_queue[index + 1]
             emb = discord.Embed(
                 title=ctx.bot.song_queue[index + 1]["title"],
@@ -127,8 +138,7 @@ class Music(commands.Cog):
             emb.set_thumbnail(url=ctx.bot.song_queue[index + 1]["thumbnail"])
             emb.add_field(
                 name="Duração",
-                value=timedelta(
-                    seconds=ctx.bot.song_queue[index + 1]["duration"]),
+                value=timedelta(seconds=ctx.bot.song_queue[index + 1]["duration"]),
                 inline=True,
             )
             emb.add_field(
@@ -137,10 +147,12 @@ class Music(commands.Cog):
                 inline=True,
             )
             emb.set_footer(
-                text="Conectado a " +
-                ctx.bot.song_queue[index + 1]["ctx"].voice_client.endpoint)
+                text="Conectado a "
+                + ctx.bot.song_queue[index + 1]["ctx"].voice_client.endpoint
+            )
             asyncio.run_coroutine_threadsafe(
-                ctx.bot.song_queue[index + 1]["ctx"].send(embed=emb), ctx.bot.loop)
+                ctx.bot.song_queue[index + 1]["ctx"].send(embed=emb), ctx.bot.loop
+            )
             del ctx.bot.song_queue[index]
 
     @commands.command(aliases=["queue"])
@@ -197,9 +209,10 @@ class Music(commands.Cog):
             value=timedelta(seconds=ctx.bot.ta_playando["duration"]),
             inline=True,
         )
-        emb.add_field(name="Pedido por",
-                      value=ctx.bot.ta_playando["requester"].name,
-                      inline=True)
-        emb.set_footer(text="Conectado a " +
-                       ctx.bot.ta_playando["ctx"].voice_client.endpoint)
+        emb.add_field(
+            name="Pedido por", value=ctx.bot.ta_playando["requester"].name, inline=True
+        )
+        emb.set_footer(
+            text="Conectado a " + ctx.bot.ta_playando["ctx"].voice_client.endpoint
+        )
         await ctx.send(embed=emb)

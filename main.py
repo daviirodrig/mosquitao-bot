@@ -1,7 +1,6 @@
 """ Main file to run the bot """
 import datetime
 import traceback
-import discord
 from discord.ext import commands
 from cmds.helpers.consts import OWNER_ID, TOKEN
 
@@ -15,7 +14,8 @@ async def on_ready():
     """
     print("----------------------------")
     print(
-        f"Bot iniciado {datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))}")
+        f"Bot iniciado {datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))}"
+    )
     print(f"Logado como {bot.user.name}")
     print("----------------------------")
 
@@ -29,8 +29,10 @@ async def on_command_error(ctx, error):
     if hasattr(ctx.command, "on_error"):
         return
     if isinstance(error, commands.MissingRequiredArgument):
-        return await ctx.send("Este comando prescisa de algum argumento\n"
-                              "Manda um `$help` para ver os comandos")
+        return await ctx.send(
+            "Este comando prescisa de algum argumento\n"
+            "Manda um `$help` para ver os comandos"
+        )
     if isinstance(error, commands.BadArgument):
         return await ctx.send("Erro no argumento")
     if isinstance(error, commands.CommandNotFound):
@@ -43,7 +45,8 @@ async def on_command_error(ctx, error):
     return await canal.send(
         f"O comando `{ctx.command}` invocado por `{ctx.author.name}`\n"
         f"Gerou o seguinte erro:\n"
-        f"```{error_str}```")
+        f"```{error_str}```"
+    )
 
 
 @bot.event
@@ -52,7 +55,8 @@ async def on_command(ctx):
     Função para printar quando alguém usar comandos.
     """
     print(
-        f"{datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))} {ctx.message.author}: {ctx.message.content}")
+        f"{datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))} {ctx.message.author}: {ctx.message.content}"
+    )
 
 
 @bot.event
