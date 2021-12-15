@@ -3,6 +3,7 @@ import random
 import asyncio
 import os
 from cmds.helpers.consts import YTDL_FORMAT_OPTIONS
+from cmds.helpers.yt_api import YT
 import discord
 import youtube_dl
 from datetime import timedelta
@@ -17,6 +18,7 @@ def setup(bot):
     """
     print("Iniciando load dos comandos de musica")
     bot.YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
+    bot.yt = YT()
     bot.song_queue = []
     bot.ta_playando = None
     bot.add_cog(Music())
@@ -216,3 +218,18 @@ class Music(commands.Cog):
             text="Conectado a " + ctx.bot.ta_playando["ctx"].voice_client.endpoint
         )
         await ctx.send(embed=emb)
+
+    @commands.command()
+    async def playlist(self, ctx, *args):
+        yt = ctx.bot.yt
+        if not args:
+            return await ctx.send("Você precisa digitar url ou add após o comando.")
+        if args[0] == "url":
+            return await ctx.send(yt.playlist_url)
+        if args[0] == "add":
+            video_id = args[1].split("=")[1]
+            insert = await yt.insert_to_playlist(video_id)
+            if insert != 200:
+                return await ctx.send("Algum erro ocorreu e a música não foi adicionada.")
+            else:
+                return await ctx.send("Música adicionada.")

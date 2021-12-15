@@ -3,6 +3,10 @@ from os import getenv
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
+YT_PLAYLIST = getenv("YT_PLAYLIST")
+YT_CLIENT_ID = getenv("YT_CLIENT_ID")
+YT_CLIENT_SECRET = getenv("YT_CLIENT_SECRET")
+YT_REFRESH_TOKEN = getenv("YT_REFRESH_TOKEN")
 REDDIT_AGENT = getenv("REDDIT_AGENT")
 REDDIT_ID = getenv("REDDIT_ID")
 REDDIT_SECRET = getenv("REDDIT_SECRET")
