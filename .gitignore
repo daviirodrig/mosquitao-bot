@@ -11,3 +11,5 @@ venv/
 .vscode/
 secret.py
 songs/
+
+.idea
