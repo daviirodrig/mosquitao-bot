@@ -227,7 +227,9 @@ class Music(commands.Cog):
         if args[0] == "url":
             return await ctx.send(yt.playlist_url)
         if args[0] == "add":
-            video_id = args[1].split("=")[1]
+            video_id = ctx.bot.YT_DL.extract_info(
+                args[1], download=False)["id"]
+            #video_id = args[1].split("=")[1]
             insert = await yt.insert_to_playlist(video_id)
             if insert != 200:
                 return await ctx.send("Algum erro ocorreu e a música não foi adicionada.")
