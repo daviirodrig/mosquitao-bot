@@ -24,6 +24,7 @@ def setup(bot):
 
 
 class Images(commands.Cog):
+
     @commands.command(usage="[nome do subreddit]")
     async def reddit(self, ctx, subreddits=None):
         """
@@ -92,7 +93,9 @@ class Images(commands.Cog):
         """
         async with ctx.channel.typing():
             emb = discord.Embed()
-            emb.set_image(url=await getChan())
+            post = await getChan()
+            url = post[0]
+            emb.set_image(url=url)
             await ctx.send(embed=emb)
 
     @commands.command()
@@ -118,16 +121,14 @@ class Images(commands.Cog):
         Gnoma pessoas.
         """
         gnome = "https://j.gifs.com/rRKn4E.gif"
-        emb = discord.Embed(
-            colour=random.randint(
-                0,
-                0xFFFFFF,
-            )
-        )
+
         nome = pessoa.nick if pessoa.nick else pessoa.name
         autor = ctx.author.nick if ctx.author.nick else ctx.author.name
+
+        emb = discord.Embed(colour=discord.Color.random())
         emb.set_author(name=f"{nome} foi gnomado por {autor}!!")
         emb.set_image(url=gnome)
+
         await ctx.send(embed=emb)
 
     @commands.command()
@@ -187,9 +188,11 @@ class Images(commands.Cog):
                     img_url = message.attachments[0].url
                     break
             image_db = deta.Base("images")
-            res = image_db.put(
-                {"key": img_name, "url": img_url, "author": ctx.author.name}
-            )
+            res = image_db.put({
+                "key": img_name,
+                "url": img_url,
+                "author": ctx.author.name
+            })
             await ctx.send(f"`{img_name}` adicionado às imagens")
 
     @img.command()
