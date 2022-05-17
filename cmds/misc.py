@@ -1,4 +1,5 @@
 """Comandos aleatórios"""
+import asyncio
 import random
 import time
 from io import BytesIO
@@ -18,6 +19,33 @@ def setup(bot):
 
 
 class Misc(commands.Cog):
+
+    @commands.command()
+    async def loop(self, ctx, command, times=5):
+        """
+        Loop de comandos
+        """
+        if command == "stop":
+            ctx.bot.stop_loop = True
+            return
+
+        ctx.bot.stop_loop = False
+
+        count = 0
+        msg = await ctx.send(f"Loop iniciado: {count}/{times}")
+
+        for _ in range(times):
+            if ctx.bot.stop_loop:
+                break
+
+            count += 1
+
+            await ctx.invoke(ctx.bot.get_command(command))
+            await msg.edit(content=f"Loop iniciado: {count}/{times}")
+            await asyncio.sleep(1)
+
+        await ctx.send("Loop finalizado")
+
     @commands.command(aliases=["rl"])
     async def hotreload(self, ctx, to_rl):
         """
