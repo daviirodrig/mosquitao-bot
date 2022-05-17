@@ -152,11 +152,11 @@ class Images(commands.Cog):
         Foto aleatória de um gato.
         """
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://aws.random.cat/meow") as r:
+            async with session.get("https://cataas.com/cat?json=true") as r:
                 gato = await r.json()
-                json_cat = gato["file"]
+                cat_url = 'https://cataas.com/' + gato["url"]
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
-        emb.set_image(url=json_cat)
+        emb.set_image(url=cat_url)
         await ctx.send(embed=emb)
 
     # Comandos de img db
