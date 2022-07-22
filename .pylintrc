@@ -1,0 +1,10 @@
+[MAIN]
+init-hook='import sys; sys.path.append(".")'
+
+[MESSAGES CONTROL]
+disable=
+    broad-except,
+    invalid-name,
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,

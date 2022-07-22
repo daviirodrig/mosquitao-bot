@@ -7,6 +7,7 @@ output.log
 # Environments
 .env
 venv/
+.venv/
 
 .vscode/
 secret.py
