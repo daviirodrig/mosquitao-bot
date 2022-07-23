@@ -4,3 +4,9 @@ services:
   bot:
     build: .
     env_file: .env
+    depends_on:
+      - lavalink
+  lavalink:
+    image: fredboat/lavalink:dev
+    volumes:
+      - ./lavalink/application.yaml:/opt/Lavalink/application.yaml

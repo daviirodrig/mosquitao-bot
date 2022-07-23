@@ -25,6 +25,8 @@ async def on_command_error(ctx, error):
     """
     Função para lidar com erros em comandos
     """
+    if isinstance(error, commands.errors.CheckFailure):
+        return
     error = getattr(error, "original", error)
     if hasattr(ctx.command, "on_error"):
         return

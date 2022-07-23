@@ -43,6 +43,8 @@ jobs:
             echo "YT_PLAYLIST"=${{ secrets.YT_PLAYLIST }} >> .env
             echo "YT_CLIENT_ID"=${{ secrets.YT_CLIENT_ID }} >> .env
             echo "YT_CLIENT_SECRET"=${{ secrets.YT_CLIENT_SECRET }} >> .env
+            echo "SPOTIFY_ID"=${{ secrets.SPOTIFY_ID }} >> .env
+            echo "SPOTIFY_SECRET"=${{ secrets.SPOTIFY_SECRET }} >> .env
 
       - name: Run deploy script
         uses: appleboy/ssh-action@master

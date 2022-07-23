@@ -5,3 +5,4 @@ youtube_dl
 Pillow
 python-dotenv
 deta
+wavelink
