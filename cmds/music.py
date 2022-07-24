@@ -121,7 +121,10 @@ class Music(commands.Cog):
         except IndexError:
             return await ctx.send("Nothing found")
 
-        if sp["type"] in (spotify.SpotifySearchType.playlist, spotify.SpotifySearchType.album):
+        if sp["type"] in (
+            spotify.SpotifySearchType.playlist,
+            spotify.SpotifySearchType.album,
+        ):
             for t in track:
                 await vc.queue.put_wait(t)
         else:
@@ -154,19 +157,21 @@ class Music(commands.Cog):
         ctx.bot.loop.create_task(self.setup_lavalink())
 
     @commands.command(aliases=["leave", "stop"])
-    @commands.check(lambda ctx: ctx.voice_client is not None)
     async def sair(self, ctx):
         """
         Comando para sair do canal de voz.
         """
+        if ctx.voice_client is None:
+            return
         await ctx.voice_client.disconnect()
 
     @commands.command(aliases=["queue"])
-    @commands.check(lambda ctx: ctx.voice_client is not None)
     async def lista(self, ctx):
         """
         Lista de músicas
         """
+        if ctx.voice_client is None:
+            return
         if len(ctx.voice_client.queue) < 1:
             return await ctx.send("```css\nLista vazia\n```")
         msg = "```css"
@@ -176,19 +181,21 @@ class Music(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    @commands.check(lambda ctx: ctx.voice_client is not None)
     async def pause(self, ctx):
         """
         Pausa a música
         """
+        if ctx.voice_client is None:
+            return
         await ctx.voice_client.pause()
 
     @commands.command()
-    @commands.check(lambda ctx: ctx.voice_client is not None)
     async def resume(self, ctx):
         """
         Resume a música
         """
+        if ctx.voice_client is None:
+            return
         await ctx.voice_client.resume()
 
     @commands.command(aliases=["skip"])
