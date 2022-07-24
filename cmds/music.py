@@ -42,6 +42,11 @@ class Music(commands.Cog):
             ),
         )
 
+    async def send_info(self, ctx: commands.Context):
+        emb = self.embed_factory(ctx)
+
+        await ctx.send(embed=emb)
+
     def embed_factory(self, ctx: commands.Context) -> discord.Embed:
         track_info = ctx.bot.YT_DL.extract_info(
             ctx.voice_client.source.uri, download=False
@@ -78,22 +83,24 @@ class Music(commands.Cog):
 
         try:
             track = await wavelink.YouTubeTrack.search(
-                query=track_name, return_first=True
+                query=track_name, return_first=False
             )
         except IndexError:
             return await ctx.send("Nothing found")
 
-        async def send_info():
-            emb = self.embed_factory(ctx)
-
-            await ctx.send(embed=emb)
+        if isinstance(track, wavelink.YouTubePlaylist):
+            for t in track.tracks:
+                await vc.queue.put_wait(t)
+        else:
+            await vc.queue.put_wait(track[0])
 
         if vc.is_playing():
-            await vc.queue.put_wait(track)
-            await ctx.send(f"Added to queue: {track.title}")
+            title = track[0].title if isinstance(track, list) else track.name
+            await ctx.send(f"Added to queue {title}")
         else:
-            ctx.bot.loop.create_task(send_info())
-            await vc.play(track)
+            ctx.bot.loop.create_task(self.send_info(ctx))
+            next_track = await vc.queue.get_wait()
+            await vc.play(next_track)
 
     @commands.command()
     async def spotify(self, ctx: commands.Context, *, track_name: str):
@@ -104,19 +111,29 @@ class Music(commands.Cog):
 
         sp = spotify.decode_url(track_name)
 
+        if sp is None:
+            return ctx.send("Not valid")
+
         try:
             track = await spotify.SpotifyTrack.search(
-                query=sp["id"], type=sp["type"], return_first=True
+                query=sp["id"], type=sp["type"], return_first=False
             )
         except IndexError:
             return await ctx.send("Nothing found")
 
-        if vc.is_playing():
-            await vc.queue.put_wait(track)
-            await ctx.send(f"Added to queue: {track.title}")
+        if sp["type"] in (spotify.SpotifySearchType.playlist, spotify.SpotifySearchType.album):
+            for t in track:
+                await vc.queue.put_wait(t)
         else:
-            # ctx.bot.loop.create_task(send_info())
-            await vc.play(track)
+            await vc.queue.put_wait(track[0])
+
+        if vc.is_playing():
+            title = track[0].title if isinstance(track, list) else track.name
+            await ctx.send(f"Added to queue {title}")
+        else:
+            ctx.bot.loop.create_task(self.send_info(ctx))
+            next_track = await vc.queue.get_wait()
+            await vc.play(next_track)
 
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, player: wavelink.Player, track, reason):
