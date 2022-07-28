@@ -154,7 +154,9 @@ class Music(commands.Cog):
             await vc.play(next_track)
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track, reason):
+    async def on_wavelink_track_end(
+        self, player: wavelink.Player, track, reason
+    ):  # pylint: disable=unused-argument
         """
         Handle on track end
         """
@@ -185,13 +187,6 @@ class Music(commands.Cog):
         if ctx.voice_client is None:
             return
         await ctx.voice_client.disconnect()
-
-    @commands.command()
-    async def volume(self, ctx: commands.Context):
-        """
-        Altera o volume
-        """
-
 
     @commands.command(aliases=["queue"])
     async def lista(self, ctx):
