@@ -30,6 +30,9 @@ class Music(commands.Cog):
         bot.loop.create_task(self.setup_lavalink())
 
     async def setup_lavalink(self) -> None:
+        """
+        Create lavalink node
+        """
         await self.bot.wait_until_ready()
 
         await wavelink.NodePool.create_node(
@@ -43,11 +46,17 @@ class Music(commands.Cog):
         )
 
     async def send_info(self, ctx: commands.Context):
+        """
+        Coroutine to send embed from `embed_factory`
+        """
         emb = self.embed_factory(ctx)
 
         await ctx.send(embed=emb)
 
     def embed_factory(self, ctx: commands.Context) -> discord.Embed:
+        """
+        Return embed of current song in `ctx`
+        """
         track_info = ctx.bot.YT_DL.extract_info(
             ctx.voice_client.source.uri, download=False
         )
@@ -76,6 +85,9 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx: commands.Context, *, track_name: str):
+        """
+        Play songs | $play [search|link]
+        """
         vc: wavelink.Player = (
             ctx.voice_client
             or await ctx.author.voice.channel.connect(cls=wavelink.Player)
@@ -104,6 +116,9 @@ class Music(commands.Cog):
 
     @commands.command()
     async def spotify(self, ctx: commands.Context, *, track_name: str):
+        """
+        Play spotify links
+        """
         vc: wavelink.Player = (
             ctx.voice_client
             or await ctx.author.voice.channel.connect(cls=wavelink.Player)
@@ -140,6 +155,9 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, player: wavelink.Player, track, reason):
+        """
+        Handle on track end
+        """
         if not player.queue.is_empty:
             next_track = await player.queue.get_wait()
             await player.play(next_track)
@@ -154,6 +172,9 @@ class Music(commands.Cog):
 
     @commands.command()
     async def reconnect(self, ctx: commands.Bot):
+        """
+        Reconnect to audio server
+        """
         ctx.bot.loop.create_task(self.setup_lavalink())
 
     @commands.command(aliases=["leave", "stop"])
@@ -164,6 +185,13 @@ class Music(commands.Cog):
         if ctx.voice_client is None:
             return
         await ctx.voice_client.disconnect()
+
+    @commands.command()
+    async def volume(self, ctx: commands.Context):
+        """
+        Altera o volume
+        """
+
 
     @commands.command(aliases=["queue"])
     async def lista(self, ctx):
@@ -227,7 +255,7 @@ class Music(commands.Cog):
             return await ctx.send(yt.playlist_url)
         if args[0] == "add":
             video_id = ctx.bot.YT_DL.extract_info(args[1], download=False)["id"]
-            # video_id = args[1].split("=")[1]
+            video_id = args[1].split("=")[1]
             insert = await yt.insert_to_playlist(video_id)
             if insert != 200:
                 return await ctx.send(
