@@ -173,6 +173,39 @@ class Music(commands.Cog):
         await canal_de_voz.connect()
 
     @commands.command()
+    async def volume(self, ctx: commands.Context, vol: int = None):
+        """
+        Altera o volume | $volume {1..500}
+        """
+        if ctx.voice_client is None:
+            return
+        if vol is None:
+            return await ctx.send(f"Volume: {ctx.voice_client.volume}")
+        vol /= 100
+        vc: wavelink.Player = ctx.voice_client
+        await vc.set_volume(vol, seek=True)
+
+    @commands.command(aliases=["avançar", "av"])
+    async def avancar(self, ctx: commands.Context, pos: int):
+        """
+        Avança x segundos na música
+        """
+        if ctx.voice_client is None:
+            return
+        vc: wavelink.Player = ctx.voice_client
+        pos = int(pos * 1000 + vc.position)
+        await vc.seek(pos)
+
+    @commands.command(aliases=["pos"])
+    async def position(self, ctx: commands.Context, pos: int):
+        """
+        Coloca a música em x segundos
+        """
+        vc: wavelink.Player = ctx.voice_client
+        pos *= 1000
+        await vc.seek(pos)
+
+    @commands.command()
     async def reconnect(self, ctx: commands.Bot):
         """
         Reconnect to audio server
