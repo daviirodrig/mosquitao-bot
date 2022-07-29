@@ -187,13 +187,14 @@ class Music(commands.Cog):
         """
         Altera o volume | $volume {1..500}
         """
-        if ctx.voice_client is None:
+        vc: wavelink.Player = ctx.voice_client
+        if vc is None:
             return
         if vol is None:
-            return await ctx.send(f"Volume: {ctx.voice_client.volume}")
+            return await ctx.send(f"Volume: {vc.volume}")
         vol /= 100
-        vc: wavelink.Player = ctx.voice_client
         await vc.set_volume(vol, seek=True)
+        await ctx.message.add_reaction("🔊")
 
     @commands.command(aliases=["avançar", "av"])
     async def avancar(self, ctx: commands.Context, pos: int):
@@ -205,6 +206,7 @@ class Music(commands.Cog):
         vc: wavelink.Player = ctx.voice_client
         pos = int(pos * 1000 + vc.position)
         await vc.seek(pos)
+        await ctx.message.add_reaction("⏩")
 
     @commands.command(aliases=["pos"])
     async def position(self, ctx: commands.Context, pos: int):
@@ -214,6 +216,7 @@ class Music(commands.Cog):
         vc: wavelink.Player = ctx.voice_client
         pos *= 1000
         await vc.seek(pos)
+        await ctx.message.add_reaction("👍")
 
     @commands.command()
     async def reconnect(self, ctx: commands.Bot):
@@ -254,6 +257,7 @@ class Music(commands.Cog):
         if ctx.voice_client is None:
             return
         await ctx.voice_client.pause()
+        await ctx.message.add_reaction("⏸")
 
     @commands.command()
     async def resume(self, ctx):
@@ -263,6 +267,7 @@ class Music(commands.Cog):
         if ctx.voice_client is None:
             return
         await ctx.voice_client.resume()
+        await ctx.message.add_reaction("▶")
 
     @commands.command(aliases=["skip"])
     async def pular(self, ctx):

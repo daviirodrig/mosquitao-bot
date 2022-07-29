@@ -1,7 +1,9 @@
 """ Main file to run the bot """
 import datetime
 import traceback
+
 from discord.ext import commands
+
 from cmds.helpers.consts import OWNER_ID, TOKEN
 
 bot = commands.Bot(command_prefix="$", case_insensitive=True)
@@ -38,7 +40,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.BadArgument):
         return await ctx.send("Erro no argumento")
     if isinstance(error, commands.CommandNotFound):
-        return await ctx.send("Comando não encontrado :/")
+        return await ctx.message.add_reaction("🤔")
     canal = bot.get_user(OWNER_ID)
     if canal is None:
         canal = await bot.fetch_user(OWNER_ID)
