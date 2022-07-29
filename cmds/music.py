@@ -1,4 +1,5 @@
 """Comandos de música"""
+import random
 from datetime import timedelta
 
 import discord
@@ -171,6 +172,15 @@ class Music(commands.Cog):
         """
         canal_de_voz = ctx.author.voice.channel
         await canal_de_voz.connect()
+
+    @commands.command()
+    async def shuffle(self, ctx:commands.Context):
+        """
+        Randomiza a lista de reprodução
+        """
+        vc: wavelink.Player = ctx.voice_client
+        random.shuffle(vc.queue._queue) # pylint: disable=protected-access
+        await ctx.message.add_reaction("🔀")
 
     @commands.command()
     async def volume(self, ctx: commands.Context, vol: int = None):
