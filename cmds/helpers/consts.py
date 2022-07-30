@@ -1,10 +1,13 @@
 """Consts file"""
 from os import getenv
-from dotenv import load_dotenv, find_dotenv
+
+from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 SPOTIFY_ID = getenv("SPOTIFY_ID")
 SPOTIFY_SECRET = getenv("SPOTIFY_SECRET")
+SPOTIFY_REFRESH = getenv("SPOTIFY_REFRESH")
+PLAYLIST_ID = getenv("PLAYLIST_ID")
 
 YT_PLAYLIST = getenv("YT_PLAYLIST")
 YT_CLIENT_ID = getenv("YT_CLIENT_ID")

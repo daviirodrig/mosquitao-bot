@@ -1,4 +1,5 @@
 """Comandos de música"""
+import asyncio
 import random
 from datetime import timedelta
 
@@ -8,7 +9,9 @@ import youtube_dl
 from discord.ext import commands
 from wavelink.ext import spotify
 
-from cmds.helpers.consts import SPOTIFY_ID, SPOTIFY_SECRET, YTDL_FORMAT_OPTIONS
+from cmds.helpers.consts import (PLAYLIST_ID, SPOTIFY_ID, SPOTIFY_SECRET,
+                                 YTDL_FORMAT_OPTIONS)
+from cmds.helpers.spotify import Spotify
 from cmds.helpers.yt_api import YT
 
 
@@ -50,14 +53,16 @@ class Music(commands.Cog):
         """
         Coroutine to send embed from `embed_factory`
         """
-        emb = self.embed_factory(ctx)
+        emb = await self.embed_factory(ctx)
 
         await ctx.send(embed=emb)
 
-    def embed_factory(self, ctx: commands.Context) -> discord.Embed:
+    async def embed_factory(self, ctx: commands.Context) -> discord.Embed:
         """
         Return embed of current song in `ctx`
         """
+        while ctx.voice_client.source is None:
+            await asyncio.sleep(1)
         track_info = ctx.bot.YT_DL.extract_info(
             ctx.voice_client.source.uri, download=False
         )
@@ -127,28 +132,42 @@ class Music(commands.Cog):
 
         sp = spotify.decode_url(track_name)
 
-        if sp is None:
-            return ctx.send("Not valid")
-
-        try:
-            track = await spotify.SpotifyTrack.search(
-                query=sp["id"], type=sp["type"], return_first=False
+        # gambiarra, please ignore
+        if sp["id"] == PLAYLIST_ID:
+            sp_client = Spotify(SPOTIFY_ID, SPOTIFY_SECRET)
+            pl_tracks = await sp_client.get_playlist_tracks(
+                f"spotify:playlist:{sp['id']}"
             )
-        except IndexError:
-            return await ctx.send("Nothing found")
-
-        if sp["type"] in (
-            spotify.SpotifySearchType.playlist,
-            spotify.SpotifySearchType.album,
-        ):
-            for t in track:
-                await vc.queue.put_wait(t)
+            for t in pl_tracks:
+                artists = [i["name"] for i in t["track"]["artists"]]
+                artists_str = " ".join(artists)
+                query = f'{artists_str} {t["track"]["name"]}'
+                track = wavelink.PartialTrack(query=query)
+                await vc.queue.put_wait(track)
+        # end of gambiarra
         else:
-            await vc.queue.put_wait(track[0])
+
+            if sp is None:
+                return ctx.send("Not valid")
+
+            try:
+                track = await spotify.SpotifyTrack.search(
+                    query=sp["id"], type=sp["type"], return_first=False
+                )
+            except IndexError:
+                return await ctx.send("Nothing found")
+
+            if sp["type"] in (
+                spotify.SpotifySearchType.playlist,
+                spotify.SpotifySearchType.album,
+            ):
+                for t in track:
+                    await vc.queue.put_wait(t)
+            else:
+                await vc.queue.put_wait(track[0])
 
         if vc.is_playing():
-            title = track[0].title if isinstance(track, list) else track.name
-            await ctx.send(f"Added to queue {title}")
+            await ctx.send("Added to queue")
         else:
             ctx.bot.loop.create_task(self.send_info(ctx))
             next_track = await vc.queue.get_wait()
@@ -174,12 +193,12 @@ class Music(commands.Cog):
         await canal_de_voz.connect()
 
     @commands.command()
-    async def shuffle(self, ctx:commands.Context):
+    async def shuffle(self, ctx: commands.Context):
         """
         Randomiza a lista de reprodução
         """
         vc: wavelink.Player = ctx.voice_client
-        random.shuffle(vc.queue._queue) # pylint: disable=protected-access
+        random.shuffle(vc.queue._queue)  # pylint: disable=protected-access
         await ctx.message.add_reaction("🔀")
 
     @commands.command()
@@ -277,7 +296,7 @@ class Music(commands.Cog):
         vc: wavelink.Player = ctx.voice_client
         await vc.stop()
         if not vc.queue.is_empty:
-            await ctx.send(f"Now playing: {vc.queue[0] or vc.queue}")
+            await ctx.send(f"Now playing: {vc.queue[0].title or vc.queue}")
 
     @commands.command(aliases=["tocando", "nowplaying", "tocandoagora"])
     async def np(self, ctx):
@@ -285,7 +304,7 @@ class Music(commands.Cog):
         O que está tocando?
         """
 
-        emb = self.embed_factory(ctx)
+        emb = await self.embed_factory(ctx)
 
         await ctx.send(embed=emb)
 
