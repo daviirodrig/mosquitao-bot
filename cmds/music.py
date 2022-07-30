@@ -265,6 +265,8 @@ class Music(commands.Cog):
         msg = "```css"
         for i, song in enumerate(ctx.voice_client.queue):
             msg += f"\n{i+1} - {song.title}"
+            if len(msg) > 1500:
+                break
         msg += "\n```"
         await ctx.send(msg)
 
