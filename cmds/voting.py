@@ -2,7 +2,7 @@
 from discord.ext import commands
 
 
-def setup(bot):
+async def setup(bot):
     """
     Setup
     """
@@ -13,7 +13,7 @@ def setup(bot):
     bot.vote = False
     bot.votos1 = 0
     bot.votos2 = 0
-    bot.add_cog(Voting())
+    await bot.add_cog(Voting())
     print("Load finalizado")
 
 

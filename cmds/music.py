@@ -9,20 +9,24 @@ import youtube_dl
 from discord.ext import commands
 from wavelink.ext import spotify
 
-from cmds.helpers.consts import (PLAYLIST_ID, SPOTIFY_ID, SPOTIFY_SECRET,
-                                 YTDL_FORMAT_OPTIONS)
+from cmds.helpers.consts import (
+    PLAYLIST_ID,
+    SPOTIFY_ID,
+    SPOTIFY_SECRET,
+    YTDL_FORMAT_OPTIONS,
+)
 from cmds.helpers.spotify import Spotify
 from cmds.helpers.yt_api import YT
 
 
-def setup(bot: commands.Bot):
+async def setup(bot: commands.Bot):
     """
     Setup
     """
     print("Iniciando load dos comandos de musica")
     bot.YT_DL = youtube_dl.YoutubeDL(YTDL_FORMAT_OPTIONS)
     bot.yt = YT()
-    bot.add_cog(Music(bot))
+    await bot.add_cog(Music(bot))
     print("Load finalizado")
 
 

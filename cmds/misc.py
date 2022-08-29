@@ -3,18 +3,19 @@ import asyncio
 import random
 import time
 from io import BytesIO
-from PIL import Image
+
 import aiohttp
 import discord
 from discord.ext import commands
+from PIL import Image
 
 
-def setup(bot):
+async def setup(bot):
     """
     Setup
     """
     print("Iniciando load dos comandos de misc")
-    bot.add_cog(Misc())
+    await bot.add_cog(Misc())
     print("Load finalizado")
 
 
@@ -52,12 +53,12 @@ class Misc(commands.Cog):
         Recarregar comandos do bot.
         """
         if to_rl == "all":
-            ctx.bot.reload_extension("cmds.img")
-            ctx.bot.reload_extension("cmds.music")
-            ctx.bot.reload_extension("cmds.misc")
-            ctx.bot.reload_extension("cmds.voting")
+            await ctx.bot.reload_extension("cmds.img")
+            await ctx.bot.reload_extension("cmds.music")
+            await ctx.bot.reload_extension("cmds.misc")
+            await ctx.bot.reload_extension("cmds.voting")
             return await ctx.send("Reloaded all")
-        ctx.bot.reload_extension(to_rl)
+        await ctx.bot.reload_extension(to_rl)
         await ctx.send(f"Reloaded {to_rl}")
 
     @commands.command()

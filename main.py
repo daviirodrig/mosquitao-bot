@@ -1,12 +1,14 @@
 """ Main file to run the bot """
+import asyncio
 import datetime
 import traceback
 
+from discord import Intents
 from discord.ext import commands
 
 from cmds.helpers.consts import OWNER_ID, TOKEN
 
-bot = commands.Bot(command_prefix="$", case_insensitive=True)
+bot = commands.Bot(command_prefix="$", case_insensitive=True, intents=Intents.all())
 
 
 @bot.event
@@ -93,8 +95,13 @@ async def on_member_remove(member):
         pass
 
 
-bot.load_extension("cmds.img")
-bot.load_extension("cmds.misc")
-bot.load_extension("cmds.music")
-bot.load_extension("cmds.voting")
-bot.run(TOKEN)
+async def main():
+    async with bot:
+        await bot.load_extension("cmds.img")
+        await bot.load_extension("cmds.misc")
+        await bot.load_extension("cmds.voting")
+        await bot.load_extension("cmds.music")
+        await bot.start(TOKEN)
+
+
+asyncio.run(main())

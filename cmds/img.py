@@ -1,25 +1,27 @@
 """Comandos de imagem"""
 import random
+import string
+
 import aiohttp
-import discord
 import asyncpraw
 import asyncprawcore
-import string
+import discord
 from deta import Deta
 from discord.ext import commands
+
 from cmds.helpers.chanGet import main as getChan
-from cmds.helpers.consts import REDDIT_ID, REDDIT_SECRET, REDDIT_AGENT, DETA_KEY
+from cmds.helpers.consts import DETA_KEY, REDDIT_AGENT, REDDIT_ID, REDDIT_SECRET
 
 deta = Deta(DETA_KEY)
 image_db = deta.Base("images")
 
 
-def setup(bot):
+async def setup(bot):
     """
     Setup
     """
     print("Iniciando load dos comandos de imagem")
-    bot.add_cog(Images())
+    await bot.add_cog(Images())
     print("Load finalizado")
 
 
