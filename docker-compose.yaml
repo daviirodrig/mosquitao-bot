@@ -3,6 +3,8 @@ version: '3'
 services:
   bot:
     build: .
+    volumes:
+      - ./cmds:/usr/app/cmds
     env_file: .env
     depends_on:
       - lavalink
