@@ -16,10 +16,9 @@ async def on_ready():
     """
     Função para quando o bot iniciar
     """
+    time_now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))
     print("----------------------------")
-    print(
-        f"Bot iniciado {datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))}"
-    )
+    print(f"Bot iniciado {time_now}")
     print(f"Logado como {bot.user.name}")
     print("----------------------------")
 
@@ -60,9 +59,8 @@ async def on_command(ctx):
     """
     Função para printar quando alguém usar comandos.
     """
-    print(
-        f"{datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))} {ctx.message.author}: {ctx.message.content}"
-    )
+    time_now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=-3)))
+    print(f"{time_now} {ctx.message.author}: {ctx.message.content}")
 
 
 @bot.event
