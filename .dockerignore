@@ -11,3 +11,7 @@ venv/
 .vscode/
 secret.py
 songs/
+.git
+.venv
+.gitignore
+README.md
