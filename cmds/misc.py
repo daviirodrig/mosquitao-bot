@@ -62,13 +62,18 @@ class Misc(commands.Cog):
         await ctx.send(f"Reloaded {to_rl}")
 
     @commands.command()
-    async def ping(self, ctx):
+    async def sync(self, ctx: commands.Context):
+        fmt = await ctx.bot.tree.sync()
+
+        await ctx.send(f"Synced {len(fmt)}")
+
+    @commands.hybrid_command()
+    async def ping(self, ctx: commands.Context) -> None:
         """
         Latência do bot.
         """
-        msg = await ctx.send("<a:loading:509160083305791488>")
-        bot_ms = str(msg.created_at - ctx.message.created_at)
-        await msg.edit(content=f"Pong!, `{bot_ms[8:11]}ms`")
+        api_ms = f"{str(round(ctx.bot.latency * 1000))} ms"
+        await ctx.send(api_ms)
 
     @commands.command()
     async def limpar(self, ctx, lim: int):
