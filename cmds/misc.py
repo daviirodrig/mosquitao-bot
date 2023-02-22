@@ -160,7 +160,7 @@ class Misc(commands.Cog):
         """
         emb = discord.Embed(colour=random.randint(0, 0xFFFFFF))
         emb.set_author(name=f"Informações de {user.name + user.discriminator}")
-        emb.set_thumbnail(url=user.avatar_url)
+        emb.set_thumbnail(url=user.avatar.url)
         emb.add_field(name=":busts_in_silhouette:| Nome", value=f"```{user.name}```")
         emb.add_field(
             name=":pencil:| Apelido",
@@ -200,6 +200,6 @@ class Misc(commands.Cog):
             emb.add_field(name=":joystick:| Game", value="```Nenhum```")
         emb.set_footer(
             text=f"Pedido por: {ctx.author.name + ctx.author.discriminator}",
-            icon_url=ctx.author.avatar_url,
+            icon_url=ctx.author.avatar.url,
         )
         await ctx.send(embed=emb)
