@@ -5,7 +5,7 @@ from datetime import timedelta
 
 import discord
 import wavelink
-import youtube_dl
+import yt_dlp as youtube_dl
 from discord.ext import commands
 from wavelink.ext import spotify
 
