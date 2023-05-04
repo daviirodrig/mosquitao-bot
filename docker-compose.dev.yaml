@@ -11,6 +11,6 @@ services:
   lavalink:
     ports:
       - 2334:2334
-    image: fredboat/lavalink:dev
+    image: ghcr.io/freyacodes/lavalink:3
     volumes:
       - ./lavalink/application.yaml:/opt/Lavalink/application.yaml
