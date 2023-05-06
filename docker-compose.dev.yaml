@@ -4,7 +4,7 @@ services:
   bot:
     build: .
     volumes:
-      - ./cmds:/usr/app/cmds
+      - ./src/:/usr/app/src/
     env_file: .env
     depends_on:
       - lavalink

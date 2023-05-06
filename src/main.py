@@ -102,4 +102,5 @@ async def main():
         await bot.start(TOKEN)
 
 
-asyncio.run(main())
+if __name__ in "__main__":
+    asyncio.run(main())

@@ -43,13 +43,15 @@ class Music(commands.Cog):
         """
         await self.bot.wait_until_ready()
 
-        await wavelink.NodePool.create_node(
-            bot=self.bot,
-            host="lavalink",
-            port=2334,
-            password="youshallnotpass",
-            spotify_client=spotify.SpotifyClient(
-                client_id=SPOTIFY_ID, client_secret=SPOTIFY_SECRET
+        await asyncio.sleep(5)
+
+        node = wavelink.Node(uri="http://lavalink:2334", password="youshallnotpass")
+
+        await wavelink.NodePool.connect(
+            client=self.bot,
+            nodes=[node],
+            spotify=spotify.SpotifyClient(
+                client_id=str(SPOTIFY_ID), client_secret=str(SPOTIFY_SECRET)
             ),
         )
 
@@ -65,10 +67,10 @@ class Music(commands.Cog):
         """
         Return embed of current song in `ctx`
         """
-        while ctx.voice_client.source is None:
+        while ctx.voice_client.current is None:
             await asyncio.sleep(1)
         track_info = ctx.bot.YT_DL.extract_info(
-            ctx.voice_client.source.uri, download=False
+            ctx.voice_client.current.uri, download=False
         )
         emb = discord.Embed(
             title=track_info["title"],
@@ -104,9 +106,7 @@ class Music(commands.Cog):
         )
 
         try:
-            track = await wavelink.YouTubeTrack.search(
-                query=track_name, return_first=False
-            )
+            track = await wavelink.YouTubeTrack.search(track_name, return_first=False)
         except IndexError:
             return await ctx.send("Nothing found")
 
@@ -150,7 +150,6 @@ class Music(commands.Cog):
                 await vc.queue.put_wait(track)
         # end of gambiarra
         else:
-
             if sp is None:
                 return ctx.send("Not valid")
 
