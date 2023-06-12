@@ -167,7 +167,7 @@ class Music(commands.Cog):
                 for t in track:
                     await vc.queue.put_wait(t)
             else:
-                await vc.queue.put_wait(track[0])
+                await vc.queue.put_wait(track)
 
         if vc.is_playing():
             await ctx.send("Added to queue")
@@ -193,7 +193,7 @@ class Music(commands.Cog):
         Comando para entrar no canal de voz.
         """
         canal_de_voz = ctx.author.voice.channel
-        await canal_de_voz.connect()
+        await canal_de_voz.connect(cls=wavelink.Player)
 
     @commands.command()
     async def shuffle(self, ctx: commands.Context):
