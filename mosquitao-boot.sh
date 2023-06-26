@@ -3,4 +3,4 @@
 #screen -XS mosquitao quit
 #screen -dm -L -Logfile mosquitao.log -S "mosquitao" python3 main.py
 docker compose up lavalink -d --build
-docker compose up bot -d --build
+COMMIT_HASH=$(git rev-parse HEAD) docker compose up bot -d --build

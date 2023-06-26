@@ -6,6 +6,8 @@ services:
     volumes:
       - ./src/:/usr/app/src/
     env_file: .env
+    environment:
+      - COMMIT_HASH=${COMMIT_HASH}
     depends_on:
       - lavalink
   lavalink:

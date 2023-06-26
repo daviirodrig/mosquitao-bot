@@ -22,6 +22,8 @@ OWNER_ID = int(getenv("OWNER_ID"))
 TOKEN = getenv("MosquitaoToken")
 DETA_KEY = getenv("DETA_KEY")
 
+COMMIT_HASH = getenv("COMMIT_HASH")
+
 YTDL_FORMAT_OPTIONS = {
     "outtmpl": "./songs/%(extractor)s-%(id)s.%(ext)s",
     "restrictfilenames": False,

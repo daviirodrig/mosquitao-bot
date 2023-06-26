@@ -6,8 +6,11 @@ from io import BytesIO
 
 import aiohttp
 import discord
+import psutil
 from discord.ext import commands
 from PIL import Image
+
+from cmds.helpers.consts import COMMIT_HASH
 
 
 async def setup(bot):
@@ -20,7 +23,6 @@ async def setup(bot):
 
 
 class Misc(commands.Cog):
-
     @commands.command()
     async def loop(self, ctx, command, times=5):
         """
@@ -128,6 +130,32 @@ class Misc(commands.Cog):
         Faça o bot dizer algo.
         """
         await ctx.send(frase)
+
+    @commands.command()
+    async def status(self, ctx):
+        """
+        Sends various info of the bot
+        Commit hash, ram usage, cpu usage, uptime, etc.
+        """
+        ram_size_mb = round(psutil.virtual_memory().total / (1024.0 ** 2))
+        ram_usage_mb: int = round(psutil.virtual_memory().used / (1024.0 ** 2))
+        ram = f"{ram_usage_mb}MB/{ram_size_mb}MB ({psutil.virtual_memory().percent}%)"
+
+        cpu = psutil.cpu_percent()
+        uptime = round((int(time.time()) - int(ctx.bot.boot_time)) / 60)
+        commit = COMMIT_HASH
+        embed = discord.Embed(
+            title="Status",
+            description=f"""
+            **Commit:** `{commit[:7]}`
+            **Ram:** `{ram}%`
+            **CPU:** `{cpu}%`
+            **Uptime:** `{uptime} min`
+            """,
+            color=discord.Color.green(),
+        )
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def emojo(self, ctx, emoji_name):
