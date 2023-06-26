@@ -178,14 +178,14 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_wavelink_track_end(
-        self, player: wavelink.Player, track, reason
+        self, payload: wavelink.TrackEventPayload
     ):  # pylint: disable=unused-argument
         """
         Handle on track end
         """
-        if not player.queue.is_empty:
-            next_track = await player.queue.get_wait()
-            await player.play(next_track)
+        if not payload.player.queue.is_empty:
+            next_track = await payload.player.queue.get_wait()
+            await payload.player.play(next_track)
 
     @commands.command(aliases=["join"])
     async def entrar(self, ctx):
@@ -299,9 +299,12 @@ class Music(commands.Cog):
         Pula a música
         """
         vc: wavelink.Player = ctx.voice_client
-        await vc.stop()
+        await vc.pause()
         if not vc.queue.is_empty:
-            await ctx.send(f"Now playing: {vc.queue[0].title or vc.queue}")
+            next_track = await vc.queue.get_wait()
+            await vc.play(next_track)
+        # if not vc.queue.is_empty:
+        #     await ctx.send(f"Now playing: {vc.queue[0].title or vc.queue}")
 
     @commands.command(aliases=["tocando", "nowplaying", "tocandoagora"])
     async def np(self, ctx):
