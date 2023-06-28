@@ -207,15 +207,15 @@ class Music(commands.Cog):
     @commands.command()
     async def volume(self, ctx: commands.Context, vol: int = None):
         """
-        Altera o volume | $volume {1..500}
+        Altera o volume | $volume {1..100}
         """
         vc: wavelink.Player = ctx.voice_client
         if vc is None:
             return
         if vol is None:
-            return await ctx.send(f"Volume: {vc.volume}")
-        vol /= 100
-        await vc.set_volume(vol, seek=True)
+            return await ctx.send(f"Volume: {int(vc.volume/10)}")
+        vol *= 10
+        await vc.set_volume(vol)
         await ctx.message.add_reaction("🔊")
 
     @commands.command(aliases=["avançar", "av"])
