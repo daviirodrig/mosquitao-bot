@@ -132,7 +132,7 @@ class Misc(commands.Cog):
         await ctx.send(frase)
 
     @commands.command()
-    async def status(self, ctx):
+    async def status(self, ctx: commands.Context):
         """
         Sends various info of the bot
         Commit hash, ram usage, cpu usage, uptime, etc.
@@ -143,13 +143,15 @@ class Misc(commands.Cog):
 
         cpu = psutil.cpu_percent()
         uptime = round((int(time.time()) - int(ctx.bot.boot_time)) / 60)
+        ping = f"{str(round(ctx.bot.latency * 1000))} ms"
         commit = COMMIT_HASH
         embed = discord.Embed(
             title="Status",
             description=f"""
-            **Commit:** `{commit[:7]}`
+            **Commit:** `{commit[:7] or "None"}`
             **Ram:** `{ram}%`
             **CPU:** `{cpu}%`
+            **Ping:** `{ping}`
             **Uptime:** `{uptime} min`
             """,
             color=discord.Color.green(),
