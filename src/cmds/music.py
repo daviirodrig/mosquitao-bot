@@ -87,9 +87,16 @@ class Music(commands.Cog):
             value=timedelta(seconds=track_info["duration"]),
             inline=True,
         )
+
+        emb.add_field(
+            name="Posição",
+            value=f"{str(timedelta(milliseconds=ctx.voice_client.position)).split('.')[0]}",
+            inline=True,
+        )
+
         emb.add_field(
             name="Pedido por",
-            value=ctx.author.name,
+            value=f"`{ctx.author.name}`",
             inline=True,
         )
         emb.set_footer(text="Conectado a " + ctx.voice_client.channel.name)
