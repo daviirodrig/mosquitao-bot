@@ -72,6 +72,17 @@ class Music(commands.Cog):
         track_info = ctx.bot.YT_DL.extract_info(
             ctx.voice_client.current.uri, download=False
         )
+        duration = timedelta(seconds=track_info["duration"])
+        position = timedelta(milliseconds=ctx.voice_client.position)
+        total_duration_seconds = duration.total_seconds()
+        current_position_seconds = position.total_seconds()
+        position_ratio = min(
+            max(current_position_seconds / total_duration_seconds, 0), 1
+        )
+        bar_filled_length = int(20 * position_ratio)
+        bar_empty_length = 20 - bar_filled_length
+        pos_bar = f"[{'=' * bar_filled_length}🔘{'-' * bar_empty_length}]"
+
         emb = discord.Embed(
             title=track_info["title"],
             url=track_info["webpage_url"],
@@ -84,16 +95,9 @@ class Music(commands.Cog):
         emb.set_thumbnail(url=track_info["thumbnail"])
         emb.add_field(
             name="Duração",
-            value=timedelta(seconds=track_info["duration"]),
+            value=f"`{str(position).split('.')[0]}` {pos_bar} `{duration}`",
             inline=True,
         )
-
-        emb.add_field(
-            name="Posição",
-            value=f"{str(timedelta(milliseconds=ctx.voice_client.position)).split('.')[0]}",
-            inline=True,
-        )
-
         emb.add_field(
             name="Pedido por",
             value=f"`{ctx.author.name}`",
