@@ -275,8 +275,8 @@ class Music(commands.Cog):
         if ctx.voice_client is None:
             return
         if len(ctx.voice_client.queue) < 1:
-            return await ctx.send("```css\nLista vazia\n```")
-        msg = "```css"
+            return await ctx.send("```k\nLista vazia\n```")
+        msg = "```k"
         for i, song in enumerate(ctx.voice_client.queue):
             msg += f"\n{i+1} - {song.title}"
             if len(msg) > 1500:
