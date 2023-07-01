@@ -194,7 +194,7 @@ class Music(commands.Cog):
         """
         Handle on track end
         """
-        if not payload.player.queue.is_empty:
+        if not payload.player.queue.is_empty and payload.reason == "FINISHED":
             next_track = await payload.player.queue.get_wait()
             await payload.player.play(next_track)
 
@@ -310,12 +310,9 @@ class Music(commands.Cog):
         Pula a música
         """
         vc: wavelink.Player = ctx.voice_client
-        await vc.pause()
         if not vc.queue.is_empty:
             next_track = await vc.queue.get_wait()
             await vc.play(next_track)
-        # if not vc.queue.is_empty:
-        #     await ctx.send(f"Now playing: {vc.queue[0].title or vc.queue}")
 
     @commands.command(aliases=["tocando", "nowplaying", "tocandoagora"])
     async def np(self, ctx):
