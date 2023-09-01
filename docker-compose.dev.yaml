@@ -13,6 +13,6 @@ services:
   lavalink:
     ports:
       - 2334:2334
-    image: ghcr.io/freyacodes/lavalink:3
+    image: ghcr.io/lavalink-devs/lavalink:latest
     volumes:
       - ./lavalink/application.yaml:/opt/Lavalink/application.yaml

@@ -9,6 +9,6 @@ services:
     depends_on:
       - lavalink
   lavalink:
-    image: ghcr.io/freyacodes/lavalink:3
+    image: ghcr.io/lavalink-devs/lavalink:latest
     volumes:
       - ./lavalink/application.yaml:/opt/Lavalink/application.yaml
