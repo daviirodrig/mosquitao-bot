@@ -2,10 +2,12 @@
 import asyncio
 import random
 import time
+import wave
 from io import BytesIO
 
 import aiohttp
 import discord
+import piper
 import psutil
 from discord.ext import commands
 from PIL import Image
@@ -124,6 +126,31 @@ class Misc(commands.Cog):
         time.sleep(0.5)
         await ctx.send(random.choice(escolhas))
 
+    @commands.command()
+    async def tts(self, ctx, *, frase):
+        """
+        Faça o bot falar algo com áudio.
+        """
+
+        if len(frase) > 800:
+            return await ctx.send("A frase não pode ter mais de 800 caracteres")
+
+        vc: discord.VoiceClient = (
+            ctx.voice_client or await ctx.author.voice.channel.connect()
+        )
+
+        if frase == "stop":
+            vc.stop()
+            return
+
+        piper_voice = piper.PiperVoice.load(
+            "./models/ptBRfabermedium.onnx", "./models/ptBRfabermedium.onnx.json"
+        )
+        with wave.open("temp_audio.wav", "wb") as f:
+            piper_voice.synthesize(frase, f)
+
+        vc.play(discord.FFmpegPCMAudio("temp_audio.wav"))
+
     @commands.command(usage="[algo]")
     async def diga(self, ctx, *, frase):
         """
@@ -137,8 +164,8 @@ class Misc(commands.Cog):
         Sends various info of the bot
         Commit hash, ram usage, cpu usage, uptime, etc.
         """
-        ram_size_mb = round(psutil.virtual_memory().total / (1024.0 ** 2))
-        ram_usage_mb: int = round(psutil.virtual_memory().used / (1024.0 ** 2))
+        ram_size_mb = round(psutil.virtual_memory().total / (1024.0**2))
+        ram_usage_mb: int = round(psutil.virtual_memory().used / (1024.0**2))
         ram = f"{ram_usage_mb}MB/{ram_size_mb}MB ({psutil.virtual_memory().percent}%)"
 
         cpu = psutil.cpu_percent()

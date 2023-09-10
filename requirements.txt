@@ -8,3 +8,4 @@ deta==1.1.0
 wavelink==2.4.0
 pytest==7.3.1
 psutil==5.9.5
+piper-tts==1.2.0
