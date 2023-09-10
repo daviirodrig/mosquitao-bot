@@ -132,8 +132,8 @@ class Misc(commands.Cog):
         Faça o bot falar algo com áudio.
         """
 
-        if len(frase) > 800:
-            return await ctx.send("A frase não pode ter mais de 800 caracteres")
+        if len(frase) > 500:
+            return await ctx.send("A frase não pode ter mais de 500 caracteres")
 
         vc: discord.VoiceClient = (
             ctx.voice_client or await ctx.author.voice.channel.connect()
