@@ -8,6 +8,11 @@ services:
       - COMMIT_HASH=${COMMIT_HASH}
     depends_on:
       - lavalink
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 800M
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:latest
     volumes:
