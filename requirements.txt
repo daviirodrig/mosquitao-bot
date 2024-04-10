@@ -1,7 +1,7 @@
 discord.py[voice]==2.3.0
 asyncpraw==7.5.0
 prawcore==2.3.0
-yt-dlp==2023.11.14
+yt-dlp==2024.4.9
 Pillow==10.2.0
 python-dotenv==1.0.0
 deta==1.1.0
